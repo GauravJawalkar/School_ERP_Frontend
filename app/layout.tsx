@@ -4,10 +4,9 @@ import "./globals.css";
 import ReactQueryProvider from "@/lib/providers/ReactQueryProvider";
 
 const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: "SCHOOL_ERP",
@@ -16,8 +15,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={`antialiased font-sans`}>
+    <html lang="en" className={`${inter.variable}`}>
+      <body className={`antialiased`}>
         <ReactQueryProvider>
           {children}
         </ReactQueryProvider>
