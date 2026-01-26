@@ -1,8 +1,67 @@
 
-import { Infinity } from "lucide-react"
+"use client"
+import { BASE_URL } from "@/constants/constants";
+import ApiClient from "@/interceptors/ApiClient";
+import { useAuthStore } from "@/store/authStore";
+import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff, Infinity, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
+    const { setUser, setAccessToken } = useAuthStore();
+    const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false)
+
+    const login = async ({ email, password }: { email: string, password: string }) => {
+        try {
+            if (email.trim() === "" || password.trim() === "") {
+                return toast.error("Email and Password are required");
+            }
+
+            const response = await ApiClient.post(`${BASE_URL}/auth/login`, { email, password });
+
+            if (response.data?.user) {
+                setAccessToken(response.data?.user?.accessToken);
+                setUser(response.data?.user);
+                toast.success("Login Successful!");
+                router.push('/')
+                return response.data.user;
+            }
+
+            return {};
+
+        } catch (error) {
+            console.error("Login failed:", error);
+        }
+    }
+
+    const loginMutation = useMutation({
+        mutationFn: login,
+        onError: () => {
+            toast.error("Invalid Credentials! Please try again.");
+        }
+    })
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+
+        if (!email || !password) {
+            return toast.error("Email and Password are required");
+        }
+
+        loginMutation.mutate({ email, password });
+    }
+
+    const handlePasswordVisibility = () => {
+        setShowPassword((prev) => !prev);
+    }
+
     return (
         <section className="min-h-screen flex items-center justify-center antialiased flex-col max-w-5xl mx-auto">
             <div className="grid grid-cols-2 gap-5 w-full rounded-xl border border-neutral-300  ">
@@ -22,32 +81,43 @@ const LoginPage = () => {
                         </h1>
                     </div>
                     <div className="mx-auto w-[80%] py-5">
-                        <form action="">
+                        <form onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-1 mb-4">
                                 <label className="text-sm">Email</label>
                                 <input
                                     type="email"
-                                    name=""
+                                    name="email"
                                     id=""
                                     placeholder="name@example.com"
                                     className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50" />
                             </div>
                             <div className="flex flex-col gap-1 mb-4">
                                 <label className="text-sm">Password</label>
-                                <input
-                                    type="password"
-                                    name=""
-                                    id=""
-                                    placeholder="example@Pas***rd"
-                                    className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50" />
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        id=""
+                                        placeholder="example@Pas***rd"
+                                        className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 w-full" />
+                                    <button type="button" onClick={handlePasswordVisibility} className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-3">
+                                        {
+                                            showPassword ?
+                                                <Eye height={20} width={20} /> :
+                                                <EyeOff height={20} width={20} />
+                                        }
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <button className="text-sm text-neutral-500 hover:underline underline-offset-2 outline-none focus:underline">Forgot Password?</button>
                             </div>
                             <div className="mt-5">
-                                <button className="w-full cursor-pointer bg-black text-white text-sm p-2 rounded-md hover:bg-black/80 transition-all ease-linear font-normal focus:ring-2 focus:ring-neutral-400/50">
+                                {(loginMutation.isPending && !loginMutation.isError) ? <button className="w-full mx-auto cursor-progress bg-black text-white text-sm p-2 rounded-md hover:bg-black/80 transition-all ease-linear font-normal focus:ring-2 focus:ring-neutral-400/50">
+                                    <Loader2 className="animate-spin mx-auto" />
+                                </button> : <button type="submit" className="w-full cursor-pointer bg-black text-white text-sm p-2 rounded-md hover:bg-black/80 transition-all ease-linear font-normal focus:ring-2 focus:ring-neutral-400/50">
                                     Sign In with Email
-                                </button>
+                                </button>}
                             </div>
                         </form>
                         {/* Continue with google section */}

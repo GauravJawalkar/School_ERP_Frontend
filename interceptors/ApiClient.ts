@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
 
 const ApiClient = axios.create({
@@ -22,13 +23,17 @@ ApiClient.interceptors.response.use(
         if (newToken) {
             const token = newToken.replace('Bearer ', '').trim();
             // Store this new accessToken in zustand
+            useAuthStore.getState().setAccessToken(token)
         }
         return response
     },
     (error) => {
         if (error.response?.status === 401) {
+            useAuthStore.getState().clearAuth();
             window.location.href = '/login';
         }
         return Promise.reject(error);
     }
 )
+
+export default ApiClient;

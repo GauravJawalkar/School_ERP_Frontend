@@ -1,0 +1,1 @@
+export const BASE_URL = process.env.BASE_URL || "https://school-erp-backend-r7jw.onrender.com/api/v1";
