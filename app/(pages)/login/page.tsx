@@ -110,7 +110,7 @@ const LoginPage = () => {
                                 </div>
                             </div>
                             <div>
-                                <button className="text-sm text-neutral-500 hover:underline underline-offset-2 outline-none focus:underline">Forgot Password?</button>
+                                <Link href={'/forgot-password'} className="text-sm cursor-pointer text-neutral-500 hover:underline underline-offset-2 outline-none focus:underline">Forgot Password?</Link>
                             </div>
                             <div className="mt-5">
                                 {(loginMutation.isPending && !loginMutation.isError) ? <button className="w-full mx-auto cursor-progress bg-black text-white text-sm p-2 rounded-md hover:bg-black/80 transition-all ease-linear font-normal focus:ring-2 focus:ring-neutral-400/50">
