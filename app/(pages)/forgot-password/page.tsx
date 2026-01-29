@@ -8,7 +8,7 @@ const page = () => {
                 <div className='w-full flex flex-col items-center justify-center gap-6'>
                     <div className=''>
                         {/* Illustration */}
-                        <MailQuestionMark height={160} width={160} strokeWidth={1.2} />
+                        <MailQuestionMark height={160} width={160} strokeWidth={1.2} className='text-neutral-700' />
                     </div>
                     <div className='space-y-2 text-center'>
                         <h1 className='text-2xl font-bold text-center tracking-wide'>Forgot your password ?</h1>
