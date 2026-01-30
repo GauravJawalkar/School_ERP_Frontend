@@ -1,15 +1,65 @@
 "use client"
-
+// 234858
+import { BASE_URL } from '@/constants/constants';
+import ApiClient from '@/interceptors/ApiClient';
 import { useAuthStore } from '@/store/authStore'
-import { ChevronLeft, Loader2, MessageCircleQuestionMark, TimerReset } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { ChevronLeft, Eye, EyeOff, Loader2, TimerReset } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const page = () => {
-    const { resetPasswordEmail } = useAuthStore();
+    const { resetPasswordEmail, setResetPasswordEmail } = useAuthStore();
+    const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmedPassword, setShowConfirmedPassword] = useState(false)
 
-    const handleSubmit = () => {
+    async function resetPassword({ otp, newPassword }: { otp: string, newPassword: string }) {
+        const response = await ApiClient.post(`${BASE_URL}/auth/resetPassword`, { email: resetPasswordEmail, otp, newPassword });
+        return response.data;
+    }
+
+    const resetPasswordMutation = useMutation({
+        mutationFn: resetPassword,
+        onSuccess: (data) => {
+            toast.success(data?.message || "Password reseted ! Login Again");
+            setResetPasswordEmail("");
+            router.push('/login');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || "Something went wrong");
+        }
+    })
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const otp = formData.get('otp') as string;
+        const newPassword = formData.get('newPassword') as string;
+        const confirmPassword = formData.get('confirmPassword') as string;
+
+        if (newPassword.trim() !== confirmPassword.trim()) {
+            return toast.error("Please confirm your password is correct");
+        }
+
+        resetPasswordMutation.mutate({ otp, newPassword });
 
     }
+
+    const handlePasswordVisibility = () => {
+        setShowPassword((prev) => !prev);
+    }
+
+    const handleConfirmedPasswordVisibility = () => {
+        setShowConfirmedPassword((prev) => !prev);
+    }
+
+    useEffect(() => {
+        if (resetPasswordEmail === null) router.replace('/forgot-password')
+    }, [resetPasswordEmail]);
+
     return (
         <div className='flex items-center justify-center h-screen'>
             <div className='mx-auto py-5 px-10 border border-light-border rounded-xl '>
@@ -28,35 +78,59 @@ const page = () => {
                                 <label className="text-sm">OTP</label>
                                 <input
                                     type="text"
+                                    name="otp"
+                                    id=""
                                     inputMode='numeric'
                                     pattern="[0-9]*"
                                     maxLength={6}
-                                    name="otp"
                                     onChange={(e) => (e.target.value = e.target.value.replace(/\D/g, ""))}
-                                    id=""
                                     placeholder="6 digit OTP"
                                     className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 appearance-none" />
                             </div>
                             <div className="flex flex-col gap-1 ">
                                 <label className="text-sm">New Password</label>
-                                <input
-                                    type="password"
-                                    name="newPassword"
-                                    id=""
-                                    placeholder="Pas***rd"
-                                    className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 " />
+                                <div className='relative'>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="newPassword"
+                                        id=""
+                                        placeholder="Pas***rd"
+                                        className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 w-full" />
+                                    <button type="button" onClick={handlePasswordVisibility} className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-3">
+                                        {
+                                            showPassword ?
+                                                <Eye height={20} width={20} /> :
+                                                <EyeOff height={20} width={20} />
+                                        }
+                                    </button>
+                                </div>
                             </div>
                             <div className="flex flex-col gap-1 ">
                                 <label className="text-sm">Confirm Password</label>
-                                <input
-                                    type="password"
-                                    name="confirmPassword"
-                                    id=""
-                                    placeholder="Pas***rd"
-                                    className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 " />
+                                <div className='relative'>
+                                    <input
+                                        type={showConfirmedPassword ? "text" : "password"}
+                                        name="confirmPassword"
+                                        id=""
+                                        placeholder="Pas***rd"
+                                        className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 w-full" />
+                                    <button type="button" onClick={handleConfirmedPasswordVisibility} className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-3">
+                                        {
+                                            showConfirmedPassword ?
+                                                <Eye height={20} width={20} /> :
+                                                <EyeOff height={20} width={20} />
+                                        }
+                                    </button>
+                                </div>
                             </div>
-                            <button type="submit" className="w-full cursor-pointer bg-black text-white text-sm p-2 rounded-md hover:bg-black/80 transition-all ease-linear font-normal focus:ring-2 focus:ring-neutral-400/50 flex items-center justify-center disabled:bg-black/50 disabled:cursor-not-allowed">
-                                Reset Password
+                            <button
+                                disabled={resetPasswordMutation.isPending}
+                                type="submit"
+                                className="w-full cursor-pointer bg-black text-white text-sm p-2 rounded-md hover:bg-black/80 transition-all ease-linear font-normal focus:ring-2 focus:ring-neutral-400/50 flex items-center justify-center disabled:bg-black/50 disabled:cursor-not-allowed">
+                                {
+                                    (resetPasswordMutation.isPending && !resetPasswordMutation.isError)
+                                        ? <Loader2 className='animate-spin' /> : "Reset Password"
+                                }
                             </button>
                         </form>
                         <div className='w-full flex items-center justify-center '>
