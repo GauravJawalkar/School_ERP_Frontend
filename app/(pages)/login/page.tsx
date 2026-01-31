@@ -16,32 +16,20 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false)
 
     const login = async ({ email, password }: { email: string, password: string }) => {
-        try {
-            if (email.trim() === "" || password.trim() === "") {
-                return toast.error("Email and Password are required");
-            }
-
-            const response = await ApiClient.post(`${BASE_URL}/auth/login`, { email, password });
-
-            if (response.data?.user) {
-                setAccessToken(response.data?.user?.accessToken);
-                setUser(response.data?.user);
-                toast.success("Login Successful!");
-                router.push('/')
-                return response.data.user;
-            }
-
-            return {};
-
-        } catch (error) {
-            console.error("Login failed:", error);
-        }
+        const response = await ApiClient.post(`${BASE_URL}/auth/login`, { email, password });
+        return response.data?.user;
     }
 
     const loginMutation = useMutation({
         mutationFn: login,
-        onError: () => {
-            toast.error("Invalid Credentials! Please try again.");
+        onSuccess: (data) => {
+            setAccessToken(data?.accessToken);
+            setUser(data);
+            toast.success("Login Successful!");
+            router.push('/')
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || "Invalid Credentials! Please try again.");
         }
     })
 
@@ -51,7 +39,7 @@ const LoginPage = () => {
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
 
-        if (!email || !password) {
+        if (email.trim() === "" || password.trim() === "") {
             return toast.error("Email and Password are required");
         }
 

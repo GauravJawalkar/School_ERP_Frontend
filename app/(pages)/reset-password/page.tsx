@@ -1,5 +1,5 @@
 "use client"
-// 234858
+
 import { BASE_URL } from '@/constants/constants';
 import ApiClient from '@/interceptors/ApiClient';
 import { useAuthStore } from '@/store/authStore'
@@ -61,7 +61,7 @@ const page = () => {
     }, [resetPasswordEmail]);
 
     return (
-        <div className='flex items-center justify-center h-screen'>
+        <div className='items-center flex justify-center h-screen'>
             <div className='mx-auto py-5 px-10 border border-light-border rounded-xl '>
                 <div className='w-md flex flex-col items-center justify-center gap-6'>
                     <div className=''>
