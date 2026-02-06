@@ -63,7 +63,7 @@ const page = () => {
     return (
         <div className='items-center flex justify-center h-screen'>
             <div className='mx-auto py-5 px-10 border border-light-border rounded-xl '>
-                <div className='w-md flex flex-col items-center justify-center gap-6'>
+                <div className='w-sm flex flex-col items-center justify-center gap-6'>
                     <div className=''>
                         {/* Illustration */}
                         <TimerReset height={100} width={100} className='text-neutral-700' />
