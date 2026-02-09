@@ -25,9 +25,11 @@ const page = () => {
             router.push('/reset-password');
         },
         onError: (error: any) => {
-            toast.error(
-                error?.response?.data?.message || "Something went wrong"
-            );
+            console.log("Forgot Password Error", error);
+            if (error?.response?.data?.status === 409) {
+                router.push('/reset-password');
+                return toast.error(error?.response?.data?.message || "Something went wrong");
+            }
         }
     })
 

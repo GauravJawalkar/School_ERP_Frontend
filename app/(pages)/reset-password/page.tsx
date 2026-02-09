@@ -57,8 +57,8 @@ const page = () => {
     }
 
     useEffect(() => {
-        if (resetPasswordEmail === null) router.replace('/forgot-password')
-    }, [resetPasswordEmail]);
+        if (!resetPasswordEmail) router.replace('/forgot-password')
+    }, [resetPasswordEmail, router]);
 
     return (
         <div className='items-center flex justify-center h-screen'>
