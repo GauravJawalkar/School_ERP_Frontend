@@ -57,7 +57,7 @@ const page = () => {
     }
 
     useEffect(() => {
-        if (!resetPasswordEmail) router.replace('/forgot-password')
+        if (!resetPasswordEmail) router.replace('/login')
     }, [resetPasswordEmail, router]);
 
     return (
