@@ -25,7 +25,6 @@ const page = () => {
             router.push('/reset-password');
         },
         onError: (error: any) => {
-            console.log("Forgot Password Error", error);
             if (error?.response?.data?.status === 409) {
                 router.push('/reset-password');
                 return toast.error(error?.response?.data?.message || "Something went wrong");
@@ -37,11 +36,9 @@ const page = () => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const email = formData.get('email') as string;
-
         if (email.trim() === "" || !email.includes("@")) {
             return toast.error("Please enter a valid email");
         }
-
         forgotPasswordMutation.mutate({ email });
     }
 
