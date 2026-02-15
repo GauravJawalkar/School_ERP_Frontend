@@ -11,6 +11,10 @@ export function proxy(request: NextRequest) {
         '/reset-password',
     ]
 
+    const protectedUrls = [
+        ''
+    ]
+
     return NextResponse.redirect(new URL('/home', request.url))
 }
 
