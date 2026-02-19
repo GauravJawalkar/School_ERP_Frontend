@@ -9,7 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export function usePermission() {
     // ── Pull directly from your Zustand store ─────────────────
-    const user = useAuthStore((state) => state.user);
+    const user = useAuthStore((state) => state?.user);
 
     const permissions: string[] = user?.permissions ?? [];
     const roles: string[] = user?.roles ?? [];
