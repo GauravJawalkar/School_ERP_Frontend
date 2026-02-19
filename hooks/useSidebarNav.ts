@@ -30,23 +30,20 @@ export function useSidebarNav(): NavGroup[] {
             .map((group) => ({
                 ...group,
                 items: group.items
-                    // ── Filter top-level items ──────────────────────
-                    .filter((item) => canAccessNavItem(item, { can, hasModule, is }))
-                    // ── Filter children of each item ────────────────
+                    .filter((item) => canAccessNavItem(item, { can, hasModule, is })) // Filter top-level items 
                     .map((item) => ({
                         ...item,
                         children: item.children?.filter((child) =>
-                            canAccessNavItem(child, { can, hasModule, is })
+                            canAccessNavItem(child, { can, hasModule, is })  // Filter children of each item 
                         ),
                     })),
             }))
-            // ── Remove groups where all items were filtered out ─
-            .filter((group) => group.items.length > 0);
+            .filter((group) => group.items.length > 0) // Remove groups where all items were filtered out 
     }, [can, hasModule, is]);
 }
 
 
-// ─── USAGE IN SIDEBAR COMPONENT ──────────────────────────────
+//  USAGE IN SIDEBAR COMPONENT
 //
 // "use client";
 // import { useSidebarNav } from "@/hooks/useSidebarNav";
