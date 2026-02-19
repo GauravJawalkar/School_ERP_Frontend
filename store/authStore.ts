@@ -1,3 +1,4 @@
+import { clearCookies } from "@/lib/clearCookies";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -21,7 +22,10 @@ export const useAuthStore = create<AuthState>()(
                 setAccessToken: (token: string | null) => set({ accessToken: token }),
                 setUser: (user) => set({ user }),
                 setResetPasswordEmail: (email) => set({ resetPasswordEmail: email }),
-                clearAuth: () => set({ accessToken: null, user: null })
+                clearAuth: () => {
+                    set({ accessToken: null, user: null, },)
+                    clearCookies();
+                }
             }
         ),
         {
