@@ -53,3 +53,22 @@ export interface ProtectPageOptions {
     /** Where to redirect if denied (default: "/dashboard") */
     redirectTo?: string;
 }
+
+export interface NavItem {
+    label: string;
+    href: string;
+    icon: string; // Lucide icon name
+    /** User needs this permission to see this item */
+    permission?: string;
+    /** User needs access to this module (any perm in module) */
+    module?: string;
+    /** User needs this role */
+    role?: string;
+    /** Sub-navigation items */
+    children?: NavItem[];
+}
+
+export interface NavGroup {
+    groupLabel: string;
+    items: NavItem[];
+}
