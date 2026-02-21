@@ -50,13 +50,15 @@ export function Sidebar() {
                                         ${isActive ? "bg-gray-100 font-medium" : "hover:bg-gray-100"}`}>
                                         <span>{item.label}</span>
                                         {hasChildren && (
-                                            isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+                                            <ChevronRight
+                                                size={16}
+                                                className={`transition-transform duration-200 ease-in-out  ${isOpen ? "rotate-90" : "rotate-0"}`} />
                                         )}
                                     </button>
                                 )}
 
                                 {hasChildren && isOpen && (
-                                    <div className="py-1">
+                                    <div className="py-1.5">
                                         {item?.children?.map((child) => (
                                             <Link
                                                 key={child.href}
