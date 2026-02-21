@@ -17,7 +17,7 @@ export function Sidebar() {
     };
 
     return (
-        <aside className="w-64 bg-gray-900 text-white">
+        <aside className="w-xs white text-black bg-gray-50 h-auto p-4">
             {navGroups.map((group) => (
                 <div key={group.groupLabel} className="mb-6">
                     <p className="px-4 py-2 text-xs text-gray-400 uppercase">
@@ -31,7 +31,7 @@ export function Sidebar() {
                             <div key={item.href}>
                                 <button
                                     onClick={() => hasChildren && toggleItem(item.href)}
-                                    className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-800">
+                                    className={`w-full flex items-center justify-between px-4 py-2 focus:outline-none text-sm rounded-sm ${isOpen ? "bg-gray-100" : "hover:bg-gray-100"}`}>
                                     <span>{item.label}</span>
                                     {hasChildren && (
                                         isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
@@ -39,12 +39,12 @@ export function Sidebar() {
                                 </button>
 
                                 {hasChildren && isOpen && (
-                                    <div className="bg-gray-800/50 py-1">
+                                    <div className="py-1">
                                         {item?.children?.map((child) => (
                                             <a
                                                 key={child.href}
                                                 href={child.href}
-                                                className="block px-8 py-2 text-sm hover:bg-gray-700">
+                                                className="block px-6 py-1.5 text-sm hover:bg-gray-100 rounded-sm">
                                                 {child.label}
                                             </a>
                                         ))}
