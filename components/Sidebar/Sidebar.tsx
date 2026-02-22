@@ -58,16 +58,20 @@ export function Sidebar() {
                                 )}
 
                                 {hasChildren && isOpen && (
-                                    <div className="py-1.5">
-                                        {item?.children?.map((child) => (
-                                            <Link
-                                                key={child.href}
-                                                scroll={false}
-                                                href={child.href}
-                                                className="block px-6 py-1.5 text-sm hover:bg-gray-100 transition-colors ease-linear duration-150 rounded-sm text-gray-600 hover:text-black">
-                                                {child.label}
-                                            </Link>
-                                        ))}
+                                    <div className="my-1.5">
+                                        {item?.children?.map((child) => {
+                                            const isActive = pathname === child?.href
+                                            return (
+                                                <Link
+                                                    key={child.href}
+                                                    scroll={false}
+                                                    href={child.href}
+                                                    className={`block px-6 py-1.5 my-1 text-sm hover:bg-gray-100 transition-colors ease-linear duration-150 rounded-sm text-gray-600 hover:text-black ${isActive ? "bg-gray-100 font-medium text-black" : "hover:bg-gray-100 hover:text-black"}`}>
+                                                    {child.label}
+                                                </Link>
+                                            )
+                                        }
+                                        )}
                                     </div>
                                 )}
                             </div>

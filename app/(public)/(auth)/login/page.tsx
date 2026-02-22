@@ -26,7 +26,7 @@ const LoginPage = () => {
             setAccessToken(data?.accessToken);
             setUser(data);
             toast.success("Login Successful!");
-            router.push('/')
+            router.push('/dashboard')
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.message || "Invalid Credentials! Please try again.");

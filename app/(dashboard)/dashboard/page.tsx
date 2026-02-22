@@ -1,13 +1,14 @@
-import { Sidebar } from '@/components/Sidebar/Sidebar'
-import React from 'react'
+import Logout from "@/components/Auth/Logout";
+import { Sidebar } from "@/components/Sidebar/Sidebar";
+import Link from "next/link";
 
-const DashboardPage = () => {
-    return (
-        <div>
-            <Sidebar />
-            <h1>Dashboard Page</h1>
-        </div>
-    )
+export default function Home() {
+  return (
+    <div>
+      <h1>Hi School ERP frontend</h1>
+      <Link href={'/login'}>Login</Link>
+      <br />
+      <Logout />
+    </div>
+  );
 }
-
-export default DashboardPage
