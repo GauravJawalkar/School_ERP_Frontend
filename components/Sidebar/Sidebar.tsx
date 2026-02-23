@@ -37,7 +37,7 @@ export function Sidebar() {
                                         href={item.href}
                                         scroll={false}
                                         className={`w-full flex items-center justify-between px-4 py-1.5 focus:outline-none text-sm rounded-sm ${isOpen ? "bg-gray-100" : "hover:bg-gray-100"} 
-                                        ${isActive ? "bg-gray-100 font-medium" : "hover:bg-gray-100"}`}>
+                                        ${isActive ? "bg-gray-100 font-medium ring-1 ring-gray-200" : "hover:bg-gray-100"}`}>
                                         <span>{item.label}</span>
                                         {hasChildren && (
                                             isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
@@ -47,7 +47,7 @@ export function Sidebar() {
                                     <button
                                         onClick={() => hasChildren && toggleItem(item.href)}
                                         className={`w-full flex items-center justify-between px-4 py-1.5 focus:outline-none text-sm rounded-sm ${isOpen ? "bg-gray-100" : "hover:bg-gray-100"} 
-                                        ${isActive ? "bg-gray-100 font-medium" : "hover:bg-gray-100"}`}>
+                                        ${isActive ? "bg-gray-100 font-medium ring-1 ring-gray-200" : "hover:bg-gray-100"}`}>
                                         <span>{item.label}</span>
                                         {hasChildren && (
                                             <ChevronRight
@@ -66,7 +66,7 @@ export function Sidebar() {
                                                     key={child.href}
                                                     scroll={false}
                                                     href={child.href}
-                                                    className={`block px-6 py-1.5 my-1 text-sm hover:bg-gray-100 transition-colors ease-linear duration-150 rounded-sm text-gray-600 hover:text-black ${isActive ? "bg-gray-100 font-medium text-black" : "hover:bg-gray-100 hover:text-black"}`}>
+                                                    className={`block px-6 py-1.5 my-1 text-sm hover:bg-gray-100 transition-colors ease-linear duration-150 rounded-sm text-gray-600 hover:text-black ${isActive ? "bg-gray-100 font-medium text-black ring-1 ring-gray-200" : "hover:bg-gray-100 hover:text-black"}`}>
                                                     {child.label}
                                                 </Link>
                                             )
