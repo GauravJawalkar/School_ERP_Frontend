@@ -4,7 +4,7 @@
 // The MAIN hook you'll use in every component and page.
 // Reads directly from your Zustand authStorage.
 
-import { hasPermission, hasAllPermissions, hasAnyPermission, hasRole, hasAnyRole, hasModuleAccess } from "@/lib/permissions";
+import { hasPermission, hasAllPermissions, hasAnyPermission, hasRole, hasAnyRole, hasModuleAccess } from "@/lib/configs/permissions";
 import { useAuthStore } from "@/store/authStore";
 
 export function usePermission() {

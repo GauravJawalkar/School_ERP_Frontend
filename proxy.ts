@@ -1,63 +1,77 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { tryRefreshAccessToken } from './lib/helpers/refreshAccessToken';
 
-//  Routes that don't need authentication 
-const PUBLIC_ROUTES = [
-    "/",
-    "/login",
-    "/forgot-password",
-    "/reset-password",
-];
+const PUBLIC_ROUTES = ["/", "/login", "/forgot-password", "/reset-password"];
+const SUPER_ADMIN_ONLY_ROUTES = ["/saas", "/saas/institutes", "/saas/billing", "/saas/settings"];
 
-//  Routes only SUPER_ADMIN can access 
-// (Fine-grained permission checks happen inside the page itself,
-//  middleware only handles coarse role-based route blocking)
-const SUPER_ADMIN_ONLY_ROUTES = [
-    "/saas",
-    "/saas/institutes",
-    "/saas/billing",
-    "/saas/settings",
-];
-
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
+    const loginUrl = new URL("/login", request.url);
 
-    // 1. Let public routes through 
-    const isPublic = PUBLIC_ROUTES.some(
-        (route) => pathname === route || pathname.startsWith(route + "/")
-    );
+    // 1. Let public routes through
+    const isPublic = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
     if (isPublic) return NextResponse.next();
 
-    //  2. Check for access token in cookies 
-    // NOTE: For this to work, you need to also save the accessToken
-    // as a cookie (httpOnly recommended) when login succeeds.
-    // Your Zustand store uses localStorage, so set a parallel cookie.
     const token = request.cookies.get("accessToken")?.value;
+    const refreshToken = request.cookies.get("refreshToken")?.value;
 
-    if (!token) {
-        // No token → redirect to login, preserving where they wanted to go
-        const loginUrl = new URL("/login", request.url);
+    // 2. No refresh token at all → must login
+    if (!refreshToken) {
         loginUrl.searchParams.set("callbackUrl", pathname);
         return NextResponse.redirect(loginUrl);
     }
 
-    //  3. Decode JWT payload (no verify — that's the backend's job) 
-    // We just need the payload for routing decisions
-    try {
-        const payload = JSON.parse(
-            Buffer.from(token.split(".")[1], "base64").toString()
-        );
+    // 3. Access token missing but refresh token exists → try to refresh
+    if (!token && refreshToken) {
+        const newAccessToken = await tryRefreshAccessToken(refreshToken);
 
-        //  4. Check token expiry 
+        if (newAccessToken) {
+            // If Successfully refreshed — set new cookie and continue
+            const nextResponse = NextResponse.next();
+            nextResponse.cookies.set("accessToken", newAccessToken, {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: false,
+                maxAge: 2 * 60,//2 minutes for testing
+            });
+            return nextResponse;
+        }
+
+        // Refresh failed → go to login
+        loginUrl.searchParams.set("callbackUrl", pathname);
+        return NextResponse.redirect(loginUrl);
+    }
+
+    // 4. Decode token for routing decisions (no verify, backend does that)
+    try {
+        const payload = JSON.parse(Buffer.from(token!.split(".")[1], "base64").toString());
+
         const now = Math.floor(Date.now() / 1000);
+
+        // 5. Token expired → try refresh before giving up
         if (payload.exp && payload.exp < now) {
-            // Token expired → clear cookie and redirect to login
+            const newAccessToken = await tryRefreshAccessToken(refreshToken);
+
+            if (newAccessToken) {
+                const nextResponse = NextResponse.next();
+                nextResponse.cookies.set("accessToken", newAccessToken, {
+                    httpOnly: true,
+                    sameSite: "lax",
+                    secure: false,
+                    maxAge: 2 * 60,
+                });
+                return nextResponse;
+            }
+
+            // Both expired → logout
             const response = NextResponse.redirect(new URL("/login", request.url));
             response.cookies.delete("accessToken");
+            loginUrl.searchParams.set("callbackUrl", pathname);
             return response;
         }
 
-        //  5. Protect SUPER_ADMIN only routes 
+        // 6. Protect SUPER_ADMIN only routes
         const isSuperAdminRoute = SUPER_ADMIN_ONLY_ROUTES.some(
             (route) => pathname === route || pathname.startsWith(route + "/")
         );
@@ -69,27 +83,15 @@ export function proxy(request: NextRequest) {
             }
         }
 
-        //  6. All checks passed 
         return NextResponse.next();
 
     } catch {
-        // Malformed token → send to login
         const response = NextResponse.redirect(new URL("/login", request.url));
         response.cookies.delete("accessToken");
         return response;
     }
 }
 
-//  Tell Next.js which routes to run middleware on 
 export const config = {
-    matcher: [
-        /*
-         * Match all paths EXCEPT:
-         * - _next/static (static files)
-         * - _next/image (image optimization)
-         * - favicon.ico
-         * - public folder files
-         */
-        "/((?!_next/static|_next/image|favicon.ico|public/).*)",
-    ],
+    matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)",],
 };

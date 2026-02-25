@@ -1,4 +1,4 @@
-import { clearCookies } from "@/lib/clearCookies";
+import { clearCookies } from "@/lib/helpers/clearCookies";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 

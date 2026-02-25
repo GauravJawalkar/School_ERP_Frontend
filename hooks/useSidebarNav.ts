@@ -1,7 +1,7 @@
 import { NavGroup, NavItem } from "@/interfaces/interface";
 import { usePermission } from "./usePermission";
 import { useMemo } from "react";
-import { navConfig } from "@/lib/nav-config";
+import { navConfig } from "@/lib/configs/nav-config";
 
 // Helper function to check if a nav item should be accessible based on its permission/module/role requirements
 export function canAccessNavItem(
