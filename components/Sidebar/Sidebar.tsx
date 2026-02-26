@@ -21,6 +21,9 @@ export function Sidebar() {
 
     return (
         <aside className="w-xs white text-black bg-gray-50 h-auto p-4">
+            <div className="flex items-center justify-start gap-2 mb-6">
+                <h1 className="text-xl font-semibold w-full text-start p-4">School ERP  Logo</h1>
+            </div>
             {navGroups.map((group) => (
                 <div key={group.groupLabel} className="mb-6">
                     <p className="px-4 py-1 text-xs text-neutral-500 capitalize">
