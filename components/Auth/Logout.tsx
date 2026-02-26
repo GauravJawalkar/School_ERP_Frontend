@@ -1,11 +1,11 @@
 "use client"
 
-import { useAuthStore } from "@/store/authStore"
+import { useLogout } from "@/hooks/useLogout";
 
 const Logout = () => {
-    const { clearAuth } = useAuthStore();
+    const { logout } = useLogout();
     return (
-        <button onClick={() => clearAuth()}>Logout</button>
+        <button onClick={() => logout()}>Logout</button>
     )
 }
 

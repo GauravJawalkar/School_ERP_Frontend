@@ -2,14 +2,19 @@
 
 import { useSidebarNav } from "@/hooks/useSidebarNav";
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronsUpDown, Landmark } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 
 export function Sidebar() {
     const navGroups = useSidebarNav();
     const [openItems, setOpenItems] = useState<Set<string>>(new Set());
     const pathname = usePathname();
+    const { user } = useAuthStore();
+    const userRole = user?.roles?.[0] || 'Employee'
+    const instituteDetails = user?.instituteDetails;
+    let schoolName = instituteDetails?.schoolName || "";
 
     const toggleItem = (href: string) => {
         setOpenItems((prev) => {
@@ -19,10 +24,37 @@ export function Sidebar() {
         });
     };
 
+    // Helper function to format role names
+    function formatRole(role?: string) {
+        return role
+            ?.toLowerCase()
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    // Helper function to determine the school name based on user role for SUPER_ADMIN
+    function showSchoolName() {
+        if (userRole === "SUPER_ADMIN") {
+            return schoolName = "School SAAS";
+        }
+        return schoolName;
+    }
+
     return (
         <aside className="w-xs white text-black bg-gray-50 h-auto p-4">
-            <div className="flex items-center justify-start gap-2 mb-6">
-                <h1 className="text-xl font-semibold w-full text-start p-4">School ERP  Logo</h1>
+            <div className="mb-4 cursor-pointer hover:bg-gray-100 hover:ring-gray-200 hover:ring p-1.5 flex items-center justify-between rounded-md">
+                <div className="flex items-center justify-start gap-2">
+                    <div className="p-1.5 rounded-sm text-gray-200 bg-black">
+                        <Landmark height={25} width={25} />
+                    </div>
+                    <div>
+                        <h1 className="font-semibold text-sm">{showSchoolName()}</h1>
+                        <p className="text-xs capitalize">Role: {formatRole(userRole)}</p>
+                    </div>
+                </div>
+                <div>
+                    <ChevronsUpDown width={18} height={18} />
+                </div>
             </div>
             {navGroups.map((group) => (
                 <div key={group.groupLabel} className="mb-6">

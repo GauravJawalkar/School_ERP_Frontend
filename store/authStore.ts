@@ -12,6 +12,7 @@ interface AuthState {
     clearAuth: () => void;
 }
 
+
 export const useAuthStore = create<AuthState>()(
     persist(
         (set) => (
@@ -19,11 +20,17 @@ export const useAuthStore = create<AuthState>()(
                 accessToken: null as string | null,
                 user: null,
                 resetPasswordEmail: null as string | null,
+                institute: null,
                 setAccessToken: (token: string | null) => set({ accessToken: token }),
                 setUser: (user) => set({ user }),
                 setResetPasswordEmail: (email) => set({ resetPasswordEmail: email }),
                 clearAuth: () => {
-                    set({ accessToken: null, user: null, },)
+                    set(
+                        {
+                            accessToken: null,
+                            user: null
+                        }
+                    )
                     clearCookies();
                 }
             }
