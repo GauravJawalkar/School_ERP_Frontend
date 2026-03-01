@@ -3,7 +3,6 @@
 
 import { ChevronRight, PanelRight } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 
 export function Header({ toggleSidebar }: { toggleSidebar: () => void }) {
     const pathname = usePathname();

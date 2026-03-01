@@ -1,13 +1,13 @@
 import Logout from "@/components/Auth/Logout";
-import { Sidebar } from "@/components/Sidebar/Sidebar";
-import Link from "next/link";
+import Stats from "@/components/Commons/Stats";
+import InstituteList from "@/components/Dashboard/SuperAdmin/InstituteList";
+import { superAdminDashboardStats } from "@/data/dummySuperAdminStats";
 
 export default function Home() {
   return (
-    <div>
-      <h1>Hi School ERP frontend</h1>
-      <Link href={'/login'}>Login</Link>
-      <br />
+    <div className="space-y-6">
+      <Stats dashboardStats={superAdminDashboardStats} />
+      <InstituteList />
       <Logout />
     </div>
   );

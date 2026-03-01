@@ -1,0 +1,68 @@
+import { DashboardStata } from "@/interfaces/interface";
+
+export const superAdminDashboardStats: DashboardStata[] = [
+    {
+        id: 1,
+        title: "Total Institutes",
+        subtitle: "All registered institutes",
+        value: 24,
+        change: 12.5,
+        period: "vs last month",
+    },
+    {
+        id: 2,
+        title: "Active Institutes",
+        subtitle: "Currently active institutes",
+        value: 21,
+        change: -3.2,
+        period: "vs last month",
+    },
+    {
+        id: 3,
+        title: "Total Students",
+        subtitle: "All enrolled students",
+        value: "15,432",
+        change: 8.1,
+        period: "vs last month",
+    },
+    {
+        id: 4,
+        title: "Platform Revenue",
+        subtitle: "Total platform earnings",
+        value: "₹45,67,890",
+        change: 18.4,
+        period: "vs last month",
+    },
+    {
+        id: 5,
+        title: "Total Teachers",
+        subtitle: "Registered teachers",
+        value: 856,
+        change: -1.6,
+        period: "vs last month",
+    },
+    {
+        id: 6,
+        title: "Total Staff",
+        subtitle: "Non-teaching staff",
+        value: 234,
+        change: 4.3,
+        period: "vs last month",
+    },
+    {
+        id: 7,
+        title: "New Signups This Month",
+        subtitle: "Users joined this month",
+        value: 3,
+        change: -12.0,
+        period: "vs last month",
+    },
+    {
+        id: 8,
+        title: "Active Users Today",
+        subtitle: "Users active today",
+        value: "1,234",
+        change: 6.7,
+        period: "vs yesterday",
+    },
+];

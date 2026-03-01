@@ -43,14 +43,14 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
     if (!isOpen) return null;
 
     return (
-        <aside className="w-xs white text-black bg-gray-50 p-4 flex flex-col h-screen border-r border-light-border">
-            <div className="relative mb-4 cursor-pointer hover:bg-gray-100 hover:ring-gray-200 hover:ring px-1.5 flex items-center justify-between rounded-md">
+        <aside className="w-xs white text-black bg-gray-50 p-3 flex flex-col h-screen">
+            <div className="relative mb-4 cursor-pointer hover:bg-gray-100 hover:ring-gray-200 hover:ring p-1.5 flex items-center justify-between rounded-md">
                 <div className="flex items-center justify-start gap-2">
                     <div className="p-1.5 rounded-sm text-gray-200 bg-black">
                         <Landmark height={25} width={25} />
                     </div>
                     <div>
-                        <h1 className="font-semibold text-sm">{showSchoolName()}</h1>
+                        <h1 className="font-semibold text-sm">{user?.firstName + " " + user?.lastName}</h1>
                         <p className="text-xs capitalize">Role: {formatRole(userRole)}</p>
                     </div>
                 </div>

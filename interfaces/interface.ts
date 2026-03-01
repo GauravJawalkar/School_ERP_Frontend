@@ -72,3 +72,12 @@ export interface NavGroup {
     groupLabel: string;
     items: NavItem[];
 }
+
+export interface DashboardStata {
+    id: number;
+    title: string;
+    value: number | string;
+    subtitle: string;
+    change: number; // percentage change from previous period
+    period: string;
+}
