@@ -42,10 +42,8 @@ export default function TopRevenueInstitutesChart() {
                         axisLine={false}
                         tickLine={false}
                         width={220}
-                        tick={{ fontSize: 12, textAnchor: "end" }}
-                        tickFormatter={(value) =>
-                            value.length > 22 ? value.slice(0, 22) + "..." : value
-                        }
+                        tick={{ fontSize: 13, textAnchor: "end" }}
+                        tickFormatter={(value) => value.length > 22 ? value.slice(0, 22) + "..." : value}
                     />
 
                     <Tooltip
@@ -61,9 +59,9 @@ export default function TopRevenueInstitutesChart() {
 
                     <Bar
                         dataKey="revenue"
-                        fill="bg-black/50"
+                        fill="#252525"
                         radius={[0, 6, 6, 0]}
-                        barSize={20}
+                        barSize={25}
                         tabIndex={-1}
                     />
                 </BarChart>
