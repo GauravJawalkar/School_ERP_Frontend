@@ -81,3 +81,11 @@ export interface DashboardStata {
     change: number; // percentage change from previous period
     period: string;
 }
+
+export interface StatItem {
+    label: string;
+    value: number;
+    percentage?: number;
+    type?: "active" | "expired" | "expiring" | "free";
+    helper?: string;
+};
