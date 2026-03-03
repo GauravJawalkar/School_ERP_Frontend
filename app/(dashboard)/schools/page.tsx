@@ -1,10 +1,12 @@
 import Stats from "@/components/Commons/Stats"
+import AllInstituteTable from "@/components/Dashboard/SuperAdmin/Tables/InstituteTable"
 import { dummySchoolStats } from "@/data/dummySuperAdminStats"
 
 const page = () => {
     return (
-        <div>
+        <div className="space-y-6">
             <Stats dashboardStats={dummySchoolStats} />
+            <AllInstituteTable />
         </div>
     )
 }

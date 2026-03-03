@@ -1,6 +1,5 @@
 import Logout from "@/components/Auth/Logout";
 import Stats from "@/components/Commons/Stats";
-import InstituteList from "@/components/Dashboard/SuperAdmin/InstituteList";
 import RevenueChart from "@/components/Dashboard/SuperAdmin/MonthlyRevenueChart";
 import RevenueByPlanChart from "@/components/Dashboard/SuperAdmin/RevenueByPlanChart";
 import RevenueTrendChart from "@/components/Dashboard/SuperAdmin/RevenueTrendChart";
@@ -19,7 +18,6 @@ export default function Home() {
         <RevenueTrendChart />
       </div>
       <TopRevenueInstitutesChart />
-      <InstituteList />
       <Logout />
     </div>
   );
