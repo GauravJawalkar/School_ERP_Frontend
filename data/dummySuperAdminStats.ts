@@ -124,3 +124,54 @@ export const institutes = [
         lastLogin: "2026-02-25",
     },
 ];
+
+export const dummySchoolStats = [
+    {
+        id: 1,
+        title: "Total Schools",
+        subtitle: "All registered schools",
+        value: 24,
+        change: 12.5,
+        period: "vs last month",
+    },
+    {
+        id: 2,
+        title: "Active Schools",
+        subtitle: "Currently active schools",
+        value: 21,
+        change: -3.2,
+        period: "vs last month",
+    },
+    {
+        id: 3,
+        title: "Trial Schools",
+        subtitle: "Free trial schools",
+        value: "10",
+        change: 8.1,
+        period: "vs last month",
+    },
+    {
+        id: 4,
+        title: "Expiring This Month",
+        subtitle: "Schools with expiring subscriptions",
+        value: "3",
+        change: -18.4,
+        period: "vs last month",
+    },
+    {
+        id: 5,
+        title: "Average Revenue",
+        subtitle: "Average earnings per school",
+        value: "₹1,90,328",
+        change: 4.3,
+        period: "vs last month",
+    },
+    {
+        id: 6,
+        title: "Total Revenue",
+        subtitle: "Total revenue from schools",
+        value: "₹45,67,890",
+        change: 18.4,
+        period: "vs last month",
+    },
+]

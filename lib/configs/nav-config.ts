@@ -17,6 +17,24 @@ export const navConfig: NavGroup[] = [
         ],
     },
     {
+        groupLabel: "Institutes",
+        items: [
+            {
+                label: "Schools",
+                href: "/my-school",
+                icon: "School",
+                permission: PERMISSIONS.SAAS.INSTITUTE_CREATE,
+                children: [
+                    { label: "All Schools", href: "/schools", icon: "Users", permission: PERMISSIONS.SAAS.INSTITUTE_VIEW_ALL },
+                    { label: "Add School", href: "/schools/new", icon: "Users", permission: PERMISSIONS.SAAS.INSTITUTE_CREATE },
+                    { label: "School Analytics", href: "/schools/analytics", icon: "Users", permission: PERMISSIONS.SAAS.INSTITUTE_CREATE },
+                    { label: "Subscription & Plans", href: "/schools/subscriptions", icon: "Users", permission: PERMISSIONS.SAAS.INSTITUTE_CREATE },
+                    { label: "School Admins", href: "/schools/admins", icon: "Users", permission: PERMISSIONS.SAAS.INSTITUTE_CREATE },
+                ]
+            },
+        ]
+    },
+    {
         groupLabel: "Academics",
         items: [
             {

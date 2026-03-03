@@ -13,8 +13,6 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
     const pathname = usePathname();
     const { user } = useAuthStore();
     const userRole = user?.roles?.[0] || 'Employee'
-    const instituteDetails = user?.instituteDetails;
-    let schoolName = instituteDetails?.schoolName || "";
 
     const toggleItem = (href: string) => {
         setOpenItems((prev) => {
@@ -32,25 +30,17 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
             .replace(/\b\w/g, (c) => c.toUpperCase());
     }
 
-    // Helper function to determine the school name based on user role for SUPER_ADMIN
-    function showSchoolName() {
-        if (userRole === "SUPER_ADMIN") {
-            return schoolName = "School SAAS";
-        }
-        return schoolName;
-    }
-
     if (!isOpen) return null;
 
     return (
         <aside className="w-xs white text-black bg-gray-50 p-3 flex flex-col h-screen">
             <div className="relative mb-4 cursor-pointer hover:bg-gray-100 hover:ring-gray-200 hover:ring p-1.5 flex items-center justify-between rounded-md">
                 <div className="flex items-center justify-start gap-2">
-                    <div className="p-1.5 rounded-sm text-gray-200 bg-black">
-                        <Landmark height={25} width={25} />
+                    <div className="py-1.5 px-3 rounded-md text-gray-200 bg-black">
+                        <h1>{String(user?.firstName[0] + user?.lastName[0])}</h1>
                     </div>
                     <div>
-                        <h1 className="font-semibold text-sm">{user?.firstName + " " + user?.lastName}</h1>
+                        <h1 className="font-semibold text-sm">{String(user?.firstName + " " + user?.lastName)}</h1>
                         <p className="text-xs capitalize">Role: {formatRole(userRole)}</p>
                     </div>
                 </div>

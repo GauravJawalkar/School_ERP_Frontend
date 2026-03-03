@@ -1,5 +1,6 @@
 "use client";
 
+import { CanAccess } from "@/components/Auth/CanAccess";
 import { StatItem } from "@/interfaces/interface";
 import { CircleCheckBig, CircleQuestionMark, Gift, ShieldAlert, ShieldCheck, ShieldOff } from "lucide-react";
 
@@ -29,7 +30,7 @@ const subscriptionStats: StatItem[] = [
         type: "free",
     },
     {
-        label: "Expiring in 39 Days",
+        label: "Expiring in 30 Days",
         value: 58,
         percentage: 8,
         type: "expiring",
@@ -38,35 +39,37 @@ const subscriptionStats: StatItem[] = [
 
 export default function SubscriptionStatus() {
     return (
-        <div className="w-full bg-white rounded-2xl border border-light-border p-4">
-            <div className="mb-4">
-                <h2 className="text-lg">Subscription Health</h2>
-            </div>
+        <CanAccess permission={'saas.subscription.manage'}>
+            <div className="w-full bg-white rounded-2xl border border-light-border p-4">
+                <div className="mb-4">
+                    <h2 className="text-lg">Subscription Health</h2>
+                </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                {subscriptionStats.map((stat) => {
-                    const Icon = stat.type === "active" ? <ShieldCheck size={17} /> : stat.type === "expired" ? <ShieldOff size={17} /> : stat.type === "expiring" ? <CircleQuestionMark size={17} /> : <Gift size={17} />;
-                    return (
-                        <div key={stat.label} className="rounded-xl border border-light-border p-4">
-                            <p className="text-xs text-black/50 mb-1">{stat.label}</p>
+                <div className="grid grid-cols-2 gap-4">
+                    {subscriptionStats.map((stat) => {
+                        const Icon = stat.type === "active" ? <ShieldCheck size={17} /> : stat.type === "expired" ? <ShieldOff size={17} /> : stat.type === "expiring" ? <CircleQuestionMark size={17} /> : <Gift size={17} />;
+                        return (
+                            <div key={stat.label} className="rounded-xl border border-light-border p-4">
+                                <p className="text-xs text-black/50 mb-1">{stat.label}</p>
 
-                            <div className="flex items-end justify-between">
-                                <p className="text-2xl font-semibold">{stat.value}</p>
+                                <div className="flex items-end justify-between">
+                                    <p className="text-2xl font-semibold">{stat.value}</p>
 
-                                {stat.percentage !== undefined && (
-                                    <span className={`text-xs px-2 py-1 rounded-md border border-light-border flex items-center gap-2 justify-center`}>
-                                        {Icon}  {stat.percentage}%
-                                    </span>
+                                    {stat.percentage !== undefined && (
+                                        <span className={`text-xs px-2 py-1 rounded-md border border-light-border flex items-center gap-2 justify-center`}>
+                                            {Icon}  {stat.percentage}%
+                                        </span>
+                                    )}
+                                </div>
+
+                                {stat.helper && (
+                                    <p className="text-xs text-amber-600 mt-2">{stat.helper}</p>
                                 )}
                             </div>
-
-                            {stat.helper && (
-                                <p className="text-xs text-amber-600 mt-2">{stat.helper}</p>
-                            )}
-                        </div>
-                    )
-                })}
+                        )
+                    })}
+                </div>
             </div>
-        </div>
+        </CanAccess>
     );
 }
