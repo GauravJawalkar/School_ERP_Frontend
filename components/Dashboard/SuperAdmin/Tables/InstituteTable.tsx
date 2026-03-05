@@ -2,8 +2,9 @@
 import { useState } from 'react'
 import { CanAccess } from '@/components/Auth/CanAccess'
 import { institutes } from '@/data/dummySuperAdminStats';
-import { Check, CircleCheckBig, CirclePlus, CircleQuestionMark, Ellipsis, Settings2, ShieldAlert } from 'lucide-react'
+import { Ban, Check, CircleCheckBig, CirclePlus, CircleQuestionMark, Delete, Edit, Ellipsis, Heart, Pen, Pencil, Settings2, ShieldAlert, Trash, Trash2, UserCog, UserStar } from 'lucide-react'
 import Link from 'next/link';
+import TableActionMenu from '@/components/Commons/TableActionMenu';
 
 const tableColumns = ['School Name', 'City', 'Email', 'Phone', 'Students', 'Staff', 'Plan', 'Revenue', 'Status', 'Renewal Date', 'Last Login']
 
@@ -66,7 +67,7 @@ const AllInstituteTable = () => {
                 </div>
 
                 {/* Table */}
-                <div className='border-light-border rounded-xl border w-full overflow-x-auto slim-scrollbar'>
+                <div className='border-light-border rounded-xl border w-full overflow-x-auto overflow-y-visible slim-scrollbar'>
                     <table className="text-sm min-w-max w-full">
                         <thead className="text-left hover:bg-gray-50 transition-all ease-linear">
                             <tr className="text-black/80">
@@ -138,29 +139,31 @@ const AllInstituteTable = () => {
                                             <td className="px-4 text-black/70">{institute.lastLogin}</td>
                                         )}
                                         <td className="px-4">
-                                            <div className='relative group'>
-                                                <button className='text-black/70 hover:text-black transition ease-linear hover:bg-gray-100/90 p-1.5 rounded-md hover:ring-light-border hover:ring-1 focus:outline-black/50'>
-                                                    <Ellipsis size={15} />
-                                                </button>
-                                                {/* Dropdown */}
-                                                <div className='absolute right-0 top-full mt-1.5 w-max bg-white rounded-md shadow-lg border border-light-border opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all ease-linear text-sm z-10'>
-                                                    <h1 className='py-2 border-b text-center border-light-border font-medium'>Toggle columns</h1>
-                                                    <div className='max-h-50 overflow-y-auto slim-scrollbar py-1'>
-                                                        {tableColumns.map((column) => (
-                                                            <label
-                                                                key={column}
-                                                                onClick={() => toggleColumn(column)}
-                                                                className='flex items-center gap-2 text-sm text-black/70 hover:text-black font-normal p-1.5 hover:bg-gray-100 rounded-md mx-1.5 cursor-pointer select-none'>
-                                                                {isVisible(column)
-                                                                    ? <Check size={15} className="text-black" />
-                                                                    : <span className="inline-block w-3.75" />
-                                                                }
-                                                                {column}
-                                                            </label>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <TableActionMenu
+                                                actions={[
+                                                    {
+                                                        label: "Edit",
+                                                        icon: <Pencil size={15} />,
+                                                        onClick: () => console.log("Edit School"),
+                                                    },
+                                                    {
+                                                        label: "Admins",
+                                                        icon: <UserCog size={15} />,
+                                                        onClick: () => console.log("View Admins"),
+                                                    },
+                                                    {
+                                                        label: "Suspend",
+                                                        icon: <Ban size={15} />,
+                                                        onClick: () => console.log("Suspend School"),
+                                                    },
+                                                    {
+                                                        label: "Delete",
+                                                        icon: <Trash2 size={15} />,
+                                                        danger: true,
+                                                        onClick: () => console.log("Delete School"),
+                                                    },
+                                                ]}
+                                            />
                                         </td>
                                     </tr>
                                 );

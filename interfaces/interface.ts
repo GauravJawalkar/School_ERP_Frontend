@@ -89,3 +89,10 @@ export interface StatItem {
     type?: "active" | "expired" | "expiring" | "free";
     helper?: string;
 };
+
+export interface Action {
+    label: string
+    icon?: React.ReactNode
+    onClick: () => void
+    danger?: boolean
+}
