@@ -26,6 +26,10 @@ const AllInstituteTable = () => {
         setOpen((prev) => !prev);
     }
 
+    const isVisible = (col: string) => visibleColumns.has(col);
+
+    const slugify = (schoolName: string) => schoolName.toLowerCase().replace(/\s+/g, '-');
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent | TouchEvent) => {
             const target = event.target as Node
@@ -41,8 +45,6 @@ const AllInstituteTable = () => {
             document.removeEventListener("touchstart", handleClickOutside)
         }
     }, [])
-
-    const isVisible = (col: string) => visibleColumns.has(col);
 
     return (
         <CanAccess permission='saas.institute.create'>
@@ -113,7 +115,6 @@ const AllInstituteTable = () => {
                                     institute.status === "Active" ? <CircleCheckBig size={17} /> :
                                         institute.status === "Expired" ? <ShieldAlert size={17} /> :
                                             <CircleQuestionMark size={17} />;
-
                                 return (
                                     <tr key={institute.id} className="border-t border-light-border hover:bg-gray-50 transition">
                                         <td className="pl-4 py-3">
@@ -122,16 +123,28 @@ const AllInstituteTable = () => {
                                                 type="checkbox" />
                                         </td>
                                         {isVisible('School Name') && (
-                                            <td className="px-4 text-black/70">{institute.name}</td>
+                                            <td className="px-4 text-black/70">
+                                                <Link className='hover:text-black transition-all hover:font-medium' href={`/schools/${slugify(institute?.name)}`}>
+                                                    {institute.name}
+                                                </Link>
+                                            </td>
                                         )}
                                         {isVisible('City') && (
                                             <td className="px-4 text-black/70">{institute.city}</td>
                                         )}
                                         {isVisible('Email') && (
-                                            <td className="px-4 text-black/70">{institute.email}</td>
+                                            <td className="px-4 text-black/70">
+                                                <Link className='hover:text-black transition-all hover:font-medium' href={`mailTo:${institute?.email}`}>
+                                                    {institute.email}
+                                                </Link>
+                                            </td>
                                         )}
                                         {isVisible('Phone') && (
-                                            <td className="px-4 text-black/70">{institute.phone}</td>
+                                            <td className="px-4 text-black/70">
+                                                <Link className='hover:text-black transition-all hover:font-medium' href={`tel:${institute.phone}`}>
+                                                    {institute.phone}
+                                                </Link>
+                                            </td>
                                         )}
                                         {isVisible('Students') && (
                                             <td className="px-4 text-black/70">{institute.students.toLocaleString()}</td>
