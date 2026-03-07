@@ -1,8 +1,8 @@
 "use client"
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CanAccess } from '@/components/Auth/CanAccess'
 import { institutes } from '@/data/dummySuperAdminStats';
-import { Ban, Check, CircleCheckBig, CirclePlus, CircleQuestionMark, Delete, Edit, Ellipsis, Heart, Pen, Pencil, Settings2, ShieldAlert, Trash, Trash2, UserCog, UserStar } from 'lucide-react'
+import { Ban, Check, CircleCheckBig, CirclePlus, CircleQuestionMark, Pencil, Settings2, ShieldAlert, Trash2, UserCog } from 'lucide-react'
 import Link from 'next/link';
 import TableActionMenu from '@/components/Commons/TableActionMenu';
 
@@ -10,6 +10,8 @@ const tableColumns = ['School Name', 'City', 'Email', 'Phone', 'Students', 'Staf
 
 const AllInstituteTable = () => {
     const [visibleColumns, setVisibleColumns] = useState(new Set(tableColumns));
+    const [open, setOpen] = useState(false);
+    const dropDownRef = useRef<HTMLDivElement>(null)
 
     const toggleColumn = (column: string) => {
         setVisibleColumns(prev => {
@@ -18,6 +20,27 @@ const AllInstituteTable = () => {
             return next;
         });
     };
+
+    const toggleDropDown = () => {
+        if (!dropDownRef.current) return
+        setOpen((prev) => !prev);
+    }
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+            const target = event.target as Node
+            if (!target?.isConnected) return
+            if (dropDownRef.current && !dropDownRef.current.contains(target)) {
+                setOpen(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("touchstart", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+            document.removeEventListener("touchstart", handleClickOutside)
+        }
+    }, [])
 
     const isVisible = (col: string) => visibleColumns.has(col);
 
@@ -39,13 +62,13 @@ const AllInstituteTable = () => {
                             <CirclePlus size={15} />
                             Add School
                         </Link>
-                        <div className='relative group'>
-                            <button className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border rounded-lg hover:bg-black/70 bg-black text-white transition-all ease-linear'>
+                        <div ref={dropDownRef} className='relative group'>
+                            <button onClick={toggleDropDown} className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border rounded-lg hover:bg-black/70 bg-black text-white transition-all ease-linear'>
                                 <Settings2 size={15} />
                                 View
                             </button>
                             {/* Dropdown */}
-                            <div className='absolute right-0 top-full mt-1.5 w-max bg-white rounded-md shadow-lg border border-light-border opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all ease-linear text-sm z-10'>
+                            {open && <div className='absolute right-0 top-full mt-1.5 w-max bg-white rounded-md shadow-lg border border-light-border transition-all ease-linear text-sm z-10'>
                                 <h1 className='py-2 border-b text-center border-light-border font-medium'>Toggle columns</h1>
                                 <div className='max-h-50 overflow-y-auto slim-scrollbar py-1'>
                                     {tableColumns.map((column) => (
@@ -61,7 +84,7 @@ const AllInstituteTable = () => {
                                         </label>
                                     ))}
                                 </div>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>

@@ -11,6 +11,7 @@ export default function TableActionMenu({ actions }: { actions: Action[] }) {
 
     const toggleMenu = () => {
         if (!ref.current) return
+        console.log("🚀 ~ toggleMenu ~ ref.current:", ref.current)
 
         const rect = ref.current.getBoundingClientRect()
         const spaceBelow = window.innerHeight - rect.bottom
@@ -43,8 +44,7 @@ export default function TableActionMenu({ actions }: { actions: Action[] }) {
             {/* Button */}
             <button
                 onClick={toggleMenu}
-                className="text-black/70 hover:text-black hover:bg-gray-100 p-1.5 rounded-md transition"
-            >
+                className="text-black/70 hover:text-black hover:bg-gray-100 p-1.5 rounded-md transition">
                 <Ellipsis size={16} />
             </button>
 
@@ -52,8 +52,7 @@ export default function TableActionMenu({ actions }: { actions: Action[] }) {
             {open && (
                 <div
                     className={`absolute right-0 min-w-30 bg-white rounded-md shadow-lg border border-light-border text-sm p-1 z-50
-                    ${openUp ? "bottom-full mb-1" : "top-full mt-1"}`}
-                >
+                    ${openUp ? "bottom-full mb-1" : "top-full mt-1"}`}>
                     {actions.map((action, i) => (
                         <button
                             key={i}
@@ -65,8 +64,7 @@ export default function TableActionMenu({ actions }: { actions: Action[] }) {
                             ${action.danger
                                     ? "text-red-500 hover:text-red-600"
                                     : "text-black/70 hover:text-black"
-                                }`}
-                        >
+                                }`}>
                             {action.label}
                             {action.icon}
                         </button>
