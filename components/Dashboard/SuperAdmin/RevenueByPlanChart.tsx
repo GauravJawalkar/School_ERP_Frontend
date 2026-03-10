@@ -39,7 +39,7 @@ export default function RevenueByPlanChart() {
                             outerRadius={100}
                             paddingAngle={4}
                             stroke="none"
-                            isAnimationActive={false}   // ✅ prevents active animation ring
+                            isAnimationActive={true}
                         >
                             {planData.map((entry, index) => (
                                 <Cell

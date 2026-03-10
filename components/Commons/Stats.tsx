@@ -9,7 +9,6 @@ const Stats = ({ dashboardStats }: { dashboardStats: DashboardStata[] }) => {
                 {
                     dashboardStats?.map(({ id, title, value, subtitle, change }) => {
                         return (
-
                             <div key={id} className="p-4 rounded-xl border border-light-border">
                                 <div className="text-sm text-black/50 flex items-center justify-between">
                                     <h2>{title}</h2>
