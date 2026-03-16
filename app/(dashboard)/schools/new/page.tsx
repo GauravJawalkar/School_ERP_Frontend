@@ -1,4 +1,4 @@
-import { Asterisk } from "lucide-react"
+import { Asterisk, PlusIcon } from "lucide-react"
 
 export const RequiredBadge = () => {
     return (
@@ -18,9 +18,9 @@ const AddSchoolPage = () => {
                 </div>
             </div>
             {/* Form To Add School Here */}
-            <div className="py-10">
+            <div className="">
                 <form>
-                    <div className="grid grid-cols-1  md:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1  md:grid-cols-2 gap-5 py-10">
                         {/* School Name */}
                         <div className="flex flex-col gap-1">
                             <label className="text-sm">School Name <RequiredBadge /> </label>
@@ -135,9 +135,10 @@ const AddSchoolPage = () => {
                             </div>
                         </div>
 
+                        {/* Office Hours Sat-Sun */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="flex flex-col gap-1">
-                                <label className="text-sm">Office Hours (Sat)</label>
+                                <label className="text-sm">Office Hours (Saturday)</label>
                                 <input
                                     name="officeHoursSaturday"
                                     type="time"
@@ -145,14 +146,31 @@ const AddSchoolPage = () => {
                                 />
                             </div>
                             <div className="flex flex-col gap-1">
-                                <label className="text-sm">Pincode</label>
+                                <label className="text-sm">Office Hours (Sunday)</label>
                                 <input
+                                    name="officeHoursSunday"
                                     type="text"
-                                    name="pincode"
-                                    placeholder="eg. 412201"
-                                    className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 placeholder:text-black/40" />
+                                    placeholder="Off"
+                                    readOnly
+                                    className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 placeholder:text-black/40 slim-scrollbar w-full cursor-not-allowed"
+                                />
                             </div>
                         </div>
+
+                        {/* Pincode */}
+                        <div className="flex flex-col gap-1">
+                            <label className="text-sm">Pincode</label>
+                            <input
+                                type="text"
+                                name="pincode"
+                                placeholder="eg. 412201"
+                                className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 placeholder:text-black/40" />
+                        </div>
+                    </div>
+                    <div>
+                        <button type="submit" title="Add New School" className="w-fit cursor-pointer bg-black text-white text-sm py-2 px-4 rounded-md hover:bg-black/80 transition-all ease-linear font-normal focus:ring-2 focus:ring-neutral-400/50 inline-flex items-center justify-center gap-2">
+                            <PlusIcon size={17} />
+                            Add New School</button>
                     </div>
                 </form>
             </div>
