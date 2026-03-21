@@ -1,7 +1,7 @@
 
 "use client"
 import { BASE_URL } from "@/constants/constants";
-import ApiClient from "@/interceptors/ApiClient";
+import { PublicApiClient } from "@/interceptors/ApiClient";
 import { useAuthStore } from "@/store/authStore";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff, Infinity, Loader2 } from "lucide-react"
@@ -16,7 +16,7 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false)
 
     const login = async ({ email, password }: { email: string, password: string }) => {
-        const response = await ApiClient.post(`${BASE_URL}/auth/login`, { email, password });
+        const response = await PublicApiClient.post(`${BASE_URL}/auth/login`, { email, password });
         return response.data?.user;
     }
 

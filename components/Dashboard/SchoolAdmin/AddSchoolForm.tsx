@@ -4,31 +4,67 @@ import { schoolSchema, SchoolSchemaFormValues } from "@/validations/school.valid
 import { useForm } from "@tanstack/react-form"
 import FormInput from "@/components/Forms/FormInput"
 import { RequiredBadge } from "@/components/Commons/RequiredBadge"
+import { ApiClient } from "@/interceptors/ApiClient"
+import { BASE_URL } from "@/constants/constants"
+import { useMutation } from "@tanstack/react-query"
+import toast from "react-hot-toast"
 
 const AddSchoolForm = () => {
     const form = useForm({
         defaultValues: {
-            name: '',
-            email: '',
-            contact: '',
+            schoolName: '',
+            primaryEmail: '',
+            main_phone: '',
             city: '',
             state: '',
-            logo: undefined as unknown as File,
+            instituteLogo: undefined as unknown as File,
             affiliationNumber: '',
             website: '',
             address: '',
             landmark: '',
-            officeHoursMondayToFridayFrom: '',
-            officeHoursMondayToFridayTo: '',
-            officeHoursSaturday: '',
+            office_hours_Mon_Fri: '',
+            office_hours_Sat: '',
             pincode: '',
-            startTime: '',
-            endTime: '',
         } satisfies SchoolSchemaFormValues,
         onSubmit: async ({ value }) => {
             console.log("Form Data is : ", value);
+            await addNewSchoolMutation.mutateAsync(value);
         }
     })
+
+    const addNewSchool = async (data: SchoolSchemaFormValues) => {
+        const formData = new FormData();
+        formData.append('schoolName', data.schoolName)
+        formData.append('primaryEmail', data.primaryEmail)
+        formData.append('main_phone', data.main_phone)
+        formData.append('city', data.city)
+        formData.append('state', data.state)
+        formData.append('affiliationNumber', data.affiliationNumber)
+        formData.append('website', data.website ?? '')
+        formData.append('address', data.address)
+        formData.append('landmark', data.landmark ?? '')
+        formData.append('pincode', data.pincode)
+        formData.append('office_hours_Mon_Fri', data.office_hours_Mon_Fri)
+        formData.append('office_hours_Sat', data.office_hours_Sat)
+
+        if (data.instituteLogo) {
+            formData.append('instituteLogo', data.instituteLogo)
+        }
+        console.log("New School Data is : ", data);
+        const response = await ApiClient.post(`${BASE_URL}/institute/createInstitute`, formData);
+        return response.data?.data;
+    }
+
+    const addNewSchoolMutation = useMutation({
+        mutationFn: addNewSchool,
+        onSuccess: () => {
+            toast.success("School Added Successful!");
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || "Something Went Wrong! Please try again.");
+        }
+    })
+
     return (
         <section>
             <div>
@@ -48,10 +84,10 @@ const AddSchoolForm = () => {
                     <div className="grid grid-cols-1  md:grid-cols-2 gap-5 py-10">
                         {/* School Name */}
                         <form.Field
-                            name="name"
+                            name="schoolName"
                             validators={{
-                                onChange: schoolSchema.shape.name,
-                                onBlur: schoolSchema.shape.name,
+                                onChange: schoolSchema.shape.schoolName,
+                                onBlur: schoolSchema.shape.schoolName,
                                 onChangeAsyncDebounceMs: 500
                             }}
                             children={(field) => {
@@ -69,10 +105,10 @@ const AddSchoolForm = () => {
 
                         {/* School Email */}
                         <form.Field
-                            name="email"
+                            name="primaryEmail"
                             validators={{
-                                onChange: schoolSchema.shape.email,
-                                onBlur: schoolSchema.shape.email,
+                                onChange: schoolSchema.shape.primaryEmail,
+                                onBlur: schoolSchema.shape.primaryEmail,
                                 onChangeAsyncDebounceMs: 500
                             }}
                             children={(field) => {
@@ -132,10 +168,10 @@ const AddSchoolForm = () => {
 
                         {/* Logo */}
                         <form.Field
-                            name="logo"
+                            name="instituteLogo"
                             validators={{
-                                onChange: schoolSchema.shape.logo,
-                                onBlur: schoolSchema.shape.logo,
+                                onChange: schoolSchema.shape.instituteLogo,
+                                onBlur: schoolSchema.shape.instituteLogo,
                             }}
                             children={(field) => (
                                 <div className="flex flex-col gap-1">
@@ -180,10 +216,10 @@ const AddSchoolForm = () => {
                         {/* Contact & Website */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <form.Field
-                                name="contact"
+                                name="main_phone"
                                 validators={{
-                                    onChange: schoolSchema.shape.contact,
-                                    onBlur: schoolSchema.shape.contact,
+                                    onChange: schoolSchema.shape.main_phone,
+                                    onBlur: schoolSchema.shape.main_phone,
                                     onChangeAsyncDebounceMs: 500
                                 }}
                                 children={(field) => {
@@ -270,126 +306,137 @@ const AddSchoolForm = () => {
                             />
                         </div>
 
-                        {/* PinCode , schools-hours */}
+                        {/* Office Hours Mon-Fri */}
+                        <form.Field
+                            name="office_hours_Mon_Fri"
+                            validators={{
+                                onChange: schoolSchema.shape.office_hours_Mon_Fri,
+                                onBlur: schoolSchema.shape.office_hours_Mon_Fri,
+                            }}
+                            children={(field) => {
+                                // parse existing value back to from/to for the inputs
+                                const [from = '', to = ''] = field.state.value?.split(' - ') ?? []
 
-                        <div className="flex flex-col gap-1">
-                            <div className="flex w-full items-center justify-center gap-2">
-                                <form.Field
-                                    name="officeHoursMondayToFridayFrom"
-                                    validators={{
-                                        onChange: schoolSchema.shape.officeHoursMondayToFridayFrom,
-                                        onBlur: schoolSchema.shape.officeHoursMondayToFridayFrom,
-                                        onChangeAsyncDebounceMs: 500
-                                    }}
-                                    children={(field) => {
-                                        return (
-                                            <>
-                                                <FormInput
-                                                    label="Start Time (Mon-Fri)"
-                                                    field={field}
-                                                    type="time"
-                                                    placeholder="Loni Kalbhor HP Apartments"
-                                                    required
-                                                />
-                                            </>
-                                        )
-                                    }}
-                                />
-                                <span className="text-sm text-black/50">to</span>
-                                <form.Field
-                                    name="officeHoursMondayToFridayTo"
-                                    validators={{
-                                        onChange: schoolSchema.shape.officeHoursMondayToFridayTo,
-                                        onBlur: schoolSchema.shape.officeHoursMondayToFridayTo,
-                                        onChangeAsyncDebounceMs: 500
-                                    }}
-                                    children={(field) => {
-                                        return (
-                                            <>
-                                                <FormInput
-                                                    label="End Time (Mon-Fri)"
-                                                    field={field}
-                                                    type="time"
-                                                    placeholder="Loni Kalbhor HP Apartments"
-                                                    required
-                                                />
-                                            </>
-                                        )
-                                    }}
-                                />
+                                return (
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-sm">
+                                            Office Hours (Mon–Fri) <RequiredBadge />
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="time"
+                                                value={from}
+                                                onChange={(e) => {
+                                                    field.handleChange(`${e.target.value} - ${to}`)
+                                                }}
+                                                onBlur={field.handleBlur}
+                                                className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:ring-2 focus:ring-neutral-400/50 w-full"
+                                            />
+                                            <span className="text-sm text-black/50 shrink-0">to</span>
+                                            <input
+                                                type="time"
+                                                value={to}
+                                                onChange={(e) => {
+                                                    field.handleChange(`${from} - ${e.target.value}`)
+                                                }}
+                                                onBlur={field.handleBlur}
+                                                className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:ring-2 focus:ring-neutral-400/50 w-full"
+                                            />
+                                        </div>
+                                        {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
+                                            <p className="text-xs text-red-500">
+                                                {field.state.meta.errors[0]?.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                )
+                            }}
+                        />
 
-                            </div>
-                        </div>
+                        <form.Field
+                            name="office_hours_Sat"
+                            validators={{
+                                onChange: schoolSchema.shape.office_hours_Sat,
+                                onBlur: schoolSchema.shape.office_hours_Sat,
+                            }}
+                            children={(field) => {
+                                const [from = '', to = ''] = field.state.value?.split(' - ') ?? []
 
-                        {/* Office Hours Sat-Sun */}
+                                return (
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-sm">Office Hours (Saturday)</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="time"
+                                                value={from}
+                                                onChange={(e) => field.handleChange(`${e.target.value} - ${to}`)}
+                                                onBlur={field.handleBlur}
+                                                className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:ring-2 focus:ring-neutral-400/50 w-full"
+                                            />
+                                            <span className="text-sm text-black/50 shrink-0">to</span>
+                                            <input
+                                                type="time"
+                                                value={to}
+                                                onChange={(e) => field.handleChange(`${from} - ${e.target.value}`)}
+                                                onBlur={field.handleBlur}
+                                                className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:ring-2 focus:ring-neutral-400/50 w-full"
+                                            />
+                                        </div>
+                                        {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
+                                            <p className="text-xs text-red-500">
+                                                {field.state.meta.errors[0]?.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                )
+                            }}
+                        />
+
+                        {/* Sunday — static, not a form field */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="flex flex-col gap-1">
+                                <label className="text-sm">Office Hours (Sunday)</label>
+                                <input
+                                    type="text"
+                                    placeholder="Off"
+                                    readOnly
+                                    className="border border-input-border text-sm p-2 rounded-md cursor-not-allowed text-black/40"
+                                />
+                            </div>
+
+                            {/* Pincode */}
                             <form.Field
-                                name="officeHoursSaturday"
+                                name="pincode"
                                 validators={{
-                                    onChange: schoolSchema.shape.officeHoursSaturday,
-                                    onBlur: schoolSchema.shape.officeHoursSaturday,
+                                    onChange: schoolSchema.shape.pincode,
+                                    onBlur: schoolSchema.shape.pincode,
                                     onChangeAsyncDebounceMs: 500
                                 }}
                                 children={(field) => {
                                     return (
                                         <FormInput
-                                            label="Start Time (Saturday)"
+                                            label="Pincode"
                                             field={field}
-                                            type="time"
-                                            placeholder=""
+                                            type="number"
+                                            placeholder="eg. 412201"
                                             required
                                         />
                                     )
                                 }}
                             />
-                            <div className="flex flex-col gap-1">
-                                <label className="text-sm">Office Hours (Sunday)</label>
-                                <input
-                                    name="officeHoursSunday"
-                                    type="text"
-                                    placeholder="Off"
-                                    readOnly
-                                    className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 placeholder:text-black/40 slim-scrollbar w-full cursor-not-allowed"
-                                />
-                            </div>
                         </div>
-
-                        {/* Pincode */}
-                        <form.Field
-                            name="pincode"
-                            validators={{
-                                onChange: schoolSchema.shape.pincode,
-                                onBlur: schoolSchema.shape.pincode,
-                                onChangeAsyncDebounceMs: 500
-                            }}
-                            children={(field) => {
-                                return (
-                                    <FormInput
-                                        label="Pincode"
-                                        field={field}
-                                        type="number"
-                                        placeholder="eg. 412201"
-                                        required
-                                    />
-                                )
-                            }}
-                        />
                     </div>
                     <div>
-                        <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
-                            {
-                                ([canSubmit, isSubmitting]) => (
-                                    <button
-                                        type="submit"
-                                        disabled={!canSubmit || isSubmitting}
-                                        title="Add New School"
-                                        className="w-fit cursor-pointer disabled:cursor-not-allowed bg-black text-white text-sm py-2 px-4 rounded-md hover:bg-black/80 transition-all ease-linear font-normal focus:ring-2 focus:ring-neutral-400/50 inline-flex items-center justify-center gap-2">
-                                        {isSubmitting ? <Loader2 size={17} className="animate-spin" /> : <PlusIcon size={17} />}
-                                        {isSubmitting ? 'Adding...' : 'Add School'}
-                                    </button>
-                                )
-                            }
-                        </form.Subscribe>
+                        <button
+                            type="submit"
+                            disabled={addNewSchoolMutation.isPending}
+                            title="Add New School"
+                            className="w-fit cursor-pointer disabled:cursor-not-allowed bg-black text-white text-sm py-2 px-4 rounded-md hover:bg-black/80 transition-all ease-linear font-normal focus:ring-2 focus:ring-neutral-400/50 inline-flex items-center justify-center gap-2">
+                            {(addNewSchoolMutation.isPending && !addNewSchoolMutation.isError) ? <Loader2 size={17} className="animate-spin" /> : <PlusIcon size={17} />}
+                            {(addNewSchoolMutation.isPending && !addNewSchoolMutation.isError) ? 'Adding...' : 'Add School'}
+                        </button>
+
+
                     </div>
                 </form>
             </div >

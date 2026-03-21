@@ -23,7 +23,7 @@ const FormInput = ({ field, label, type = 'text', placeholder, required, readOnl
                 onBlur={field.handleBlur}
                 placeholder={placeholder}
                 readOnly={readOnly}
-                className={`border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 placeholder:text-black/40 ${readOnly ? 'cursor-not-allowed' : ''}`} />
+                className={`border border-input-border text-sm p-2 outline-none rounded-md font-normal focus:shadow focus:ring-2 focus:ring-neutral-400/50 placeholder:text-black/40 ${readOnly ? 'cursor-not-allowed' : ''}`} />
             {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
                 <p className="text-xs text-red-500">
                     {field.state.meta.errors[0]?.message}

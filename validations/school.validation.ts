@@ -2,15 +2,15 @@ import { z } from 'zod';
 
 export const schoolSchema = z.object(
     {
-        name: z.string().min(3, "School Name must be atleast 3 characters"),
-        email: z.email('Enter a valid email address'),
-        contact: z
+        schoolName: z.string().min(3, "School Name must be atleast 3 characters"),
+        primaryEmail: z.email('Enter a valid email address'),
+        main_phone: z
             .string()
             .min(1, 'Phone number is required')
             .regex(/^\d{10}$/, 'Enter a valid 10-digit mobile number'),
         city: z.string().min(2, "City is required"),
         state: z.string().min(2, "State is required"),
-        logo: z
+        instituteLogo: z
             .any()
             .refine((file) => !!file, 'Logo is required')
             .refine(
@@ -28,12 +28,9 @@ export const schoolSchema = z.object(
             .regex(/^(https?:\/\/)?([\w-]+\.)+[\w]{2,}(\/\S*)?$/, 'Enter a valid website URL'),
         address: z.string(),
         landmark: z.string(),
-        officeHoursMondayToFridayFrom: z.string(),
-        officeHoursMondayToFridayTo: z.string(),
-        officeHoursSaturday: z.string(),
+        office_hours_Mon_Fri: z.string().min(1, 'Office hours are required'),
+        office_hours_Sat: z.string().min(1, 'Saturday hours are required'),
         pincode: z.string().trim().length(6, "Pincode must be 6 digits").regex(/^[1-9][0-9]{5}$/, "Enter a valid 6-digit pincode"),
-        startTime: z.string(),
-        endTime: z.string(),
     }
 )
 

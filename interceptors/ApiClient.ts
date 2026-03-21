@@ -1,7 +1,12 @@
 import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
 
-const ApiClient = axios.create({
+export const ApiClient = axios.create({
+    baseURL: process.env.BASE_URL,
+    withCredentials: true
+});
+
+export const PublicApiClient = axios.create({
     baseURL: process.env.BASE_URL,
     withCredentials: true
 });
@@ -9,7 +14,8 @@ const ApiClient = axios.create({
 // Request Interceptor (Add the accessToken to every request)
 ApiClient.interceptors.request.use(
     (config) => {
-        const token = "Get accessToken from zustand";
+        const { accessToken } = useAuthStore.getState();
+        const token = accessToken;
         if (token) {
             config.headers.Authorization = `Bearer ${token}`
         }
@@ -35,5 +41,3 @@ ApiClient.interceptors.response.use(
         return Promise.reject(error);
     }
 )
-
-export default ApiClient;
