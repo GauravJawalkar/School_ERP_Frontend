@@ -1,7 +1,10 @@
+import SchoolAdminsTable from "@/components/Dashboard/SuperAdmin/Tables/SchoolAdminsTable"
 
 const page = () => {
     return (
-        <div>School Admins Page</div>
+        <div>
+            <SchoolAdminsTable />
+        </div>
     )
 }
 

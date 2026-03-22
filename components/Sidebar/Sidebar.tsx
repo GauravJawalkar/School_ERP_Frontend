@@ -33,7 +33,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
     if (!isOpen) return null;
 
     return (
-        <aside className="w-xs white text-black bg-gray-50 p-3 flex flex-col h-screen">
+        <aside className="w-xs white text-black bg-gray-50 p-3  flex flex-col h-screen">
             <div className="relative mb-4 cursor-pointer hover:bg-gray-100 hover:ring-gray-200 hover:ring p-1.5 flex items-center justify-between rounded-md">
                 <div className="flex items-center justify-start gap-2">
                     <div className="py-1.5 px-3 rounded-md text-gray-200 bg-black">
