@@ -436,7 +436,6 @@ const AddSchoolForm = () => {
                             {(addNewSchoolMutation.isPending && !addNewSchoolMutation.isError) ? 'Adding...' : 'Add School'}
                         </button>
 
-
                     </div>
                 </form>
             </div >

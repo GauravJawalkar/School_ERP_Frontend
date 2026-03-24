@@ -1,8 +1,9 @@
-
 "use client"
 import { BASE_URL } from "@/constants/constants";
 import { PublicApiClient } from "@/interceptors/ApiClient";
 import { useAuthStore } from "@/store/authStore";
+import { LoginSchemaFormValues, loginFormSchema } from "@/validations/login.validation";
+import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff, Infinity, Loader2 } from "lucide-react"
 import Link from "next/link"
@@ -13,9 +14,24 @@ import toast from "react-hot-toast";
 const LoginPage = () => {
     const { setUser, setAccessToken } = useAuthStore();
     const router = useRouter();
-    const [showPassword, setShowPassword] = useState(false)
+    const [showPassword, setShowPassword] = useState(false);
 
-    const login = async ({ email, password }: { email: string, password: string }) => {
+    const form = useForm(
+        {
+            defaultValues: {
+                email: '',
+                password: ''
+            } satisfies LoginSchemaFormValues,
+            onSubmit: async ({ value }) => {
+                console.log("🚀 ~ LoginPage ~ value:", value)
+                await loginMutation.mutate(value);
+            }
+        }
+    )
+
+    const login = async (data: { email: string, password: string }) => {
+        const email = data?.email;
+        const password = data?.password;
         const response = await PublicApiClient.post(`${BASE_URL}/auth/login`, { email, password });
         return response.data?.user;
     }
@@ -35,15 +51,8 @@ const LoginPage = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const email = formData.get("email") as string;
-        const password = formData.get("password") as string;
-
-        if (email.trim() === "" || password.trim() === "") {
-            return toast.error("Email and Password are required");
-        }
-
-        loginMutation.mutate({ email, password });
+        e.stopPropagation();
+        form.handleSubmit();
     }
 
     const handlePasswordVisibility = () => {
@@ -70,33 +79,68 @@ const LoginPage = () => {
                     </div>
                     <div className="mx-auto w-[80%] py-5">
                         <form onSubmit={handleSubmit}>
-                            <div className="flex flex-col gap-1 mb-4">
-                                <label className="text-sm">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    id=""
-                                    placeholder="name@example.com"
-                                    className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50" />
-                            </div>
-                            <div className="flex flex-col gap-1 mb-4">
-                                <label className="text-sm">Password</label>
-                                <div className="relative">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="password"
-                                        id=""
-                                        placeholder="example@Pas***rd"
-                                        className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 w-full" />
-                                    <button type="button" onClick={handlePasswordVisibility} className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-3">
-                                        {
-                                            showPassword ?
-                                                <Eye height={20} width={20} /> :
-                                                <EyeOff height={20} width={20} />
-                                        }
-                                    </button>
-                                </div>
-                            </div>
+                            <form.Field
+                                name="email"
+                                validators={{
+                                    onChange: loginFormSchema.shape.email,
+                                    onBlur: loginFormSchema.shape.email
+                                }}
+                                children={(field) => {
+                                    return (
+                                        <div className="flex flex-col gap-1 mb-4">
+                                            <label className="text-sm">Email</label>
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={field.state.value}
+                                                onChange={(e) => field.handleChange(e.target.value)}
+                                                onBlur={field.handleBlur}
+                                                placeholder="name@example.com"
+                                                className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50" />
+                                            {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
+                                                <p className="text-xs text-red-500">
+                                                    {field.state.meta.errors[0]?.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )
+                                }}
+
+                            />
+                            <form.Field
+                                name="password"
+                                validators={{
+                                    onChange: loginFormSchema.shape.password,
+                                    onBlur: loginFormSchema.shape.password
+                                }}
+                                children={(field) => {
+                                    return (
+                                        <div className="flex flex-col gap-1 mb-4">
+                                            <label className="text-sm">Password</label>
+                                            <div className="relative">
+                                                <input
+                                                    type={showPassword ? "text" : "password"}
+                                                    name="password"
+                                                    value={field.state.value}
+                                                    onChange={(e) => field.handleChange(e.target.value)}
+                                                    onBlur={field.handleBlur}
+                                                    placeholder="example@Pas***rd"
+                                                    className="border border-input-border text-sm p-2 outline-none rounded-md font-medium focus:shadow focus:ring-2 focus:ring-neutral-400/50 w-full" />
+                                                <button
+                                                    type="button"
+                                                    onClick={handlePasswordVisibility} className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-3">
+                                                    {
+                                                        showPassword ?
+                                                            <Eye height={20} width={20} /> :
+                                                            <EyeOff height={20} width={20} />
+                                                    }
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )
+                                }}
+
+                            />
                             <div>
                                 <Link href={'/forgot-password'} className="text-sm cursor-pointer text-neutral-500 hover:underline underline-offset-2 outline-none focus:underline">Forgot Password?</Link>
                             </div>
