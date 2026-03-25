@@ -6,7 +6,7 @@ import { Ban, Check, CircleCheckBig, CirclePlus, CircleQuestionMark, Pencil, Set
 import Link from 'next/link';
 import TableActionMenu from '@/components/Commons/TableActionMenu';
 
-const tableColumns = ['School Name', 'City', 'Email', 'Phone', 'Students', 'Staff', 'Plan', 'Revenue', 'Status', 'Renewal Date', 'Last Login']
+const tableColumns = ['School Name', 'Email', 'Phone', 'Plan', 'Status', 'Last Login', 'Total Admins']
 
 const SchoolAdminsTable = () => {
     const [visibleColumns, setVisibleColumns] = useState(new Set(tableColumns));
@@ -129,9 +129,6 @@ const SchoolAdminsTable = () => {
                                                 </Link>
                                             </td>
                                         )}
-                                        {isVisible('City') && (
-                                            <td className="px-4 text-black/70">{institute.city}</td>
-                                        )}
                                         {isVisible('Email') && (
                                             <td className="px-4 text-black/70">
                                                 <Link className='hover:text-black transition-all hover:font-medium' href={`mailTo:${institute?.email}`}>
@@ -146,19 +143,10 @@ const SchoolAdminsTable = () => {
                                                 </Link>
                                             </td>
                                         )}
-                                        {isVisible('Students') && (
-                                            <td className="px-4 text-black/70">{institute.students.toLocaleString()}</td>
-                                        )}
-                                        {isVisible('Staff') && (
-                                            <td className="px-4 text-black/70">{institute.staff.toLocaleString()}</td>
-                                        )}
                                         {isVisible('Plan') && (
                                             <td className="px-4">
                                                 <span className="text-sm text-black/70">{institute.plan}</span>
                                             </td>
-                                        )}
-                                        {isVisible('Revenue') && (
-                                            <td className="px-4 text-black/70">{institute.revenueGenerated.toLocaleString()}</td>
                                         )}
                                         {isVisible('Status') && (
                                             <td className="px-4">
@@ -168,10 +156,10 @@ const SchoolAdminsTable = () => {
                                                 </span>
                                             </td>
                                         )}
-                                        {isVisible('Renewal Date') && (
+                                        {isVisible('Last Login') && (
                                             <td className="px-4 text-black/70">{institute.renewalDate}</td>
                                         )}
-                                        {isVisible('Last Login') && (
+                                        {isVisible('Total Admins') && (
                                             <td className="px-4 text-black/70">{institute.lastLogin}</td>
                                         )}
                                         <td className="px-4">
