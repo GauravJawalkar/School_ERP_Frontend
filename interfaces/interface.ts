@@ -96,3 +96,48 @@ export interface Action {
     onClick: () => void
     danger?: boolean
 }
+
+export interface schoolAdminsApi {
+    schoolId: number;
+    schoolName: string;
+    schoolSlug: string;
+    schoolStatus: string;
+    affiliationNumber: string;
+    schoolInfo: {
+        emails: {
+            primary: string
+        },
+        website: string;
+        main_phone: string;
+        office_hours: {
+            sunday: string;
+            saturday: string;
+            monday_to_friday: string;
+        },
+        address_details: {
+            area: string;
+            city: string;
+            state: string;
+            pincode: string;
+            landmark: string;
+        }
+    };
+    admins: [
+        {
+            userId: string,
+            firstName: string,
+            lastName: string,
+            email: string,
+            phone: string,
+            isActive: boolean,
+            assignedAt: string
+        }
+    ]
+}
+
+export interface TableSkeletonProps {
+    rows?: number
+    columns?: number
+    hasCheckbox?: boolean
+    hasActions?: boolean
+}
