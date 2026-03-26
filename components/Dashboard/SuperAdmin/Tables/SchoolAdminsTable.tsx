@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
 import { CanAccess } from '@/components/Auth/CanAccess'
-import { Ban, Check, CircleCheckBig, CirclePlus, CircleQuestionMark, ChevronDown, Pencil, Settings2, ShieldAlert, Trash2, UserCog, UserRound, BadgeCheck, BadgeX, Plus } from 'lucide-react'
+import { Ban, Check, CircleCheckBig, CirclePlus, CircleQuestionMark, ChevronDown, Pencil, Settings2, ShieldAlert, Trash2, UserCog, UserRound, BadgeCheck, BadgeX, Plus, AlertTriangle } from 'lucide-react'
 import Link from 'next/link';
 import TableActionMenu from '@/components/Commons/TableActionMenu';
 import { ApiClient } from '@/interceptors/ApiClient';
@@ -63,11 +63,31 @@ const SchoolAdminsTable = () => {
         }
     }
 
-    const { data: schoolAdmins = [], isFetching, isSuccess, isError } = useQuery({
+    const { data: schoolAdmins = [], isFetching, isError, refetch } = useQuery({
         queryKey: ['getSchoolAdmis'],
         queryFn: getSchoolAdmins,
         refetchOnWindowFocus: false,
     })
+
+    if (isError) {
+        return (
+            <div className="border-light-border border p-4 rounded-xl">
+                <div className="py-1 text-lg font-medium text-black/80">
+                    <p>School Admins</p>
+                </div>
+                <div className="flex flex-col items-center justify-center py-16 gap-3">
+                    <AlertTriangle size={28} className="text-black/20" />
+                    <p className="text-sm font-medium text-black/50">Failed to load school admins</p>
+                    <p className="text-xs text-black/30">Something went wrong. Please try again.</p>
+                    <button
+                        onClick={() => refetch()}
+                        className="mt-1 text-sm font-medium px-3 py-1.5 border border-light-border rounded-lg hover:bg-gray-100 text-black/70 transition-all ease-linear">
+                        Try again
+                    </button>
+                </div>
+            </div>
+        )
+    }
 
     const totalColumns = visibleColumns.size + 2;
 
@@ -258,17 +278,17 @@ const SchoolAdminsTable = () => {
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <UserCog size={14} className="text-black/40" />
                                                         <span className="text-xs font-medium text-black/40 uppercase tracking-wide">
-                                                            Admins — {school.schoolName}
+                                                            Admins —
                                                         </span>
                                                         <span className="text-xs text-black/40 bg-gray-200/70 px-1.5 py-0.5 rounded-xs">
-                                                            {school.admins.length} total
+                                                            Total : {school.admins.length}
                                                         </span>
                                                     </div>
 
                                                     <div className="border border-light-border rounded-lg overflow-hidden">
                                                         <table className="text-xs w-full">
                                                             <thead>
-                                                                <tr className="bg-gray-100/80 text-left text-black/50">
+                                                                <tr className="bg-gray-50 border-b border-light-border text-left text-black/50">
                                                                     <th className="px-2.5 py-2 font-medium">Name</th>
                                                                     <th className="px-2.5 py-2 font-medium">Email</th>
                                                                     <th className="px-2.5 py-2 font-medium">Phone</th>
