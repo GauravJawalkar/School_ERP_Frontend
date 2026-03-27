@@ -141,3 +141,38 @@ export interface TableSkeletonProps {
     hasCheckbox?: boolean
     hasActions?: boolean
 }
+
+export interface schoolDataApi {
+    schoolId: number;
+    schoolName: string;
+    schoolSlug: string;
+    schoolStatus: string;
+    affiliationNumber: string;
+    schoolInfo: {
+        emails: {
+            primary: string
+        },
+        website: string;
+        main_phone: string;
+        office_hours: {
+            sunday: string;
+            saturday: string;
+            monday_to_friday: string;
+        },
+        address_details: {
+            area: string;
+            city: string;
+            state: string;
+            pincode: string;
+            landmark: string;
+        }
+    };
+    totalStudents: number;
+    totalStaff: number;
+    createdAt: string | Date
+}
+
+export interface ErrorFallbackProps {
+    refetch: () => void;
+    title: string
+}

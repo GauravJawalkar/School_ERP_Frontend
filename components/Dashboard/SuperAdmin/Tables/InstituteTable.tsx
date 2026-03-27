@@ -1,17 +1,27 @@
 "use client"
 import { useEffect, useRef, useState } from 'react'
 import { CanAccess } from '@/components/Auth/CanAccess'
-import { institutes } from '@/data/dummySuperAdminStats';
 import { Ban, Check, CircleCheckBig, CirclePlus, CircleQuestionMark, Pencil, Settings2, ShieldAlert, Trash2, UserCog } from 'lucide-react'
 import Link from 'next/link';
 import TableActionMenu from '@/components/Commons/TableActionMenu';
+import { ApiClient } from '@/interceptors/ApiClient';
+import { BASE_URL } from '@/constants/constants';
+import { useQuery } from '@tanstack/react-query';
+import { schoolDataApi } from '@/interfaces/interface';
+import { formatDate } from '@/lib/helpers/formatDate';
+import TableSkeleton from '@/components/Commons/Skeletons/TableSkeleton';
+import ErrorFallback from '@/components/Commons/Errors/ErrorFallback';
+import { useRouter } from 'next/navigation';
 
-const tableColumns = ['School Name', 'City', 'Email', 'Phone', 'Students', 'Staff', 'Plan', 'Revenue', 'Status', 'Renewal Date', 'Last Login']
+// TODO: Add the Plan, Revenue, Renewal Date once the backend routes are completed
+
+const tableColumns = ['School Name', 'City', 'Email', 'Phone', 'Students', 'Staff', 'Status', 'Created At']
 
 const AllInstituteTable = () => {
     const [visibleColumns, setVisibleColumns] = useState(new Set(tableColumns));
     const [open, setOpen] = useState(false);
     const dropDownRef = useRef<HTMLDivElement>(null)
+    const router = useRouter();
 
     const toggleColumn = (column: string) => {
         setVisibleColumns(prev => {
@@ -28,8 +38,6 @@ const AllInstituteTable = () => {
 
     const isVisible = (col: string) => visibleColumns.has(col);
 
-    const slugify = (schoolName: string) => schoolName.toLowerCase().replace(/\s+/g, '-');
-
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent | TouchEvent) => {
             const target = event.target as Node
@@ -44,7 +52,23 @@ const AllInstituteTable = () => {
             document.removeEventListener("mousedown", handleClickOutside)
             document.removeEventListener("touchstart", handleClickOutside)
         }
-    }, [])
+    }, []);
+
+    const getAllSchools = async () => {
+        const response = await ApiClient.get(`${BASE_URL}/institute/allSchools`);
+        return response.data.data
+    }
+
+    const { data: allSchools = [], isFetching, isError, error, refetch } = useQuery({
+        queryKey: ['getAllSchools'],
+        queryFn: getAllSchools,
+        refetchOnWindowFocus: false
+    })
+
+    if (isError) {
+        console.error("Error fetching schoolAdmins  : ", error.message)
+        return <ErrorFallback refetch={refetch} title={'School Admins'} />
+    }
 
     return (
         <CanAccess permission='saas.institute.create'>
@@ -60,12 +84,18 @@ const AllInstituteTable = () => {
                             placeholder='Filter Schools ....' />
                     </div>
                     <div className='flex items-center gap-2'>
-                        <Link href={'/schools/new'} className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border border-dashed rounded-lg hover:bg-gray-100 text-black transition-all ease-linear'>
+                        <button
+                            onClick={() => router.push("/schools/new")}
+                            disabled={isFetching || isError}
+                            className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border border-dashed rounded-lg hover:bg-gray-100 text-black transition-all ease-linear disabled:cursor-not-allowed'>
                             <CirclePlus size={15} />
                             Add School
-                        </Link>
+                        </button>
                         <div ref={dropDownRef} className='relative group'>
-                            <button onClick={toggleDropDown} className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border rounded-lg hover:bg-black/70 bg-black text-white transition-all ease-linear'>
+                            <button
+                                onClick={toggleDropDown}
+                                disabled={isFetching || isError}
+                                className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border rounded-lg hover:bg-black/70 bg-black text-white transition-all ease-linear disabled:cursor-not-allowed'>
                                 <Settings2 size={15} />
                                 View
                             </button>
@@ -92,7 +122,7 @@ const AllInstituteTable = () => {
                 </div>
 
                 {/* Table */}
-                <div className='border-light-border rounded-xl border w-full overflow-x-auto overflow-y-visible slim-scrollbar'>
+                {isFetching ? <TableSkeleton columns={8} rows={5} hasCheckbox hasActions /> : <div className='border-light-border rounded-xl border w-full overflow-x-auto overflow-y-visible slim-scrollbar'>
                     <table className="text-sm min-w-max w-full">
                         <thead className="text-left hover:bg-gray-50 transition-all ease-linear">
                             <tr className="text-black/80">
@@ -110,13 +140,13 @@ const AllInstituteTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {institutes.map((institute) => {
+                            {allSchools?.map((school: schoolDataApi) => {
                                 const statusIcon =
-                                    institute.status === "Active" ? <CircleCheckBig size={17} /> :
-                                        institute.status === "Expired" ? <ShieldAlert size={17} /> :
+                                    school.schoolStatus.toLowerCase() === "active" ? <CircleCheckBig size={17} /> :
+                                        school.schoolStatus.toLowerCase() === "expired" ? <ShieldAlert size={17} /> :
                                             <CircleQuestionMark size={17} />;
                                 return (
-                                    <tr key={institute.id} className="border-t border-light-border hover:bg-gray-50 transition">
+                                    <tr key={school.schoolId} className="border-t border-light-border hover:bg-gray-50 transition">
                                         <td className="pl-4 py-3">
                                             <input
                                                 className='h-3.5 w-3.5 rounded-lg border-light-border accent-black'
@@ -124,55 +154,44 @@ const AllInstituteTable = () => {
                                         </td>
                                         {isVisible('School Name') && (
                                             <td className="px-4 text-black/70">
-                                                <Link className='hover:text-black transition-all hover:font-medium' href={`/schools/${slugify(institute?.name)}`}>
-                                                    {institute.name}
+                                                <Link className='hover:text-black transition-all hover:font-medium' href={`/schools/${school.schoolSlug}`}>
+                                                    {school.schoolName}
                                                 </Link>
                                             </td>
                                         )}
                                         {isVisible('City') && (
-                                            <td className="px-4 text-black/70">{institute.city}</td>
+                                            <td className="px-4 text-black/70">{school.schoolInfo?.address_details?.city}</td>
                                         )}
                                         {isVisible('Email') && (
                                             <td className="px-4 text-black/70">
-                                                <Link className='hover:text-black transition-all hover:font-medium' href={`mailTo:${institute?.email}`}>
-                                                    {institute.email}
+                                                <Link className='hover:text-black transition-all hover:font-medium' href={`mailTo:${school?.schoolInfo?.emails?.primary}`}>
+                                                    {school?.schoolInfo?.emails?.primary}
                                                 </Link>
                                             </td>
                                         )}
                                         {isVisible('Phone') && (
                                             <td className="px-4 text-black/70">
-                                                <Link className='hover:text-black transition-all hover:font-medium' href={`tel:${institute.phone}`}>
-                                                    {institute.phone}
+                                                <Link className='hover:text-black transition-all hover:font-medium' href={`tel:${school?.schoolInfo?.main_phone}`}>
+                                                    {school?.schoolInfo?.main_phone}
                                                 </Link>
                                             </td>
                                         )}
                                         {isVisible('Students') && (
-                                            <td className="px-4 text-black/70">{institute.students.toLocaleString()}</td>
+                                            <td className="px-4 text-black/70">{school.totalStudents}</td>
                                         )}
                                         {isVisible('Staff') && (
-                                            <td className="px-4 text-black/70">{institute.staff.toLocaleString()}</td>
-                                        )}
-                                        {isVisible('Plan') && (
-                                            <td className="px-4">
-                                                <span className="text-sm text-black/70">{institute.plan}</span>
-                                            </td>
-                                        )}
-                                        {isVisible('Revenue') && (
-                                            <td className="px-4 text-black/70">{institute.revenueGenerated.toLocaleString()}</td>
+                                            <td className="px-4 text-black/70">{school.totalStaff}</td>
                                         )}
                                         {isVisible('Status') && (
                                             <td className="px-4">
                                                 <span className="py-1 rounded-md flex items-center gap-2 text-black/70">
                                                     {statusIcon}
-                                                    <span title={institute.status} className='text-sm line-clamp-1'>{institute.status}</span>
+                                                    <span title={school.schoolStatus} className='text-sm line-clamp-1 capitalize'>{school.schoolStatus.toLowerCase()}</span>
                                                 </span>
                                             </td>
                                         )}
-                                        {isVisible('Renewal Date') && (
-                                            <td className="px-4 text-black/70">{institute.renewalDate}</td>
-                                        )}
-                                        {isVisible('Last Login') && (
-                                            <td className="px-4 text-black/70">{institute.lastLogin}</td>
+                                        {isVisible('Created At') && (
+                                            <td className="px-4 text-black/70">{formatDate(school?.createdAt)}</td>
                                         )}
                                         <td className="px-4">
                                             <TableActionMenu
@@ -206,7 +225,7 @@ const AllInstituteTable = () => {
                             })}
                         </tbody>
                     </table>
-                </div>
+                </div>}
             </div>
         </CanAccess>
     )

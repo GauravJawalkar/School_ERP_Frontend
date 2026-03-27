@@ -9,6 +9,8 @@ import { BASE_URL } from '@/constants/constants';
 import { useQuery } from '@tanstack/react-query';
 import { schoolAdminsApi } from '@/interfaces/interface';
 import TableSkeleton from '@/components/Commons/Skeletons/TableSkeleton';
+import ErrorFallback from '@/components/Commons/Errors/ErrorFallback';
+import { useRouter } from 'next/navigation';
 
 const tableColumns = ['School Name', 'Email', 'Phone', 'Affiliation No', 'Status', 'City', 'Admin']
 
@@ -17,6 +19,7 @@ const SchoolAdminsTable = () => {
     const [open, setOpen] = useState(false);
     const [expandedSchool, setExpandedSchool] = useState<number | null>(null);
     const dropDownRef = useRef<HTMLDivElement>(null)
+    const router = useRouter();
 
     const toggleColumn = (column: string) => {
         setVisibleColumns(prev => {
@@ -55,38 +58,19 @@ const SchoolAdminsTable = () => {
     }, [])
 
     const getSchoolAdmins = async () => {
-        try {
-            const response = await ApiClient.get(`${BASE_URL}/admin/allAdmins`);
-            return response.data?.data;
-        } catch (error) {
-            throw console.error("Error fetching schoolAdmins: ", error);
-        }
+        const response = await ApiClient.get(`${BASE_URL}/admin/allAdmins`);
+        return response.data?.data;
     }
 
-    const { data: schoolAdmins = [], isFetching, isError, refetch } = useQuery({
+    const { data: schoolAdmins = [], isFetching, isError, refetch, error } = useQuery({
         queryKey: ['getSchoolAdmis'],
         queryFn: getSchoolAdmins,
         refetchOnWindowFocus: false,
     })
 
     if (isError) {
-        return (
-            <div className="border-light-border border p-4 rounded-xl">
-                <div className="py-1 text-lg font-medium text-black/80">
-                    <p>School Admins</p>
-                </div>
-                <div className="flex flex-col items-center justify-center py-16 gap-3">
-                    <AlertTriangle size={28} className="text-black/20" />
-                    <p className="text-sm font-medium text-black/50">Failed to load school admins</p>
-                    <p className="text-xs text-black/30">Something went wrong. Please try again.</p>
-                    <button
-                        onClick={() => refetch()}
-                        className="mt-1 text-sm font-medium px-3 py-1.5 border border-light-border rounded-lg hover:bg-gray-100 text-black/70 transition-all ease-linear">
-                        Try again
-                    </button>
-                </div>
-            </div>
-        )
+        console.error("Error fetching schoolAdmins  : ", error.message);
+        return <ErrorFallback refetch={refetch} title={'School Admins'} />
     }
 
     const totalColumns = visibleColumns.size + 2;
@@ -105,12 +89,18 @@ const SchoolAdminsTable = () => {
                             placeholder='Filter Schools ....' />
                     </div>
                     <div className='flex items-center gap-2'>
-                        <Link href={'/schools/new'} className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border border-dashed rounded-lg hover:bg-gray-100 text-black transition-all ease-linear'>
+                        <button
+                            onClick={() => router.push("/schools/new")}
+                            disabled={isFetching || isError}
+                            className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border border-dashed rounded-lg hover:bg-gray-100 text-black transition-all ease-linear disabled:cursor-not-allowed'>
                             <CirclePlus size={15} />
                             Add Admin
-                        </Link>
+                        </button>
                         <div ref={dropDownRef} className='relative group'>
-                            <button onClick={toggleDropDown} className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border rounded-lg hover:bg-black/70 bg-black text-white transition-all ease-linear'>
+                            <button
+                                onClick={toggleDropDown}
+                                disabled={isFetching || isError}
+                                className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border rounded-lg hover:bg-black/70 bg-black text-white transition-all ease-linear disabled:cursor-not-allowed'>
                                 <Settings2 size={15} />
                                 View
                             </button>
@@ -138,7 +128,7 @@ const SchoolAdminsTable = () => {
                 </div>
 
                 {/* Table */}
-                {isFetching ? <TableSkeleton rows={6} columns={8} /> : <div className='border-light-border rounded-xl border w-full overflow-x-auto slim-scrollbar'>
+                {isFetching ? <TableSkeleton rows={6} columns={6} /> : <div className='border-light-border rounded-xl border w-full overflow-x-auto slim-scrollbar'>
                     <table className="text-sm min-w-max w-full">
                         <thead className="text-left hover:bg-gray-50 transition-all ease-linear">
                             <tr className="text-black/80">
@@ -156,7 +146,6 @@ const SchoolAdminsTable = () => {
                         <tbody>
                             {schoolAdmins?.map((school: schoolAdminsApi, index: number) => {
                                 const isExpanded = expandedSchool === school.schoolId;
-                                const isLast = index >= schoolAdmins.length - 2;
                                 const statusIcon =
                                     school?.schoolStatus.toLowerCase() === "active" ? <CircleCheckBig size={17} /> :
                                         school?.schoolStatus.toLowerCase() === "expired" ? <ShieldAlert size={17} /> :
