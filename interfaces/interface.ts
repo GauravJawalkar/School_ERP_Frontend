@@ -176,3 +176,15 @@ export interface ErrorFallbackProps {
     refetch: () => void;
     title: string
 }
+
+export interface AddAdminFormData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    instituteId: number;
+    phone: string;
+    gender: string;
+    password: string,
+    isActive: boolean,
+    roleName: string
+}

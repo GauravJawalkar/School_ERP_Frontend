@@ -7,10 +7,10 @@ export const addAdminSchema = z.object({
     instituteId: z.number({ error: 'Institute is required' }),
     phone: z.string().min(1, 'Phone number is required').regex(/^\d{10}$/, 'Enter a valid 10-digit mobile number'),
     gender: z.string().refine(
-        (val): val is 'Male' | 'Female' | 'Other' => ['Male', 'Female', 'Other'].includes(val),
+        (val) => ['MALE', 'FEMALE', 'OTHER'].includes(val),
         { message: 'Gender is required' }
-    ),                                     // ✅ optional so undefined default works
-    password: z.string().min(6, 'Password must be at least 6 characters'),
+    ),
+    password: z.string().min(4, 'Password must be at least 4 characters'),
     isActive: z.boolean(),
     roleName: z.string().min(1, 'Role name is required'),
 });

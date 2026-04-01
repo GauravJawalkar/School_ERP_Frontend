@@ -435,7 +435,6 @@ const AddSchoolForm = () => {
                             {(addNewSchoolMutation.isPending && !addNewSchoolMutation.isError) ? <Loader2 size={17} className="animate-spin" /> : <PlusIcon size={17} />}
                             {(addNewSchoolMutation.isPending && !addNewSchoolMutation.isError) ? 'Adding...' : 'Add School'}
                         </button>
-
                     </div>
                 </form>
             </div >

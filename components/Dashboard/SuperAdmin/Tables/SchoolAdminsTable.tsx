@@ -45,10 +45,6 @@ const SchoolAdminsTable = () => {
         setExpandedSchool(prev => prev === schoolId ? null : schoolId);
     }
 
-    const toggleAddAdminModal = () => {
-        setOpenModal(prev => !prev);
-    }
-
     const isVisible = (col: string) => visibleColumns.has(col);
 
     // Keeping it up so no confilict arise at runtime
@@ -98,22 +94,10 @@ const SchoolAdminsTable = () => {
         setSelectedSchool({ schoolName: '', schoolId: 0, schoolEmail: '' }); // ✅ reset on close too
     }
 
-    const onSelectSchool = ({ schoolName, schoolEmail, schoolId }: {
-        schoolName: string,
-        schoolEmail: string,
-        schoolId: number
-    }) => {
-        setSelectedSchool({
-            schoolName,
-            schoolId,
-            schoolEmail,
-        })
-    }
-
     const totalColumns = visibleColumns.size + 2;
 
     return (
-        <React.Fragment>
+        <>
             <CanAccess permission='saas.institute.create'>
                 <div className='border-light-border border p-4 rounded-xl'>
                     <div className='py-1 text-lg font-medium text-black/80'>
@@ -279,16 +263,6 @@ const SchoolAdminsTable = () => {
                                                                 onClick: () => console.log("Edit School"),
                                                             },
                                                             {
-                                                                label: "Add Admins",
-                                                                icon: <UserCog size={15} />,
-                                                                onClick: () => toggleAdminDrawer(school.schoolId),
-                                                            },
-                                                            {
-                                                                label: "Suspend",
-                                                                icon: <Ban size={15} />,
-                                                                onClick: () => console.log("Suspend School"),
-                                                            },
-                                                            {
                                                                 label: "Delete",
                                                                 icon: <Trash2 size={15} />,
                                                                 danger: true,
@@ -390,9 +364,9 @@ const SchoolAdminsTable = () => {
             </CanAccess>
             {/* Add Admin Modal */}
             {openModal && (
-                <AddAdminModal isOpen={openModal} school={selectedSchool} onClose={toggleAddAdminModal} />
+                <AddAdminModal isOpen={openModal} school={selectedSchool} onClose={closeAddAdminModal} />
             )}
-        </React.Fragment>
+        </>
     )
 }
 
