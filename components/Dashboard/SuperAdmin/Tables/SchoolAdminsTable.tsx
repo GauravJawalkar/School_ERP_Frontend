@@ -1,17 +1,18 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
 import { CanAccess } from '@/components/Auth/CanAccess'
-import { Ban, Check, CircleCheckBig, CirclePlus, CircleQuestionMark, ChevronDown, Pencil, Settings2, ShieldAlert, Trash2, UserCog, UserRound, BadgeCheck, BadgeX, Plus, AlertTriangle } from 'lucide-react'
+import { Check, CircleCheckBig, CirclePlus, CircleQuestionMark, ChevronDown, Pencil, Settings2, ShieldAlert, Trash2, UserCog, UserRound, BadgeCheck, BadgeX, Plus } from 'lucide-react'
 import Link from 'next/link';
 import TableActionMenu from '@/components/Commons/TableActionMenu';
 import { ApiClient } from '@/interceptors/ApiClient';
 import { BASE_URL } from '@/constants/constants';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { schoolAdminsApi } from '@/interfaces/interface';
 import TableSkeleton from '@/components/Commons/Skeletons/TableSkeleton';
 import ErrorFallback from '@/components/Commons/Errors/ErrorFallback';
 import { useRouter } from 'next/navigation';
 import AddAdminModal from '../Modals/AddAdminModal';
+import toast from 'react-hot-toast';
 
 const tableColumns = ['School Name', 'Email', 'Phone', 'Affiliation No', 'Status', 'City', 'Admin']
 
@@ -20,6 +21,7 @@ const SchoolAdminsTable = () => {
     const [open, setOpen] = useState(false);
     const [expandedSchool, setExpandedSchool] = useState<number | null>(null);
     const [openModal, setOpenModal] = useState(false);
+    const queryClient = useQueryClient();
     const [selectedSchool, setSelectedSchool] = useState({
         schoolName: '',
         schoolId: 0,
@@ -92,6 +94,23 @@ const SchoolAdminsTable = () => {
     const closeAddAdminModal = () => {
         setOpenModal(false);
         setSelectedSchool({ schoolName: '', schoolId: 0, schoolEmail: '' }); // ✅ reset on close too
+    }
+
+    const updateUserStatus = async ({ userId, isActive }: { userId: string, isActive: boolean }) => {
+        const response = await ApiClient.patch(`${BASE_URL}/institute/updateUserStatus`, { userId, isActive });
+        return response.data.data
+    }
+
+    const handelUpdateUserStatusMutation = useMutation({
+        mutationFn: updateUserStatus,
+        onSuccess: (data) => {
+            toast.success(`Admin has been ${data.isActive ? 'activated' : 'deactivated'}!`);
+            queryClient.invalidateQueries({ queryKey: ['getSchoolAdmis'] });
+        }
+    })
+
+    const handleUpdateUserStatus = (data: { userId: string, isActive: boolean }) => {
+        handelUpdateUserStatusMutation.mutate(data);
     }
 
     const totalColumns = visibleColumns.size + 2;
@@ -277,14 +296,22 @@ const SchoolAdminsTable = () => {
                                             {isExpanded && (
                                                 <tr className="border-t border-light-border">
                                                     <td colSpan={totalColumns} className="bg-gray-50/60 px-6 py-3">
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <UserCog size={14} className="text-black/40" />
-                                                            <span className="text-xs font-medium text-black/40 uppercase tracking-wide">
-                                                                Admins —
-                                                            </span>
-                                                            <span className="text-xs text-black/40 bg-gray-200/70 px-1.5 py-0.5 rounded-xs">
-                                                                Total : {school.admins.length}
-                                                            </span>
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <div className='flex items-center gap-2'>
+                                                                <UserCog size={14} className="text-black/40" />
+                                                                <span className="text-xs font-medium text-black/40 uppercase tracking-wide">
+                                                                    Admins —
+                                                                </span>
+                                                                <span className="text-xs text-black/40 bg-gray-200/70 px-1.5 py-0.5 rounded-xs">
+                                                                    Total : {school.admins.length}
+                                                                </span>
+                                                            </div>
+                                                            <div>
+                                                                <button
+                                                                    type='button'
+                                                                    onClick={() => openAddAdminModal(school)}
+                                                                    className='text-xs px-2 py-0.5 rounded-xs bg-gray-200/70 cursor-pointer hover:bg-gray-300/70 text-black/70 transition-colors'>Add</button>
+                                                            </div>
                                                         </div>
 
                                                         <div className="border border-light-border rounded-lg overflow-hidden">
@@ -340,8 +367,9 @@ const SchoolAdminsTable = () => {
                                                                             <td className="px-2.5 py-2.5">
                                                                                 <button
                                                                                     type="button"
+                                                                                    onClick={() => handleUpdateUserStatus({ userId: admin.userId, isActive: !admin.isActive })}
                                                                                     className="bg-gray-200/60 px-1.5 py-0.5 rounded-sm hover:text-black text-black/60 cursor-pointer transition-all">
-                                                                                    Manage
+                                                                                    {admin.isActive ? "Deactivate" : "Activate"}
                                                                                 </button>
                                                                             </td>
                                                                         </tr>
@@ -360,7 +388,6 @@ const SchoolAdminsTable = () => {
                     </div>
                     }
                 </div>
-
             </CanAccess>
             {/* Add Admin Modal */}
             {openModal && (

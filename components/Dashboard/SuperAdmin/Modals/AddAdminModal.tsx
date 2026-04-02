@@ -19,7 +19,6 @@ interface School {
 }
 
 const AddAdminModal = ({ isOpen, school, onClose }: { isOpen: boolean, school: School, onClose: () => void }) => {
-    console.log("🚀 ~ AddAdminModal ~ school:", school)
     const queryClient = useQueryClient();
     const [showPassword, setShowPassword] = useState(false);
 
@@ -39,7 +38,6 @@ const AddAdminModal = ({ isOpen, school, onClose }: { isOpen: boolean, school: S
             onSubmit: addAdminSchema,
         },
         onSubmit: async ({ value }) => {
-            console.log("submitted value:", value);
             if (!value.instituteId) return;
             addSchoolAdminMutation.mutate(value, {
                 onSuccess: () => onClose(),
@@ -52,7 +50,6 @@ const AddAdminModal = ({ isOpen, school, onClose }: { isOpen: boolean, school: S
     });
 
     const addSchoolAdmin = async (data: AddAdminFormData) => {
-        console.log("🚀 ~ addSchoolAdmin ~ data:", data)
         const response = await ApiClient.post(`${BASE_URL}/institute/createSchoolAdmin`, data);
         return response.data.data;
     }
@@ -81,8 +78,8 @@ const AddAdminModal = ({ isOpen, school, onClose }: { isOpen: boolean, school: S
                         <h1 className="text-lg font-semibold">Add Admin</h1>
                         <p className="text-xs text-black/50">Enter admin details for : <b>{school.schoolName}</b>.</p>
                     </div>
-                    <button type="button" onClick={() => onClose()}>
-                        <X size={17} className="cursor-pointer" />
+                    <button type="button" onClick={() => onClose()} className="p-2 rounded-md text-black/50 bg-gray-100 transition-colors hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 cursor-pointer">
+                        <X size={17} />
                     </button>
                 </div>
                 <div>
