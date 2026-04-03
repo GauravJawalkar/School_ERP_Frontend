@@ -68,7 +68,9 @@ export default function TableActionMenu({ actions }: { actions: Action[] }) {
                     {actions.map((action, i) => (
                         <button
                             key={i}
-                            onClick={() => {
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 action.onClick()
                                 setOpen(false)
                             }}

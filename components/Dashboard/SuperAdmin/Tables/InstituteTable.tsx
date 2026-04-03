@@ -204,7 +204,7 @@ const AllInstituteTable = () => {
                                                     {
                                                         label: "Admins",
                                                         icon: <UserCog size={15} />,
-                                                        onClick: () => console.log("View Admins"),
+                                                        onClick: () => router.push(`schools/admins`),
                                                     },
                                                     {
                                                         label: "Suspend",
