@@ -1,4 +1,4 @@
-import SchoolAdminsTable from "@/components/Dashboard/SuperAdmin/Tables/SchoolAdminsTable"
+import SchoolAdminsTable from "@/components/Dashboards/SuperAdmin/Tables/SchoolAdminsTable"
 
 const page = () => {
     return (

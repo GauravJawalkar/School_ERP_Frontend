@@ -1,5 +1,5 @@
 import Stats from "@/components/Commons/Stats"
-import AllInstituteTable from "@/components/Dashboard/SuperAdmin/Tables/InstituteTable"
+import AllInstituteTable from "@/components/Dashboards/SuperAdmin/Tables/InstituteTable"
 import { dummySchoolStats } from "@/data/dummySuperAdminStats"
 
 const page = () => {
