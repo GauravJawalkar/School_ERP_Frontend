@@ -6,6 +6,7 @@ export const ApiClient = axios.create({
     withCredentials: true
 });
 
+// For endpoints that don't require authentication we can use this client without interceptors to avoid unnecessary token handling and potential issues with missing tokens.
 export const PublicApiClient = axios.create({
     baseURL: process.env.BASE_URL,
     withCredentials: true

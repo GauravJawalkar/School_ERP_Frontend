@@ -1,6 +1,6 @@
 "use client"
 import { BASE_URL } from '@/constants/constants';
-import ApiClient from '@/interceptors/ApiClient';
+import { PublicApiClient } from '@/interceptors/ApiClient';
 import { useAuthStore } from '@/store/authStore';
 import { useMutation } from '@tanstack/react-query';
 import { ChevronLeft, Loader2, MessageCircleQuestionMark } from 'lucide-react'
@@ -12,7 +12,7 @@ const page = () => {
     const { setResetPasswordEmail } = useAuthStore();
     const router = useRouter();
     async function forgotPassword({ email }: { email: string }) {
-        const res = await ApiClient.post(`${BASE_URL}/auth/forgotPassword`, { email });
+        const res = await PublicApiClient.post(`${BASE_URL}/auth/forgotPassword`, { email });
         const response = { ...res.data, email }
         return response;
     }

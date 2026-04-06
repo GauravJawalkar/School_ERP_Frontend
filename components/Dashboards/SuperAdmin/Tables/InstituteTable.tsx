@@ -12,7 +12,6 @@ import { formatDate } from '@/lib/helpers/formatDate';
 import TableSkeleton from '@/components/Commons/Skeletons/TableSkeleton';
 import ErrorFallback from '@/components/Commons/Errors/ErrorFallback';
 import { useRouter } from 'next/navigation';
-import { Skeleton } from 'boneyard-js/react'
 
 // TODO: Add the Plan, Revenue, Renewal Date once the backend routes are completed
 
@@ -60,7 +59,7 @@ const AllInstituteTable = () => {
         return response.data.data
     }
 
-    const { data: allSchools = [], isFetching, isError, error, refetch, isSuccess } = useQuery({
+    const { data: allSchools = [], isFetching, isError, error, refetch } = useQuery({
         queryKey: ['getAllSchools'],
         queryFn: getAllSchools,
         refetchOnWindowFocus: false
@@ -123,112 +122,110 @@ const AllInstituteTable = () => {
                 </div>
 
                 {/* Table */}
-                <Skeleton name="institute-table" loading={isFetching}>
-                    {isSuccess && <div className='border-light-border rounded-xl border w-full overflow-x-auto overflow-y-visible slim-scrollbar'>
-                        <table className="text-sm min-w-max w-full">
-                            <thead className="text-left hover:bg-gray-50 transition-all ease-linear">
-                                <tr className="text-black/80">
-                                    <th className="pl-4 py-2.5 font-medium">
-                                        <input
-                                            className='h-3.5 w-3.5 rounded-lg border-light-border accent-black'
-                                            type="checkbox" />
-                                    </th>
-                                    {
-                                        tableColumns.map((column) => (
-                                            isVisible(column) && <th key={column} className="px-4 font-medium">{column}</th>
-                                        ))
-                                    }
-                                    <th className="px-4 font-medium"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {allSchools?.map((school: schoolDataApi) => {
-                                    const statusIcon =
-                                        school.schoolStatus.toLowerCase() === "active" ? <CircleCheckBig size={17} /> :
-                                            school.schoolStatus.toLowerCase() === "expired" ? <ShieldAlert size={17} /> :
-                                                <CircleQuestionMark size={17} />;
-                                    return (
-                                        <tr key={school.schoolId} className="border-t border-light-border hover:bg-gray-50 transition">
-                                            <td className="pl-4 py-3">
-                                                <input
-                                                    className='h-3.5 w-3.5 rounded-lg border-light-border accent-black'
-                                                    type="checkbox" />
+                {isFetching ? <TableSkeleton columns={8} rows={5} hasCheckbox hasActions /> : <div className='border-light-border rounded-xl border w-full overflow-x-auto overflow-y-visible slim-scrollbar'>
+                    <table className="text-sm min-w-max w-full">
+                        <thead className="text-left hover:bg-gray-50 transition-all ease-linear">
+                            <tr className="text-black/80">
+                                <th className="pl-4 py-2.5 font-medium">
+                                    <input
+                                        className='h-3.5 w-3.5 rounded-lg border-light-border accent-black'
+                                        type="checkbox" />
+                                </th>
+                                {
+                                    tableColumns.map((column) => (
+                                        isVisible(column) && <th key={column} className="px-4 font-medium">{column}</th>
+                                    ))
+                                }
+                                <th className="px-4 font-medium"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {allSchools?.map((school: schoolDataApi) => {
+                                const statusIcon =
+                                    school.schoolStatus.toLowerCase() === "active" ? <CircleCheckBig size={17} /> :
+                                        school.schoolStatus.toLowerCase() === "expired" ? <ShieldAlert size={17} /> :
+                                            <CircleQuestionMark size={17} />;
+                                return (
+                                    <tr key={school.schoolId} className="border-t border-light-border hover:bg-gray-50 transition">
+                                        <td className="pl-4 py-3">
+                                            <input
+                                                className='h-3.5 w-3.5 rounded-lg border-light-border accent-black'
+                                                type="checkbox" />
+                                        </td>
+                                        {isVisible('School Name') && (
+                                            <td className="px-4 text-black/70">
+                                                <Link className='hover:text-black transition-all hover:font-medium' href={`/schools/${school.schoolSlug}`}>
+                                                    {school.schoolName}
+                                                </Link>
                                             </td>
-                                            {isVisible('School Name') && (
-                                                <td className="px-4 text-black/70">
-                                                    <Link className='hover:text-black transition-all hover:font-medium' href={`/schools/${school.schoolSlug}`}>
-                                                        {school.schoolName}
-                                                    </Link>
-                                                </td>
-                                            )}
-                                            {isVisible('City') && (
-                                                <td className="px-4 text-black/70">{school.schoolInfo?.address_details?.city}</td>
-                                            )}
-                                            {isVisible('Email') && (
-                                                <td className="px-4 text-black/70">
-                                                    <Link className='hover:text-black transition-all hover:font-medium' href={`mailTo:${school?.schoolInfo?.emails?.primary}`}>
-                                                        {school?.schoolInfo?.emails?.primary}
-                                                    </Link>
-                                                </td>
-                                            )}
-                                            {isVisible('Phone') && (
-                                                <td className="px-4 text-black/70">
-                                                    <Link className='hover:text-black transition-all hover:font-medium' href={`tel:${school?.schoolInfo?.main_phone}`}>
-                                                        {school?.schoolInfo?.main_phone}
-                                                    </Link>
-                                                </td>
-                                            )}
-                                            {isVisible('Students') && (
-                                                <td className="px-4 text-black/70">{school.totalStudents}</td>
-                                            )}
-                                            {isVisible('Staff') && (
-                                                <td className="px-4 text-black/70">{school.totalStaff}</td>
-                                            )}
-                                            {isVisible('Status') && (
-                                                <td className="px-4">
-                                                    <span className="py-1 rounded-md flex items-center gap-2 text-black/70">
-                                                        {statusIcon}
-                                                        <span title={school.schoolStatus} className='text-sm line-clamp-1 capitalize'>{school.schoolStatus.toLowerCase()}</span>
-                                                    </span>
-                                                </td>
-                                            )}
-                                            {isVisible('Created At') && (
-                                                <td className="px-4 text-black/70">{formatDate(school?.createdAt)}</td>
-                                            )}
+                                        )}
+                                        {isVisible('City') && (
+                                            <td className="px-4 text-black/70">{school.schoolInfo?.address_details?.city}</td>
+                                        )}
+                                        {isVisible('Email') && (
+                                            <td className="px-4 text-black/70">
+                                                <Link className='hover:text-black transition-all hover:font-medium' href={`mailTo:${school?.schoolInfo?.emails?.primary}`}>
+                                                    {school?.schoolInfo?.emails?.primary}
+                                                </Link>
+                                            </td>
+                                        )}
+                                        {isVisible('Phone') && (
+                                            <td className="px-4 text-black/70">
+                                                <Link className='hover:text-black transition-all hover:font-medium' href={`tel:${school?.schoolInfo?.main_phone}`}>
+                                                    {school?.schoolInfo?.main_phone}
+                                                </Link>
+                                            </td>
+                                        )}
+                                        {isVisible('Students') && (
+                                            <td className="px-4 text-black/70">{school.totalStudents}</td>
+                                        )}
+                                        {isVisible('Staff') && (
+                                            <td className="px-4 text-black/70">{school.totalStaff}</td>
+                                        )}
+                                        {isVisible('Status') && (
                                             <td className="px-4">
-                                                <TableActionMenu
-                                                    actions={[
-                                                        {
-                                                            label: "Edit",
-                                                            icon: <Pencil size={15} />,
-                                                            onClick: () => console.log("Edit School"),
-                                                        },
-                                                        {
-                                                            label: "Admins",
-                                                            icon: <UserCog size={15} />,
-                                                            onClick: () => router.push(`schools/admins`),
-                                                        },
-                                                        {
-                                                            label: "Suspend",
-                                                            icon: <Ban size={15} />,
-                                                            onClick: () => console.log("Suspend School"),
-                                                        },
-                                                        {
-                                                            label: "Delete",
-                                                            icon: <Trash2 size={15} />,
-                                                            danger: true,
-                                                            onClick: () => console.log("Delete School"),
-                                                        },
-                                                    ]}
-                                                />
+                                                <span className="py-1 rounded-md flex items-center gap-2 text-black/70">
+                                                    {statusIcon}
+                                                    <span title={school.schoolStatus} className='text-sm line-clamp-1 capitalize'>{school.schoolStatus.toLowerCase()}</span>
+                                                </span>
                                             </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>}
-                </Skeleton>
+                                        )}
+                                        {isVisible('Created At') && (
+                                            <td className="px-4 text-black/70">{formatDate(school?.createdAt)}</td>
+                                        )}
+                                        <td className="px-4">
+                                            <TableActionMenu
+                                                actions={[
+                                                    {
+                                                        label: "Edit",
+                                                        icon: <Pencil size={15} />,
+                                                        onClick: () => console.log("Edit School"),
+                                                    },
+                                                    {
+                                                        label: "Admins",
+                                                        icon: <UserCog size={15} />,
+                                                        onClick: () => router.push(`schools/admins`),
+                                                    },
+                                                    {
+                                                        label: "Suspend",
+                                                        icon: <Ban size={15} />,
+                                                        onClick: () => console.log("Suspend School"),
+                                                    },
+                                                    {
+                                                        label: "Delete",
+                                                        icon: <Trash2 size={15} />,
+                                                        danger: true,
+                                                        onClick: () => console.log("Delete School"),
+                                                    },
+                                                ]}
+                                            />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>}
             </div>
         </CanAccess>
     )

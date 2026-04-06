@@ -1,7 +1,7 @@
 "use client"
 
 import { BASE_URL } from '@/constants/constants';
-import ApiClient from '@/interceptors/ApiClient';
+import { PublicApiClient } from '@/interceptors/ApiClient';
 import { useAuthStore } from '@/store/authStore'
 import { useMutation } from '@tanstack/react-query';
 import { ChevronLeft, Eye, EyeOff, Loader2, TimerReset } from 'lucide-react';
@@ -17,7 +17,7 @@ const page = () => {
     const [showConfirmedPassword, setShowConfirmedPassword] = useState(false)
 
     async function resetPassword({ otp, newPassword }: { otp: string, newPassword: string }) {
-        const response = await ApiClient.post(`${BASE_URL}/auth/resetPassword`, { email: resetPasswordEmail, otp, newPassword });
+        const response = await PublicApiClient.post(`${BASE_URL}/auth/resetPassword`, { email: resetPasswordEmail, otp, newPassword });
         return response.data;
     }
 
