@@ -5,6 +5,7 @@ import { dummySchoolStats } from "@/data/dummySuperAdminStats"
 const page = () => {
     return (
         <div className="space-y-6">
+            {/* Creating the new page for schools */}
             <Stats dashboardStats={dummySchoolStats} />
             <AllInstituteTable />
         </div>
