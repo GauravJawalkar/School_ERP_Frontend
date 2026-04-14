@@ -5,6 +5,8 @@ import { BASE_URL } from "@/constants/constants";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import SchoolHero from "./SchoolHero";
+import SchoolStats from "./SchoolStats";
 
 const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
     const getSchoolDetails = async () => {
@@ -23,7 +25,11 @@ const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
     }
 
     return (
-        <div>This School Is : {schoolSlug} </div>
+        <section>
+            This School Is : {schoolSlug}
+            <SchoolHero />
+            <SchoolStats />
+        </section>
     )
 }
 
