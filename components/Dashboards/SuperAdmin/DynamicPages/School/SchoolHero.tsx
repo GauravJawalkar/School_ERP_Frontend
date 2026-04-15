@@ -1,6 +1,6 @@
 
 
-const SchoolHero = () => {
+const SchoolHero = ({ }) => {
     return (
         <div>SchoolHero</div>
     )

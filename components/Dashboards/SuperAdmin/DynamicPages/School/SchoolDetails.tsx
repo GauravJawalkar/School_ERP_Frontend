@@ -26,7 +26,6 @@ const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
 
     return (
         <section>
-            This School Is : {schoolSlug}
             <SchoolHero />
             <SchoolStats />
         </section>
