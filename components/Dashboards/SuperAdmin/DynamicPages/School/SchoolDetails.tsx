@@ -4,7 +4,6 @@ import ErrorFallback from "@/components/Commons/Errors/ErrorFallback";
 import { BASE_URL } from "@/constants/constants";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { useQuery } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import SchoolHero from "./SchoolHero";
 import SchoolStats from "./SchoolStats";
 

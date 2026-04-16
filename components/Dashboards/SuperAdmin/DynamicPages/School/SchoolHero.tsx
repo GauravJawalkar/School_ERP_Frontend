@@ -1,12 +1,11 @@
 import { PenTool, Share2, ShieldBan, UserStar } from "lucide-react"
 import Image from "next/image"
 
-
 const SchoolHero = ({ }) => {
     return (
-        <div className="pb-15">
+        <div className="pb-5">
             {/* Cover Area */}
-            <div className="bg-gray-100/70 rounded-lg h-36 w-full relative">
+            <div className="bg-gray-100/70 rounded-lg h-42 w-full relative">
                 {/* Active and Board Tags */}
                 <div className="flex items-start justify-between py-2 px-3">
                     <div className="text-xs border px-2 py-1 rounded-full border-light-border bg-white">
@@ -22,7 +21,7 @@ const SchoolHero = ({ }) => {
                     </div>
                 </div>
                 {/* Logo */}
-                <div className="absolute -bottom-1/4 left-5">
+                <div className="absolute -bottom-1/5 left-5">
                     {/* <Image alt="school-logo" src={'https://res.cloudinary.com/dauznfh72/image/upload/v1764271211/School_Erp_Logos/pwgoh1iz1av2zvxw0fta.png'} className="h-18 w-18 ring ring-light-border rounded-lg object-contain" height={2000} width={2000} /> */}
                     <h1 className="h-18 w-18 ring ring-light-border rounded-lg flex items-center justify-center text-lg font-semibold tracking-widest bg-white">MMV</h1>
                 </div>
