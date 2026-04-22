@@ -199,7 +199,7 @@ const AllInstituteTable = () => {
                                                     {
                                                         label: "Edit",
                                                         icon: <Pencil size={15} />,
-                                                        onClick: () => console.log("Edit School"),
+                                                        onClick: () => router.push(`/schools/edit/${school.schoolSlug}`),
                                                     },
                                                     {
                                                         label: "Admins",

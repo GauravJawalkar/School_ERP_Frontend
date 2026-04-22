@@ -14,7 +14,7 @@ const StepIndicator = ({ steps, current }: StepIndicatorProps) => (
 
         {/* Progress fill line */}
         <div
-            className="absolute h-px bg-black transition-all duration-300"
+            className="absolute h-px bg-black/30 transition-all duration-300"
             style={{
                 top: '14px',
                 left: '14px',

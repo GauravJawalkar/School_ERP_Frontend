@@ -34,17 +34,15 @@ const TagChipInput = ({ value = [], onChange, onBlur, placeholder = "Type & pres
     return (
         <div className="flex flex-col gap-1">
             <div
-                className="flex flex-wrap gap-1.5 p-2 border border-input-border rounded-md bg-white min-h-[38px] cursor-text focus-within:ring-2 focus-within:ring-neutral-400/50 focus-within:shadow transition-all"
-                onClick={(e) => (e.currentTarget.querySelector('input') as HTMLInputElement)?.focus()}
-            >
+                className="flex flex-wrap gap-1.5 p-2 border border-input-border rounded-md bg-white min-h-9.5 cursor-text focus-within:ring-2 focus-within:ring-neutral-400/50 focus-within:shadow transition-all"
+                onClick={(e) => (e.currentTarget.querySelector('input') as HTMLInputElement)?.focus()}>
                 {value.map((tag) => (
                     <span key={tag} className="inline-flex items-center gap-1 bg-neutral-100 border border-neutral-200 text-neutral-700 text-xs px-2 py-0.5 rounded-md">
                         {tag}
                         <button
                             type="button"
                             onClick={() => remove(tag)}
-                            className="text-neutral-400 hover:text-neutral-700 transition-colors"
-                        >
+                            className="text-neutral-400 hover:text-neutral-700 transition-colors">
                             <X size={11} />
                         </button>
                     </span>
@@ -56,8 +54,7 @@ const TagChipInput = ({ value = [], onChange, onBlur, placeholder = "Type & pres
                     onKeyDown={handleKeyDown}
                     onBlur={() => { add(); onBlur?.() }}
                     placeholder={value.length === 0 ? placeholder : ''}
-                    className="flex-1 min-w-[100px] text-sm outline-none bg-transparent placeholder:text-black/30"
-                />
+                    className="flex-1 min-w-25 text-sm outline-none bg-transparent placeholder:text-black/30" />
             </div>
             {hint && <p className="text-xs text-black/40">{hint}</p>}
         </div>

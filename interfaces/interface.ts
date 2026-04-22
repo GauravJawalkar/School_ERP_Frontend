@@ -1,3 +1,5 @@
+import { SchoolSchemaFormValues } from "@/validations/school.validation";
+
 export interface User {
     id: number;
     name: string;
@@ -187,4 +189,12 @@ export interface AddAdminFormData {
     password: string,
     isActive: boolean,
     roleName: string
+}
+
+export interface AddSchoolFormProps {
+    mode: 'create' | 'edit'
+    schoolSlug?: string
+    defaultData?: Partial<Omit<SchoolSchemaFormValues, 'instituteLogo'>> & {
+        instituteLogo?: string  // URL in edit mode, undefined in create
+    }
 }

@@ -1,6 +1,6 @@
 import SchoolDetails from "@/components/Dashboards/SuperAdmin/DynamicPages/School/SchoolDetails";
 
-const page = async ({ params }: { params: { school: string } }) => {
+const page = async ({ params }: { params: Promise<{ school: string }> }) => {
     const { school } = await params;
     return (
         <div>

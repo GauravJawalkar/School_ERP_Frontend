@@ -93,7 +93,7 @@ const SchoolAdminsTable = () => {
 
     const closeAddAdminModal = () => {
         setOpenModal(false);
-        setSelectedSchool({ schoolName: '', schoolId: 0, schoolEmail: '' }); // ✅ reset on close too
+        setSelectedSchool({ schoolName: '', schoolId: 0, schoolEmail: '' }); //  reset on close too
     }
 
     const updateUserStatus = async ({ userId, isActive }: { userId: string, isActive: boolean }) => {
@@ -193,7 +193,7 @@ const SchoolAdminsTable = () => {
                                                 <CircleQuestionMark size={17} />;
 
                                     return (
-                                        // ✅ Fix 1: key on React.Fragment, not on the inner <tr>
+                                        //  Fix 1: key on React.Fragment, not on the inner <tr>
                                         <React.Fragment key={school.schoolId}>
 
                                             {/* Main Row */}
@@ -279,7 +279,7 @@ const SchoolAdminsTable = () => {
                                                             {
                                                                 label: "Edit",
                                                                 icon: <Pencil size={15} />,
-                                                                onClick: () => console.log("Edit School"),
+                                                                onClick: () => router.push(`/schools/edit/${school.schoolSlug}`),
                                                             },
                                                             {
                                                                 label: "Delete",
