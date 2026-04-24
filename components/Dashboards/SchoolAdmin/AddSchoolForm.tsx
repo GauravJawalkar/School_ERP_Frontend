@@ -172,8 +172,7 @@ const AddSchoolForm = ({ mode, schoolSlug, defaultData }: AddSchoolFormProps) =>
                                             <img
                                                 src={defaultData.instituteLogo as unknown as string}
                                                 alt="Current logo"
-                                                className="w-8 h-8 rounded object-cover border border-neutral-200"
-                                            />
+                                                className="w-8 h-8 rounded object-cover border border-neutral-200" />
                                             Current logo · upload a new file to replace
                                         </div>
                                     )}
@@ -183,8 +182,7 @@ const AddSchoolForm = ({ mode, schoolSlug, defaultData }: AddSchoolFormProps) =>
                                         accept="image/png,image/jpeg,image/jpg"
                                         onChange={(e) => field.handleChange(e.target.files?.[0] as File)}
                                         onBlur={field.handleBlur}
-                                        className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-medium file:bg-gray-200/80 file:text-black/50 hover:file:bg-gray-200 hover:file:text-black border border-input-border rounded-md outline-none focus:ring-2 focus:ring-neutral-400/50 cursor-pointer"
-                                    />
+                                        className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-medium file:bg-gray-200/80 file:text-black/50 hover:file:bg-gray-200 hover:file:text-black border border-input-border rounded-md outline-none focus:ring-2 focus:ring-neutral-400/50 cursor-pointer" />
                                     <p className="text-xs text-black/40">PNG or JPG · max 2 MB</p>
                                     {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
                                         <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
@@ -245,8 +243,7 @@ const AddSchoolForm = ({ mode, schoolSlug, defaultData }: AddSchoolFormProps) =>
                                         onChange={(e) => field.handleChange(e.target.value)}
                                         onBlur={field.handleBlur}
                                         placeholder="eg. 1995"
-                                        className={inputClass}
-                                    />
+                                        className={inputClass} />
                                     {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
                                         <p className="text-xs text-red-500">{field.state.meta.errors[0] as string}</p>
                                     )}
@@ -303,8 +300,7 @@ const AddSchoolForm = ({ mode, schoolSlug, defaultData }: AddSchoolFormProps) =>
                                         onChange={(e) => field.handleChange(e.target.value)}
                                         onBlur={field.handleBlur}
                                         placeholder="eg. Opposite to HP Petroleum, Near Bus Stand"
-                                        className={inputClass + " slim-scrollbar"}
-                                    />
+                                        className={inputClass + " slim-scrollbar"} />
                                     {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
                                         <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
                                     )}
@@ -482,8 +478,7 @@ const AddSchoolForm = ({ mode, schoolSlug, defaultData }: AddSchoolFormProps) =>
                         type="button"
                         onClick={() => setStep(s => s - 1)}
                         disabled={step === 0}
-                        className="inline-flex items-center gap-2 text-sm px-4 py-2 border border-neutral-200 rounded-md hover:bg-neutral-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                    >
+                        className="inline-flex items-center gap-2 text-sm px-4 py-2 border border-neutral-300 rounded-md hover:bg-neutral-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                         <ArrowLeft size={15} /> Back
                     </button>
 
@@ -493,8 +488,7 @@ const AddSchoolForm = ({ mode, schoolSlug, defaultData }: AddSchoolFormProps) =>
                         <button
                             type="button"
                             onClick={() => setStep(s => s + 1)}
-                            className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-black text-white rounded-md hover:bg-black/80 transition-all"
-                        >
+                            className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-black text-white rounded-md hover:bg-black/80 transition-all">
                             Next <ArrowRight size={15} />
                         </button>
                     ) : (
@@ -502,8 +496,7 @@ const AddSchoolForm = ({ mode, schoolSlug, defaultData }: AddSchoolFormProps) =>
                             type="submit"
                             disabled={addNewSchoolMutation.isPending}
                             onClick={() => form.handleSubmit()}
-                            className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-black text-white rounded-md hover:bg-black/80 disabled:cursor-not-allowed disabled:opacity-60 transition-all"
-                        >
+                            className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-black text-white rounded-md hover:bg-black/80 disabled:cursor-not-allowed disabled:opacity-60 transition-all">
                             {addNewSchoolMutation.isPending
                                 ? <><Loader2 size={15} className="animate-spin" /> {mode === 'edit' ? 'Saving...' : 'Adding...'}</>
                                 : <><CheckIcon size={15} /> {mode === 'edit' ? 'Save Changes' : 'Add School'}</>
