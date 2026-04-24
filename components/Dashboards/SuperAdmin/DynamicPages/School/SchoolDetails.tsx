@@ -32,7 +32,7 @@ const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
         id: schoolDetailsData?.id,
         email: schoolDetailsData?.contactInfo?.emails?.primary,
         status: schoolDetailsData?.status,
-        boardsAffiliated: schoolDetailsData?.additionalInfo?.boardsAffiliated,
+        tags: schoolDetailsData?.additionalInfo?.tags,
         logo: schoolDetailsData?.logoUrl,
         name: schoolDetailsData?.schoolName,
         establishedIn: schoolDetailsData?.additionalInfo?.establishedYear,
@@ -42,10 +42,19 @@ const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
         slug: schoolDetailsData?.slug,
     }
 
+    const schoolStatsData = {
+        foundedIn: schoolDetailsData?.additionalInfo?.establishedYear,
+        founder: schoolDetailsData?.additionalInfo?.founderName,
+        students: schoolDetailsData?.totalStudents,
+        staff: schoolDetailsData?.staff?.length,
+        classes: schoolDetailsData?.classes?.length,
+        admins: schoolDetailsData?.admins?.length,
+    }
+
     return (
         <section>
             <SchoolHero data={heroData} />
-            <SchoolStats />
+            <SchoolStats stats={schoolStatsData} />
         </section>
     )
 }

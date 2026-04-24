@@ -198,3 +198,26 @@ export interface AddSchoolFormProps {
         instituteLogo?: string  // URL in edit mode, undefined in create
     }
 }
+
+export interface schoolHeroProps {
+    id: number,
+    status: string,
+    tags: string[],
+    logo: string,
+    name: string,
+    establishedIn: number,
+    location: string,
+    affiliationNo: string,
+    classes: string[],
+    slug: string,
+    email: string
+}
+
+export interface SchoolStatsProps {
+    foundedIn: number;
+    founder?: string;
+    students?: number;
+    staff?: number;
+    classes?: number;
+    admins?: number;
+}
