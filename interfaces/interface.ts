@@ -214,6 +214,7 @@ export interface schoolHeroProps {
 }
 
 export interface SchoolStatsProps {
+    slug: string;
     foundedIn: number;
     founder?: string;
     students?: number;
