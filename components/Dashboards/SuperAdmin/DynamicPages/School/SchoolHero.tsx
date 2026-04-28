@@ -75,7 +75,7 @@ const SchoolHero = ({ data }: { data: schoolHeroProps }) => {
                 {/* Active and Board Tags */}
                 <div className="flex items-start justify-between py-2 px-3">
                     <div className="text-xs border px-2 py-1 rounded-full border-light-border bg-white">
-                        <h1>CBSE Affiliated</h1>
+                        <h1>Estd. 1990</h1>
                     </div>
                     <div>
                         <h1 className="flex items-center gap-2 text-xs border px-2 py-1 rounded-full border-light-border bg-white">

@@ -217,6 +217,7 @@ export interface SchoolStatsProps {
     foundedIn: number;
     founder?: string;
     students?: number;
+    boards: string[],
     staff?: number;
     classes?: number;
     admins?: number;

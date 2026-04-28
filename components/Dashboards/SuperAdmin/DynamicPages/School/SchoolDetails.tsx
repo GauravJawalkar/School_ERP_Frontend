@@ -46,6 +46,7 @@ const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
         foundedIn: schoolDetailsData?.additionalInfo?.establishedYear,
         founder: schoolDetailsData?.additionalInfo?.founderName,
         students: schoolDetailsData?.totalStudents,
+        boards: schoolDetailsData?.additionalInfo?.boardsAffiliated,
         staff: schoolDetailsData?.staff?.length,
         classes: schoolDetailsData?.classes?.length,
         admins: schoolDetailsData?.admins?.length,
