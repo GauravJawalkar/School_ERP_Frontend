@@ -6,7 +6,9 @@ import { ApiClient } from "@/interceptors/ApiClient";
 import { useQuery } from "@tanstack/react-query";
 import SchoolHero from "./SchoolHero";
 import SchoolStats from "./SchoolStats";
-import { Loader2 } from "lucide-react";
+import SchoolHeroSkeleton from "@/components/Commons/Skeletons/SchoolHeroSkeleton";
+import SchoolStatsSkeleton from "@/components/Commons/Skeletons/SchoolStatsSkeleton";
+import React from "react";
 
 const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
     const getSchoolDetails = async () => {
@@ -20,12 +22,17 @@ const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
         refetchOnWindowFocus: false,
     });
 
-    if (isLoading) {
-        return <Loader2 className="animate-spin" />
-    }
-
     if (isError) {
         return <ErrorFallback refetch={refetch} title="" />
+    }
+
+    if (isLoading || !isSuccess) {
+        return (
+            <React.Fragment>
+                <SchoolHeroSkeleton />
+                <SchoolStatsSkeleton />
+            </React.Fragment>
+        )
     }
 
     const heroData = {

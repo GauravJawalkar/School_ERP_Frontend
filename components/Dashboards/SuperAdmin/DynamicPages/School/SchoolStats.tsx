@@ -8,7 +8,6 @@ const SchoolStats = ({ stats }: { stats: SchoolStatsProps }) => {
 
     const getSchoolAdmins = async () => {
         const slug = stats?.slug;
-        console.log("🚀 ~ getSchoolAdmins ~ slug:", slug)
         const response = await ApiClient.get(`${BASE_URL}/admin/${slug}`);
         return response.data;
     }
