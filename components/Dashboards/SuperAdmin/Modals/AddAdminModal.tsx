@@ -56,9 +56,9 @@ const AddAdminModal = ({ isOpen, school, onClose }: { isOpen: boolean, school: S
 
     const addSchoolAdminMutation = useMutation({
         mutationFn: addSchoolAdmin,
-        onSuccess: () => {
+        onSuccess: (data) => {
             toast.success("Admin Added!");
-            queryClient.invalidateQueries({ queryKey: ['getSchoolAdmis'] })
+            queryClient.invalidateQueries({ queryKey: ['schoolAdmins', data.schoolId] })
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.message || "Something Went Wrong! Please try again.");

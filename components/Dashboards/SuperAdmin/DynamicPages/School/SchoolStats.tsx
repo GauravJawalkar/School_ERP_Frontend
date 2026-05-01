@@ -14,7 +14,7 @@ const SchoolStats = ({ stats }: { stats: SchoolStatsProps }) => {
 
     const { data: adminsData, isSuccess, refetch, isLoading } = useQuery({
         queryFn: getSchoolAdmins,
-        queryKey: ['schoolAdmins', stats.slug],
+        queryKey: ['schoolAdmins', stats.id],
         refetchOnWindowFocus: false,
     });
 
