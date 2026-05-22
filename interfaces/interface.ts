@@ -224,3 +224,20 @@ export interface SchoolStatsProps {
     classes?: number;
     admins?: number;
 }
+
+export interface AdminUser {
+    userId: string
+    firstName: string
+    lastName: string
+    email: string
+    phone: string
+    isActive: boolean
+    assignedAt: string
+}
+
+export interface SchoolAdminsSectionProps {
+    schoolId: number
+    schoolName: string
+    schoolEmail: string
+    schoolSlug: string
+}

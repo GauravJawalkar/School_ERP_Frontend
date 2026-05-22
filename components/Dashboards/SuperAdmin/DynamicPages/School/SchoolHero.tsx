@@ -69,7 +69,7 @@ const SchoolHero = ({ data }: { data: schoolHeroProps }) => {
     const StatusIcon = statusConfig?.icon
 
     return (
-        <div className="pb-5">
+        <div>
             {/* Cover Area */}
             <div className="bg-gray-100/70 rounded-lg h-42 w-full relative">
                 {/* Active and Board Tags */}

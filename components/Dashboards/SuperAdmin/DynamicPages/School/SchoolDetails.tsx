@@ -6,6 +6,9 @@ import { ApiClient } from "@/interceptors/ApiClient";
 import { useQuery } from "@tanstack/react-query";
 import SchoolHero from "./SchoolHero";
 import SchoolStats from "./SchoolStats";
+import SchoolAdminsSection from "./SchoolAdminsSection";
+import SchoolSubscriptionSection from "./SchoolSubscriptionSection";
+import SchoolAcademicsSection from "./SchoolAcademicsSection";
 import SchoolHeroSkeleton from "@/components/Commons/Skeletons/SchoolHeroSkeleton";
 import SchoolStatsSkeleton from "@/components/Commons/Skeletons/SchoolStatsSkeleton";
 import React from "react";
@@ -16,9 +19,9 @@ const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
         return response.data.data;
     }
 
-    const { data: schoolDetailsData = [], isError, isSuccess, refetch, isLoading } = useQuery({
+    const { data: schoolDetailsData = null, isError, isSuccess, refetch, isLoading } = useQuery({
         queryFn: getSchoolDetails,
-        queryKey: ['schoolDetails'],
+        queryKey: ['schoolDetails', schoolSlug],
         refetchOnWindowFocus: false,
     });
 
@@ -26,7 +29,7 @@ const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
         return <ErrorFallback refetch={refetch} title="" />
     }
 
-    if (isLoading || !isSuccess) {
+    if (isLoading || !isSuccess || !schoolDetailsData) {
         return (
             <React.Fragment>
                 <SchoolHeroSkeleton />
@@ -62,9 +65,31 @@ const SchoolDetails = ({ schoolSlug }: { schoolSlug: string }) => {
     }
 
     return (
-        <section>
+        <section className="space-y-6">
             <SchoolHero data={heroData} />
             <SchoolStats stats={schoolStatsData} />
+
+            {/* Extended Operations Panel Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left Side: Operations & Billing (Col Span 2) */}
+                <div className="lg:col-span-2 space-y-6">
+                    <SchoolAdminsSection
+                        schoolId={schoolDetailsData?.id}
+                        schoolName={schoolDetailsData?.schoolName}
+                        schoolEmail={schoolDetailsData?.contactInfo?.emails?.primary || ''}
+                        schoolSlug={schoolSlug}
+                    />
+                    <SchoolSubscriptionSection
+                        totalStudents={schoolDetailsData?.totalStudents || 0}
+                        totalStaff={schoolDetailsData?.staff?.length || 0}
+                    />
+                </div>
+
+                {/* Right Side: Academics & Contact Directory (Col Span 1) */}
+                <div>
+                    <SchoolAcademicsSection data={schoolDetailsData} />
+                </div>
+            </div>
         </section>
     )
 }
