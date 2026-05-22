@@ -22,7 +22,7 @@ export default function SchoolAdminsSection({
     // Query specific admins for this school
     const getSchoolAdmins = async () => {
         const response = await ApiClient.get(`${BASE_URL}/admin/${schoolSlug}`)
-        return response.data.data
+        return response.data
     }
 
     const { data: adminsData, isLoading, isError, refetch } = useQuery({
