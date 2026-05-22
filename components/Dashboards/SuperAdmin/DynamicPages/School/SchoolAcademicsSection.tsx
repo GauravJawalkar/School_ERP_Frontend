@@ -130,16 +130,36 @@ export default function SchoolAcademicsSection({ data }: SchoolAcademicsSectionP
                 </div>
             </div>
 
-            {/* Mission Statement (identity block) */}
-            {additionalInfo?.missionStatement && (
-                <div className="space-y-2 pt-1">
+            {/* Identity & Values Block */}
+            {(additionalInfo?.missionStatement || additionalInfo?.visionStatement || (additionalInfo?.coreValues && additionalInfo.coreValues.length > 0)) && (
+                <div className="space-y-3 pt-1">
                     <h4 className="text-[11px] font-semibold text-black/50 uppercase tracking-wider flex items-center gap-1.5">
                         <FileText size={12} /> Identity & Values
                     </h4>
-                    <div className="text-xs italic text-black/60 border-l-2 border-black pl-3 py-1 bg-gray-50/50 rounded-r-md">
-                        <p className="font-medium text-black/40 not-italic text-[10px] uppercase mb-0.5">Mission</p>
-                        "{additionalInfo.missionStatement}"
-                    </div>
+                    {additionalInfo?.visionStatement && (
+                        <div className="text-xs italic text-black/60 border-l-2 border-black pl-3 py-1 bg-gray-50/50 rounded-r-md">
+                            <p className="font-medium text-black/40 not-italic text-[10px] uppercase mb-0.5">Vision</p>
+                            "{additionalInfo.visionStatement}"
+                        </div>
+                    )}
+                    {additionalInfo?.missionStatement && (
+                        <div className="text-xs italic text-black/60 border-l-2 border-black pl-3 py-1 bg-gray-50/50 rounded-r-md">
+                            <p className="font-medium text-black/40 not-italic text-[10px] uppercase mb-0.5">Mission</p>
+                            "{additionalInfo.missionStatement}"
+                        </div>
+                    )}
+                    {additionalInfo?.coreValues && additionalInfo.coreValues.length > 0 && (
+                        <div className="pt-1">
+                            <p className="font-semibold text-black/50 text-[10px] uppercase tracking-wider mb-1.5">Core Values</p>
+                            <div className="flex flex-wrap gap-1.5">
+                                {additionalInfo.coreValues.map((value: string, index: number) => (
+                                    <span key={index} className="text-[10px] bg-black text-white px-2 py-0.5 rounded-sm font-semibold tracking-wide uppercase">
+                                        {value}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

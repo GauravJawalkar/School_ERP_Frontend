@@ -116,10 +116,6 @@ export default function SchoolAdminsSection({
                                 <tr key={admin.userId} className="hover:bg-gray-50/60 transition-colors">
                                     <td className="px-3.5 py-3">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-6 w-6 rounded-full bg-gray-100 border border-light-border flex items-center justify-center text-black/40 shrink-0 font-medium">
-                                                {admin.firstName[0]}
-                                                {admin.lastName[0]}
-                                            </div>
                                             <span className="font-semibold text-black/85">
                                                 {admin.firstName} {admin.lastName}
                                             </span>
