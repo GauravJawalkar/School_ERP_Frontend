@@ -116,7 +116,7 @@ export default function SchoolAcademicsSection({ data }: SchoolAcademicsSectionP
                     <div className="flex items-center gap-2 text-black/70">
                         <Mail size={13} className="text-black/40 shrink-0" />
                         <a href={`mailto:${data?.email}`} className="hover:text-black transition hover:underline truncate">
-                            {data?.email || "No email available"}
+                            {contactInfo?.emails?.primary || "No email available"}
                         </a>
                     </div>
                     {contactInfo?.main_phone && (
