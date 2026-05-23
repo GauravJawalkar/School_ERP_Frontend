@@ -1,8 +1,8 @@
-import React from 'react'
+import SubscriptionDashboard from "@/components/Dashboards/SuperAdmin/DynamicPages/School/Subscriptions/SubscriptionDashboard";
 
 const page = () => {
     return (
-        <div>Plans and Subscriptions Page</div>
+        <SubscriptionDashboard />
     )
 }
 
