@@ -1,29 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Search, MapPin, Users, GraduationCap, CheckCircle2, ChevronRight, Ban } from "lucide-react";
-
-interface School {
-    schoolId: number;
-    schoolName: string;
-    city?: string;
-    totalStudents?: number;
-    totalStaff?: number;
-    students?: number | string;
-    staff?: number | string;
-    schoolStatus: string;
-    status?: string;
-    createdAt: string;
-    schoolInfo?: {
-        address_details?: {
-            city?: string;
-        }
-    };
-}
-
-interface ActiveSubscriptionsTableProps {
-    schools: School[];
-}
+import { ActiveSubscriptionsTableProps } from "@/interfaces/interface";
 
 export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscriptionsTableProps) {
     const [searchQuery, setSearchQuery] = useState("");
@@ -50,20 +30,20 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
         }
     };
 
-    const filtered = schools.filter(s => 
+    const filtered = schools.filter(s =>
         s.schoolName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
         <div className="bg-white border border-light-border rounded-xl p-5 shadow-xs space-y-4">
-            
+
             {/* Table Header and Search */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                     <h3 className="text-sm font-semibold text-black/80 uppercase tracking-wider mb-0.5">School Billing Registry</h3>
                     <p className="text-xs text-black/40">Listing details, quotas, and licensing for {schools.length} institutions</p>
                 </div>
-                
+
                 <div className="relative min-w-xs">
                     <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-black/40" />
                     <input
@@ -80,7 +60,7 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
             <div className="overflow-x-auto border border-light-border rounded-lg">
                 <table className="w-full text-xs min-w-max">
                     <thead>
-                        <tr className="bg-neutral-50 border-b border-light-border text-left text-black/60 font-semibold uppercase tracking-wider text-[10px]">
+                        <tr className="bg-neutral-50 border-b border-light-border text-left text-black/60 font-medium uppercase tracking-wider text-xs">
                             <th className="px-4 py-3">School Name</th>
                             <th className="px-4 py-3">Assigned Plan</th>
                             <th className="px-4 py-3 text-center">Student Quota</th>
@@ -88,7 +68,7 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
                             <th className="px-4 py-3">Recurring Price</th>
                             <th className="px-4 py-3">Next Renewal</th>
                             <th className="px-4 py-3">Billing Status</th>
-                            <th className="px-4 py-3 text-right">Actions</th>
+                            <th className="px-4 py-3 text-right">Visit</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-light-border bg-white text-black/70">
@@ -109,14 +89,14 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
 
                                 return (
                                     <tr key={school.schoolId} className="hover:bg-gray-50/40 transition">
-                                        
+
                                         {/* School & City */}
                                         <td className="px-4 py-3.5">
                                             <div>
-                                                <span className="font-bold text-black text-[13px] block tracking-tight">
+                                                <span className="font-medium text-black text-sm block tracking-tight">
                                                     {school.schoolName}
                                                 </span>
-                                                <span className="text-[10px] text-black/40 font-semibold uppercase tracking-wider flex items-center gap-0.5 mt-0.5">
+                                                <span className="text-xs text-black/40 font-medium uppercase tracking-wider flex items-center gap-0.5 mt-0.5">
                                                     <MapPin size={9} /> {city}
                                                 </span>
                                             </div>
@@ -124,31 +104,33 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
 
                                         {/* Plan Name */}
                                         <td className="px-4 py-3.5">
-                                            <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border ${plan.bg}`}>
+                                            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border ${plan.bg}`}>
                                                 {plan.name}
                                             </span>
                                         </td>
 
                                         {/* Students */}
                                         <td className="px-4 py-3.5 text-center">
-                                            <div className="flex items-center justify-center gap-1 font-semibold text-black">
-                                                <GraduationCap size={13} className="text-black/55" />
+                                            <div className="flex items-center justify-center gap-1 font-semibold text-black text-sm">
+                                                <GraduationCap size={14} className="text-black/55" />
                                                 {students.toLocaleString()}
                                             </div>
                                         </td>
 
                                         {/* Staff */}
                                         <td className="px-4 py-3.5 text-center">
-                                            <div className="flex items-center justify-center gap-1 font-semibold text-black">
-                                                <Users size={13} className="text-black/55" />
+                                            <div className="flex items-center justify-center gap-1 font-semibold text-black text-sm">
+                                                <Users size={14} className="text-black/55" />
                                                 {staff}
                                             </div>
                                         </td>
 
                                         {/* Price */}
                                         <td className="px-4 py-3.5">
-                                            <span className="font-bold text-black">{plan.price}</span>
-                                            <span className="text-[9px] text-black/40 font-medium ml-1">/ yr</span>
+                                            <span className="font-semibold text-sm text-black">
+                                                {plan.price}
+                                            </span>
+                                            <span className="text-xs text-black/40 font-medium ml-1">/ yr</span>
                                         </td>
 
                                         {/* Next Renewal */}
@@ -159,11 +141,11 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
                                         {/* Status */}
                                         <td className="px-4 py-3.5">
                                             {status === "ACTIVE" ? (
-                                                <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border border-green-200">
+                                                <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-0.5 rounded-full text-xs font-semibold border border-green-200">
                                                     <CheckCircle2 size={10} /> Good Standing
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border border-red-200">
+                                                <span className="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2.5 py-0.5 rounded-full text-xs font-semibold border border-red-200">
                                                     <Ban size={10} /> Suspended
                                                 </span>
                                             )}
@@ -171,9 +153,12 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
 
                                         {/* Actions */}
                                         <td className="px-4 py-3.5 text-right">
-                                            <button className="h-7 w-7 rounded-md border border-light-border bg-white flex items-center justify-center text-black/60 hover:text-black hover:bg-neutral-50 shadow-xs cursor-pointer transition">
+                                            <Link
+                                                href={`/schools/${school?.schoolSlug ?? '/'}`}
+                                                className="h-7 w-7 rounded-md border border-light-border bg-white flex items-center justify-center text-black/60 hover:text-black hover:bg-neutral-50 shadow-xs cursor-pointer transition inline-flex"
+                                            >
                                                 <ChevronRight size={14} />
-                                            </button>
+                                            </Link>
                                         </td>
 
                                     </tr>

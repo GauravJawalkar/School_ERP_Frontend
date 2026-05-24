@@ -122,8 +122,7 @@ export default function SchoolAnalyticsDashboard() {
                             type="button"
                             onClick={() => refetch()}
                             disabled={isRefetching}
-                            className="h-9 px-3 rounded-lg border border-light-border bg-white flex items-center gap-2 text-xs font-semibold text-black/70 hover:text-black transition shadow-xs hover:bg-neutral-50"
-                        >
+                            className="h-9 px-3 rounded-lg border border-light-border bg-white flex items-center gap-2 text-xs font-semibold text-black/70 hover:text-black transition shadow-xs hover:bg-neutral-50">
                             <RefreshCw size={12} className={isRefetching ? "animate-spin" : ""} />
                             {isRefetching ? "Syncing..." : "Sync Live Data"}
                         </button>
@@ -154,8 +153,7 @@ export default function SchoolAnalyticsDashboard() {
                         <select
                             value={selectedBoard}
                             onChange={(e) => setSelectedBoard(e.target.value)}
-                            className="px-3 py-2 w-full text-xs border border-input-border rounded-lg outline-none font-medium text-black/70 bg-white focus:ring-2 focus:ring-black/10"
-                        >
+                            className="px-3 py-2 w-full text-xs border border-input-border rounded-lg outline-none font-medium text-black/70 bg-white focus:ring-2 focus:ring-black/10">
                             <option value="">All Affiliated Boards</option>
                             {uniqueBoards.map((board) => (
                                 <option key={board} value={board}>{board}</option>
@@ -166,8 +164,7 @@ export default function SchoolAnalyticsDashboard() {
                         <select
                             value={selectedCity}
                             onChange={(e) => setSelectedCity(e.target.value)}
-                            className="px-3 py-2 w-full text-xs border border-input-border rounded-lg outline-none font-medium text-black/70 bg-white focus:ring-2 focus:ring-black/10"
-                        >
+                            className="px-3 py-2 w-full text-xs border border-input-border rounded-lg outline-none font-medium text-black/70 bg-white focus:ring-2 focus:ring-black/10">
                             <option value="">All Cities</option>
                             {uniqueCities.map((city) => (
                                 <option key={city} value={city}>{city}</option>
@@ -178,8 +175,7 @@ export default function SchoolAnalyticsDashboard() {
                         <select
                             value={selectedStatus}
                             onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="px-3 py-2 w-full text-xs border border-input-border rounded-lg outline-none font-medium text-black/70 bg-white focus:ring-2 focus:ring-black/10"
-                        >
+                            className="px-3 py-2 w-full text-xs border border-input-border rounded-lg outline-none font-medium text-black/70 bg-white focus:ring-2 focus:ring-black/10">
                             <option value="">All Statuses</option>
                             <option value="ACTIVE">Active</option>
                             <option value="INACTIVE">Inactive</option>

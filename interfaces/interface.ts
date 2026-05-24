@@ -241,3 +241,68 @@ export interface SchoolAdminsSectionProps {
     schoolEmail: string
     schoolSlug: string
 }
+
+export interface SchoolItem {
+    id?: number;
+    schoolName: string;
+    city?: string;
+    students?: number | string;
+    staff?: number | string;
+    status?: string;
+    schoolStatus?: string;
+    totalStudents?: number;
+    totalStaff?: number;
+    schoolInfo?: {
+        address_details?: {
+            city?: string;
+        }
+    };
+}
+
+export interface TopEnrollmentListProps {
+    schools: SchoolItem[];
+}
+
+export interface Plan {
+    name: string;
+    price: string;
+    billing: string;
+    studentsLimit: string;
+    staffLimit: string;
+    activeCount: number;
+    color: string;
+    textColor: string;
+    features: string[];
+    popular?: boolean;
+}
+
+export interface ConfigureTierDrawerProps {
+    plan: Plan | null;
+    isOpen: boolean;
+    onClose: () => void;
+    onSave: (updatedPlan: Plan) => void;
+}
+
+
+export interface School {
+    schoolId: number;
+    schoolName: string;
+    city?: string;
+    schoolSlug?: string;
+    totalStudents?: number;
+    totalStaff?: number;
+    students?: number | string;
+    staff?: number | string;
+    schoolStatus: string;
+    status?: string;
+    createdAt: string;
+    schoolInfo?: {
+        address_details?: {
+            city?: string;
+        }
+    };
+}
+
+export interface ActiveSubscriptionsTableProps {
+    schools: School[];
+}

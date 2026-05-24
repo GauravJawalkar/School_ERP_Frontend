@@ -1,27 +1,7 @@
 "use client";
 
-import { Award, GraduationCap, MapPin, Users } from "lucide-react";
-
-interface SchoolItem {
-    id?: number;
-    schoolName: string;
-    city?: string;
-    students?: number | string;
-    staff?: number | string;
-    status?: string;
-    schoolStatus?: string;
-    totalStudents?: number;
-    totalStaff?: number;
-    schoolInfo?: {
-        address_details?: {
-            city?: string;
-        }
-    };
-}
-
-interface TopEnrollmentListProps {
-    schools: SchoolItem[];
-}
+import { TopEnrollmentListProps } from "@/interfaces/interface";
+import { GraduationCap, MapPin, Users } from "lucide-react";
 
 export default function TopEnrollmentList({ schools = [] }: TopEnrollmentListProps) {
     // Sort schools by students count descending (handle string parsed numbers)
@@ -64,18 +44,16 @@ export default function TopEnrollmentList({ schools = [] }: TopEnrollmentListPro
                     const status = school.schoolStatus || school.status || "INACTIVE";
 
                     return (
-                        <div 
-                            key={index} 
-                            className={`flex items-center justify-between p-3 rounded-lg border border-transparent hover:border-light-border transition ${isEven ? "bg-gray-50/40" : "bg-white"}`}
-                        >
+                        <div
+                            key={index}
+                            className={`flex items-center justify-between p-3 rounded-lg border border-transparent hover:border-light-border transition ${isEven ? "bg-gray-50/80" : "bg-white"}`}>
                             <div className="flex items-center gap-3">
                                 {/* Rank Badge */}
-                                <div className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold ${
-                                    index === 0 ? "bg-black text-white" :
+                                <div className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold ${index === 0 ? "bg-black text-white" :
                                     index === 1 ? "bg-neutral-600 text-white" :
-                                    index === 2 ? "bg-neutral-400 text-white" :
-                                    "bg-gray-100 text-black/60"
-                                }`}>
+                                        index === 2 ? "bg-neutral-400 text-white" :
+                                            "bg-gray-100 text-black/60"
+                                    }`}>
                                     {index + 1}
                                 </div>
                                 <div>
@@ -99,9 +77,7 @@ export default function TopEnrollmentList({ schools = [] }: TopEnrollmentListPro
                                 </div>
 
                                 {/* Status Tag */}
-                                <span className={`text-[9px] px-1.5 py-0.5 rounded-sm font-semibold tracking-wide uppercase ${
-                                    status === "ACTIVE" ? "bg-black text-white" : "bg-gray-100 text-black/40"
-                                }`}>
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded-sm font-semibold tracking-wide uppercase ${status === "ACTIVE" ? "bg-black text-white" : "bg-gray-100 text-black/40"}`}>
                                     {status}
                                 </span>
                             </div>

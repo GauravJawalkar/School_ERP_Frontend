@@ -135,7 +135,7 @@ const SchoolAdminsTable = () => {
                                 disabled={isFetching || isError}
                                 className='flex items-center justify-center gap-1.5 text-sm font-medium px-3 py-1.5 border border-light-border border-dashed rounded-lg hover:bg-gray-100 text-black transition-all ease-linear disabled:cursor-not-allowed'>
                                 <CirclePlus size={15} />
-                                Add Admin
+                                Add School
                             </button>
                             <div ref={dropDownRef} className='relative group'>
                                 <button

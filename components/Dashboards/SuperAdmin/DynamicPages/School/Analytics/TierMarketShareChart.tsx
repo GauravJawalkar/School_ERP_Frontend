@@ -12,13 +12,13 @@ export default function TierMarketShareChart() {
     const totalCount = data.reduce((sum, item) => sum + item.value, 0);
 
     return (
-        <div className="w-full bg-white rounded-xl border border-light-border p-5 shadow-xs flex flex-col justify-between">
+        <div className="w-full bg-white rounded-xl border border-light-border p-5 shadow-xs flex flex-col h-full">
             <div>
                 <h3 className="text-sm font-semibold text-black/80 uppercase tracking-wider mb-0.5">Subscription Breakdown</h3>
                 <p className="text-xs text-black/40 mb-4">Tier market share & active licenses</p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row items-center gap-6 h-full justify-center">
                 {/* Donut Chart Container */}
                 <div className="relative w-44 h-44">
                     <ResponsiveContainer width="100%" height="100%">
@@ -30,15 +30,14 @@ export default function TierMarketShareChart() {
                                 innerRadius={55}
                                 outerRadius={75}
                                 paddingAngle={3}
-                                stroke="none"
-                            >
+                                stroke="none">
                                 {data.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
                             </Pie>
                             <Tooltip
                                 contentStyle={{
-                                    background: "#ffffff",
+                                    background: "white",
                                     borderRadius: "8px",
                                     border: "1px solid #e5e7eb",
                                     fontSize: "11px",
@@ -62,9 +61,9 @@ export default function TierMarketShareChart() {
                         return (
                             <div key={idx} className="flex items-center justify-between border-b border-gray-50 pb-2 last:border-0 last:pb-0">
                                 <div className="flex items-center gap-2">
-                                    <div 
-                                        className="w-2.5 h-2.5 rounded-sm shrink-0" 
-                                        style={{ backgroundColor: entry.color }} 
+                                    <div
+                                        className="w-2.5 h-2.5 rounded-sm shrink-0"
+                                        style={{ backgroundColor: entry.color }}
                                     />
                                     <span className="text-xs font-semibold text-black/70">{entry.name}</span>
                                 </div>
@@ -73,7 +72,7 @@ export default function TierMarketShareChart() {
                                     <span className="text-[10px] text-black/40 font-medium ml-1.5">({pct}%)</span>
                                 </div>
                             </div>
-                        );
+                        )
                     })}
                 </div>
             </div>

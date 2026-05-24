@@ -74,16 +74,14 @@ export default function BoardDistributionChart({ schools = [] }: BoardDistributi
                     <BarChart
                         data={chartData}
                         layout="vertical"
-                        margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
-                    >
+                        margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
                         <CartesianGrid stroke="#f3f4f6" strokeDasharray="3 3" horizontal={false} />
                         <XAxis
                             type="number"
                             stroke="#9ca3af"
                             fontSize={10}
                             tickLine={false}
-                            axisLine={false}
-                        />
+                            axisLine={false} />
                         <YAxis
                             dataKey="name"
                             type="category"
@@ -91,8 +89,7 @@ export default function BoardDistributionChart({ schools = [] }: BoardDistributi
                             fontSize={10}
                             tickLine={false}
                             axisLine={false}
-                            width={75}
-                        />
+                            width={75} />
                         <Tooltip
                             contentStyle={{
                                 background: "#ffffff",
@@ -101,14 +98,12 @@ export default function BoardDistributionChart({ schools = [] }: BoardDistributi
                                 fontSize: "11px",
                                 padding: "6px 10px",
                                 boxShadow: "0 2px 5px rgba(0,0,0,0.05)"
-                            }}
-                        />
+                            }} />
                         <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={14}>
                             {chartData.map((entry, index) => (
                                 <Cell
                                     key={`cell-${index}`}
-                                    fill={COLORS[index % COLORS.length]}
-                                />
+                                    fill={COLORS[index % COLORS.length]} />
                             ))}
                         </Bar>
                     </BarChart>

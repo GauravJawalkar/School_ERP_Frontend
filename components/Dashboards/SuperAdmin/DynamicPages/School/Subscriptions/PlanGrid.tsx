@@ -1,37 +1,30 @@
 "use client";
 
+import { useState } from "react";
 import { CreditCard, Check, Settings2, ShieldCheck, Zap } from "lucide-react";
-
-interface Plan {
-    name: string;
-    price: string;
-    billing: string;
-    studentsLimit: string;
-    staffLimit: string;
-    activeCount: number;
-    color: string;
-    textColor: string;
-    features: string[];
-    popular?: boolean;
-}
+import ConfigureTierDrawer from "./ConfigureTierDrawer";
+import { Plan } from "@/interfaces/interface";
 
 interface PlanGridProps {
     schools: any[];
 }
 
 export default function PlanGrid({ schools = [] }: PlanGridProps) {
+    const [activePlanForDrawer, setActivePlanForDrawer] = useState<Plan | null>(null);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
     // Dynamically calculate how many schools are currently on each plan tier
     const enterpriseCount = schools.filter(s => Number(s.totalStudents) > 2500).length;
     const proCount = schools.filter(s => Number(s.totalStudents) <= 2500 && Number(s.totalStudents) > 500).length;
     const basicCount = schools.filter(s => Number(s.totalStudents) <= 500).length || schools.length - proCount - enterpriseCount;
 
-    const PLANS: Plan[] = [
+    const [plans, setPlans] = useState<Plan[]>([
         {
             name: "Basic Tier",
             price: "₹15,000",
             billing: "per school / year",
-            studentsLimit: "Up to 500 Students",
-            staffLimit: "Up to 35 Staff Accounts",
+            studentsLimit: "500",
+            staffLimit: "35",
             activeCount: Math.max(basicCount, 0),
             color: "bg-white border-light-border",
             textColor: "text-black",
@@ -46,9 +39,9 @@ export default function PlanGrid({ schools = [] }: PlanGridProps) {
             name: "Premium Growth",
             price: "₹45,000",
             billing: "per school / year",
-            studentsLimit: "Up to 2,500 Students",
-            staffLimit: "Up to 150 Staff Accounts",
-            activeCount: Math.max(proCount, 1), // Default to 1 (Angel High is here)
+            studentsLimit: "2500",
+            staffLimit: "150",
+            activeCount: Math.max(proCount, 1),
             color: "bg-black text-white border-black/90",
             textColor: "text-white",
             features: [
@@ -64,8 +57,8 @@ export default function PlanGrid({ schools = [] }: PlanGridProps) {
             name: "Enterprise Suite",
             price: "₹95,000",
             billing: "per school / year",
-            studentsLimit: "Unlimited Students",
-            staffLimit: "Unlimited Staff Accounts",
+            studentsLimit: "Unlimited",
+            staffLimit: "Unlimited",
             activeCount: Math.max(enterpriseCount, 0),
             color: "bg-white border-light-border",
             textColor: "text-black",
@@ -77,7 +70,24 @@ export default function PlanGrid({ schools = [] }: PlanGridProps) {
                 "Custom Features SLA Development"
             ]
         }
-    ];
+    ]);
+
+    // Handle opening the configuration drawer
+    const openConfigDrawer = (plan: Plan) => {
+        setActivePlanForDrawer(plan);
+        setIsDrawerOpen(true);
+    };
+
+    // Save configurations received back from modular drawer
+    const handleSaveConfig = (updatedPlan: Plan) => {
+        setPlans(prevPlans =>
+            prevPlans.map(p =>
+                p.name === activePlanForDrawer?.name
+                    ? updatedPlan
+                    : p
+            )
+        );
+    };
 
     return (
         <div className="space-y-4">
@@ -89,9 +99,9 @@ export default function PlanGrid({ schools = [] }: PlanGridProps) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {PLANS.map((plan, idx) => (
-                    <div 
-                        key={idx} 
+                {plans.map((plan, idx) => (
+                    <div
+                        key={idx}
                         className={`relative rounded-xl border p-5 flex flex-col justify-between shadow-xs transition-all hover:shadow-md ${plan.color}`}
                     >
                         {/* Popular Badge */}
@@ -110,9 +120,8 @@ export default function PlanGrid({ schools = [] }: PlanGridProps) {
                                         {plan.activeCount} Active Schools
                                     </span>
                                 </div>
-                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${
-                                    plan.popular ? "bg-white text-black border-white/20" : "bg-gray-50 text-black border-light-border"
-                                }`}>
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${plan.popular ? "bg-white text-black border-white/20" : "bg-gray-50 text-black border-light-border"
+                                    }`}>
                                     {plan.name.includes("Enterprise") ? <ShieldCheck size={16} /> : <CreditCard size={16} />}
                                 </div>
                             </div>
@@ -124,18 +133,21 @@ export default function PlanGrid({ schools = [] }: PlanGridProps) {
                             </div>
 
                             {/* Capacity info */}
-                            <div className="space-y-1.5 mb-5 bg-gray-50/50 p-2.5 rounded-lg border border-light-border/10 text-xs">
-                                <div className={`font-semibold ${plan.textColor}`}>{plan.studentsLimit}</div>
-                                <div className={`font-normal opacity-60`}>{plan.staffLimit}</div>
+                            <div className={`space-y-1.5 mb-5 p-2.5 rounded-lg border text-xs ${plan.popular ? "bg-neutral-800/70 text-white/90 border-light-border/10" : "bg-gray-50/50 text-black/70 border-light-border"}`}>
+                                <div className={`font-semibold`}>
+                                    {plan.studentsLimit === "Unlimited" ? "Unlimited Students" : `Up to ${Number(plan.studentsLimit).toLocaleString()} Students`}
+                                </div>
+                                <div className={`font-normal opacity-60`}>
+                                    {plan.staffLimit === "Unlimited" ? "Unlimited Staff Accounts" : `Up to ${plan.staffLimit} Staff Accounts`}
+                                </div>
                             </div>
 
                             {/* Feature List */}
                             <ul className="space-y-2 text-xs">
                                 {plan.features.map((feat, fidx) => (
                                     <li key={fidx} className="flex items-center gap-2">
-                                        <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
-                                            plan.popular ? "bg-white/15 text-white" : "bg-neutral-100 text-black/80"
-                                        }`}>
+                                        <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${plan.popular ? "bg-white/15 text-white" : "bg-neutral-100 text-black/80"
+                                            }`}>
                                             <Check size={10} strokeWidth={3} />
                                         </div>
                                         <span className="opacity-75">{feat}</span>
@@ -146,17 +158,30 @@ export default function PlanGrid({ schools = [] }: PlanGridProps) {
 
                         {/* Action buttons */}
                         <div className="mt-6 pt-4 border-t border-light-border/20 flex gap-2">
-                            <button className={`w-full py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition ${
-                                plan.popular 
-                                    ? "bg-white text-black hover:bg-white/90" 
+                            <button
+                                onClick={() => openConfigDrawer(plan)}
+                                className={`w-full py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition ${plan.popular
+                                    ? "bg-white text-black hover:bg-white/90"
                                     : "bg-black text-white hover:bg-black/90"
-                            }`}>
+                                    }`}
+                            >
                                 <Settings2 size={12} /> Configure Tier
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
+
+            {/* ── HIGH-END CONFIGURATION SLIDE-OVER DRAWER (MODULAR COMPONENT) ── */}
+            <ConfigureTierDrawer
+                plan={activePlanForDrawer}
+                isOpen={isDrawerOpen}
+                onClose={() => {
+                    setIsDrawerOpen(false);
+                    setActivePlanForDrawer(null);
+                }}
+                onSave={handleSaveConfig}
+            />
         </div>
     );
 }
