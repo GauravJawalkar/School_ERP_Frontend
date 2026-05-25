@@ -11,7 +11,7 @@ import { schoolAdminsApi } from '@/interfaces/interface';
 import TableSkeleton from '@/components/Commons/Skeletons/TableSkeleton';
 import ErrorFallback from '@/components/Commons/Errors/ErrorFallback';
 import { useRouter } from 'next/navigation';
-import AddAdminModal from '../Modals/AddAdminModal';
+import AddAdminModal from '../Drawers/AddAdminModal';
 import toast from 'react-hot-toast';
 
 const tableColumns = ['School Name', 'Email', 'Phone', 'Affiliation No', 'Status', 'City', 'Admin']

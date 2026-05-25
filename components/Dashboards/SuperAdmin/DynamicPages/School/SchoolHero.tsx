@@ -2,7 +2,7 @@
 import { Loader2, PenTool, Share2, ShieldBan, ShieldCheck, UserStar } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link";
-import AddAdminModal from "../../Modals/AddAdminModal";
+import AddAdminModal from "../../Drawers/AddAdminModal";
 import { useState } from "react";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
