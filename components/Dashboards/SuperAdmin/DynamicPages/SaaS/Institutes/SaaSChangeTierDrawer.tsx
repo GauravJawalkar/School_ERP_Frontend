@@ -3,18 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Check, Sliders, Info } from "lucide-react";
 
-interface School {
-    schoolId: number;
-    schoolName: string;
-    schoolSlug: string;
-    totalStudents?: number;
-    totalStaff?: number;
-    students?: number | string;
-    staff?: number | string;
-    schoolStatus: string;
-    status?: string;
-    createdAt: string;
-}
+import { School } from "@/interfaces/interface";
 
 interface SaaSChangeTierDrawerProps {
     school: School | null;
@@ -59,7 +48,7 @@ export default function SaaSChangeTierDrawer({
     };
 
     const handleApply = () => {
-        onSave(school.schoolSlug, selectedTier);
+        onSave(school.schoolSlug ?? "", selectedTier);
         handleClose();
     };
 

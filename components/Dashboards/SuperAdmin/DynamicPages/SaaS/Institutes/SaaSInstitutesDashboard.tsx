@@ -49,8 +49,8 @@ export default function SaaSInstitutesDashboard() {
     // 2. Mutation: Toggle Suspension Access
     const updateStatusMutation = useMutation({
         mutationFn: async ({ schoolSlug, newStatus }: { schoolSlug: string; newStatus: string }) => {
-            const res = await ApiClient.patch(`${BASE_URL}/institute/update/${schoolSlug}`, {
-                schoolStatus: newStatus
+            const res = await ApiClient.patch(`${BASE_URL}/institute/${schoolSlug}/status`, {
+                status: newStatus
             });
             return res.data;
         },
@@ -89,7 +89,7 @@ export default function SaaSInstitutesDashboard() {
     return (
         <CanAccess role="SUPER_ADMIN">
             <div className="space-y-7 max-w-7xl mx-auto pb-10">
-                
+
                 {/* Dashboard Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-light-border pb-5">
                     <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ export default function SaaSInstitutesDashboard() {
                 <SaaSStatsGrid schools={allSchools} />
 
                 {/* Operations Registry list Table */}
-                <SaaSInstitutesTable 
+                <SaaSInstitutesTable
                     schools={allSchools}
                     onUpdateTier={(schoolSlug, newTier) => updateTierMutation.mutate({ schoolSlug, newTier })}
                     onUpdateStatus={(schoolSlug, newStatus) => updateStatusMutation.mutate({ schoolSlug, newStatus })}

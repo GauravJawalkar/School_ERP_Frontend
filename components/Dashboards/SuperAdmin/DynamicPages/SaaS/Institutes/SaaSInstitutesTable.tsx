@@ -4,25 +4,7 @@ import { useState } from "react";
 import { Search, Globe, ShieldAlert, Sliders, Ban, CheckCircle2, ChevronDown } from "lucide-react";
 import SaaSChangeTierDrawer from "./SaaSChangeTierDrawer";
 import SaaSQuotaOverrideDrawer from "./SaaSQuotaOverrideDrawer";
-
-interface School {
-    schoolId: number;
-    schoolName: string;
-    schoolSlug: string;
-    city?: string;
-    totalStudents?: number;
-    totalStaff?: number;
-    students?: number | string;
-    staff?: number | string;
-    schoolStatus: string;
-    status?: string;
-    createdAt: string;
-    schoolInfo?: {
-        address_details?: {
-            city?: string;
-        }
-    };
-}
+import { School } from "@/interfaces/interface";
 
 interface SaaSInstitutesTableProps {
     schools: School[];
@@ -56,23 +38,23 @@ export default function SaaSInstitutesTable({
         }
     };
 
-    const filtered = schools.filter(s => 
+    const filtered = schools.filter(s =>
         s.schoolName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.schoolSlug.toLowerCase().includes(searchQuery.toLowerCase())
+        (s.schoolSlug ?? "").toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
         <div className="bg-white border border-light-border rounded-xl p-5 shadow-xs space-y-4 relative">
-            
+
             {/* Header and Search */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                     <h3 className="text-sm font-semibold text-black/80 uppercase tracking-wider mb-0.5">SaaS Platform Institutes</h3>
                     <p className="text-xs text-black/40">Audit subdomains, quota meters, and adjust parameters on the fly</p>
                 </div>
-                
+
                 <div className="relative min-w-xs">
-                    <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-black/40" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black/40" />
                     <input
                         type="text"
                         placeholder="Search subdomains or names..."
@@ -107,22 +89,22 @@ export default function SaaSInstitutesTable({
                                 const students = Number(school.totalStudents || school.students || 0);
                                 const details = getPlanDetails(students);
                                 const status = school.schoolStatus || school.status || "INACTIVE";
-                                
+
                                 // Quota calculations
                                 const quotaPercent = Math.min(Math.round((students / details.cap) * 100), 100);
 
                                 return (
                                     <tr key={school.schoolId} className="hover:bg-gray-50/40 transition">
-                                        
+
                                         {/* Name & Domain */}
                                         <td className="px-4 py-3.5">
                                             <div>
-                                                <span className="font-bold text-black text-sm block tracking-tight">
+                                                <span className="font-medium text-black text-sm block tracking-tight">
                                                     {school.schoolName}
                                                 </span>
                                                 <span className="text-xs text-black/40 font-medium flex items-center gap-1 mt-0.5 lowercase font-mono">
                                                     <Globe size={11} className="text-black/30 shrink-0" />
-                                                    {school.schoolSlug}.layernlooms.com
+                                                    {school.schoolSlug ?? ""}.layernlooms.com
                                                 </span>
                                             </div>
                                         </td>
@@ -145,7 +127,7 @@ export default function SaaSInstitutesTable({
                                                     <span>{quotaPercent}% cap</span>
                                                 </div>
                                                 <div className="w-full bg-neutral-100 rounded-full h-1 overflow-hidden">
-                                                    <div 
+                                                    <div
                                                         className="bg-black h-1 rounded-full transition-all duration-300"
                                                         style={{ width: `${quotaPercent}%` }}
                                                     />
@@ -172,7 +154,7 @@ export default function SaaSInstitutesTable({
                                             <div className="flex justify-end gap-2">
                                                 {/* Action Selector */}
                                                 <div className="relative">
-                                                    <button 
+                                                    <button
                                                         onClick={() => setActiveDropdownRow(activeDropdownRow === school.schoolId ? null : school.schoolId)}
                                                         className="h-8 px-2.5 rounded-lg border border-light-border bg-white text-xs font-semibold text-black/70 hover:text-black hover:bg-neutral-50 shadow-xs cursor-pointer transition flex items-center gap-1"
                                                     >
@@ -181,10 +163,9 @@ export default function SaaSInstitutesTable({
 
                                                     {/* Dropdown Menu */}
                                                     {activeDropdownRow === school.schoolId && (
-                                                        <div className={`absolute right-0 w-40 bg-white border border-light-border rounded-lg shadow-lg z-30 py-1 text-left text-xs divide-y divide-gray-50 ${
-                                                            (idx >= 3 || idx === filtered.length - 1) ? "bottom-full mb-1.5 animate-in fade-in slide-in-from-bottom-2 duration-150" : "top-full mt-1.5 animate-in fade-in slide-in-from-top-2 duration-150"
-                                                        }`}>
-                                                            <button 
+                                                        <div className={`absolute right-0 w-40 bg-white border border-light-border rounded-lg shadow-lg z-30 py-1 text-left text-xs divide-y divide-gray-50 ${(idx >= 3 || idx === filtered.length - 1) ? "bottom-full mb-1.5 animate-in fade-in slide-in-from-bottom-2 duration-150" : "top-full mt-1.5 animate-in fade-in slide-in-from-top-2 duration-150"
+                                                            }`}>
+                                                            <button
                                                                 type="button"
                                                                 onClick={() => {
                                                                     setSelectedSchoolForTier(school);
@@ -195,7 +176,7 @@ export default function SaaSInstitutesTable({
                                                             >
                                                                 <Sliders size={12} /> Change Tier
                                                             </button>
-                                                            <button 
+                                                            <button
                                                                 type="button"
                                                                 onClick={() => {
                                                                     setSelectedSchoolForQuota(school);
@@ -206,15 +187,14 @@ export default function SaaSInstitutesTable({
                                                             >
                                                                 <Sliders size={12} /> Override Quota
                                                             </button>
-                                                            <button 
+                                                            <button
                                                                 type="button"
                                                                 onClick={() => {
-                                                                    onUpdateStatus(school.schoolSlug, status === "ACTIVE" ? "SUSPENDED" : "ACTIVE");
+                                                                    onUpdateStatus(school.schoolSlug ?? "", status === "ACTIVE" ? "SUSPENDED" : "ACTIVE");
                                                                     setActiveDropdownRow(null);
                                                                 }}
-                                                                className={`w-full px-3 py-2 hover:bg-neutral-50 font-semibold transition cursor-pointer flex items-center gap-2 ${
-                                                                    status === "ACTIVE" ? "text-red-600 hover:text-red-700" : "text-green-600 hover:text-green-700"
-                                                                }`}
+                                                                className={`w-full px-3 py-2 hover:bg-neutral-50 font-semibold transition cursor-pointer flex items-center gap-2 ${status === "ACTIVE" ? "text-red-600 hover:text-red-700" : "text-green-600 hover:text-green-700"
+                                                                    }`}
                                                             >
                                                                 <Ban size={12} /> {status === "ACTIVE" ? "Suspend Access" : "Activate Access"}
                                                             </button>

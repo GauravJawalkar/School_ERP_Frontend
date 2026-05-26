@@ -2,19 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Users, Info } from "lucide-react";
-
-interface School {
-    schoolId: number;
-    schoolName: string;
-    schoolSlug: string;
-    totalStudents?: number;
-    totalStaff?: number;
-    students?: number | string;
-    staff?: number | string;
-    schoolStatus: string;
-    status?: string;
-    createdAt: string;
-}
+import { School } from "@/interfaces/interface";
 
 interface SaaSQuotaOverrideDrawerProps {
     school: School | null;
@@ -59,26 +47,24 @@ export default function SaaSQuotaOverrideDrawer({
     };
 
     const handleApply = () => {
-        onSave(school.schoolSlug, quotaInput);
+        onSave(school.schoolSlug ?? "", quotaInput);
         handleClose();
     };
 
     return (
         <div className="fixed inset-0 z-50 overflow-hidden">
             {/* Backdrop */}
-            <div 
-                className={`absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 ${
-                    animateIn ? "opacity-100" : "opacity-0"
-                }`}
+            <div
+                className={`absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 ${animateIn ? "opacity-100" : "opacity-0"
+                    }`}
                 onClick={handleClose}
             />
 
             <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
                 {/* Slide-over panel */}
-                <div 
-                    className={`w-screen max-w-md bg-white border-l border-light-border shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out ${
-                        animateIn ? "translate-x-0" : "translate-x-full"
-                    }`}
+                <div
+                    className={`w-screen max-w-md bg-white border-l border-light-border shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out ${animateIn ? "translate-x-0" : "translate-x-full"
+                        }`}
                 >
                     {/* Header */}
                     <div className="p-6 border-b border-light-border flex items-center justify-between">
@@ -91,7 +77,7 @@ export default function SaaSQuotaOverrideDrawer({
                                 <p className="text-[10px] text-black/40 font-medium">Manually adjust school capacity rules</p>
                             </div>
                         </div>
-                        <button 
+                        <button
                             type="button"
                             onClick={handleClose}
                             className="h-8 w-8 rounded-lg border border-light-border bg-white flex items-center justify-center text-black/50 hover:text-black transition hover:bg-neutral-50 shadow-xs cursor-pointer"
@@ -110,7 +96,7 @@ export default function SaaSQuotaOverrideDrawer({
                         <div className="space-y-4">
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Maximum Student Seats</label>
-                                <input 
+                                <input
                                     type="number"
                                     value={quotaInput}
                                     onChange={(e) => setQuotaInput(Number(e.target.value))}
@@ -126,14 +112,14 @@ export default function SaaSQuotaOverrideDrawer({
 
                     {/* Actions */}
                     <div className="p-6 border-t border-light-border bg-gray-50/50 flex gap-3">
-                        <button 
+                        <button
                             type="button"
                             onClick={handleClose}
                             className="w-1/2 py-2.5 rounded-lg border border-light-border bg-white text-xs font-semibold text-black hover:bg-neutral-50 transition cursor-pointer"
                         >
                             Cancel
                         </button>
-                        <button 
+                        <button
                             type="button"
                             onClick={handleApply}
                             className="w-1/2 py-2.5 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition cursor-pointer"
