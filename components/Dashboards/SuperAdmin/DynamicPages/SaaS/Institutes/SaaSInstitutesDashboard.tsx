@@ -93,9 +93,6 @@ export default function SaaSInstitutesDashboard() {
                 {/* Dashboard Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-light-border pb-5">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl border border-light-border bg-white flex items-center justify-center text-black">
-                            <Layers size={18} />
-                        </div>
                         <div>
                             <h1 className="text-xl font-bold text-black">SaaS Institute Registry</h1>
                             <p className="text-xs text-black/50">Configure platform subdomains, audit active seat limits, and execute global licensing commands</p>

@@ -1,9 +1,5 @@
-import React from 'react'
+import SaaSBillingDashboard from '@/components/Dashboards/SuperAdmin/DynamicPages/SaaS/Billing/SaaSBillingDashboard'
 
-const page = () => {
-    return (
-        <div>page</div>
-    )
+export default function SaaSBillingPage() {
+    return <SaaSBillingDashboard />
 }
-
-export default page

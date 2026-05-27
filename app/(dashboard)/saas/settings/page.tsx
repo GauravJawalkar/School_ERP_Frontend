@@ -1,9 +1,5 @@
-import React from 'react'
+import SaaSSettingsDashboard from '@/components/Dashboards/SuperAdmin/DynamicPages/SaaS/Settings/SaaSSettingsDashboard'
 
-const page = () => {
-    return (
-        <div>page</div>
-    )
+export default function SaaSSettingsPage() {
+    return <SaaSSettingsDashboard />
 }
-
-export default page

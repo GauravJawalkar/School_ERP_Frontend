@@ -203,7 +203,6 @@ export default function SaaSInstitutesTable({
                                                 </div>
                                             </div>
                                         </td>
-
                                     </tr>
                                 );
                             })
