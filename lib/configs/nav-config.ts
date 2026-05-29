@@ -207,25 +207,25 @@ export const navConfig: NavGroup[] = [
         items: [
             {
                 label: "Users",
-                href: "/users",
+                href: "/settings/users",
                 icon: "UserCog",
                 permission: PERMISSIONS.USER.VIEW,
             },
             {
                 label: "Roles",
-                href: "/roles",
+                href: "/settings/roles",
                 icon: "ShieldCheck",
                 permission: PERMISSIONS.ROLE.VIEW,
             },
             {
                 label: "Institute",
-                href: "/institute",
+                href: "/settings/institute",
                 icon: "School",
                 permission: PERMISSIONS.INSTITUTE.VIEW,
             },
             {
                 label: "Academic Year",
-                href: "/academic-year",
+                href: "/settings/academic-year",
                 icon: "CalendarDays",
                 permission: PERMISSIONS.ACADEMIC_YEAR.VIEW,
             },
