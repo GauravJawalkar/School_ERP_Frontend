@@ -51,18 +51,20 @@ export default function CreateRoleDrawer({ isOpen, roles, onClose, onSave }: Cre
             <div className="relative w-full max-w-md h-full bg-white border-l border-light-border shadow-2xl flex flex-col justify-between z-10 animate-slide-in">
                 {/* Header */}
                 <div className="p-5 border-b border-light-border flex items-center justify-between">
-                    <div>
-                        <h2 className="text-sm font-bold text-black flex items-center gap-1.5 uppercase tracking-wide">
-                            <ShieldAlert size={14} className="text-black" />
-                            Provision Custom Role
-                        </h2>
-                        <p className="text-[10px] text-black/50 font-medium">Create a custom security template with inherited module permissions.</p>
+                    <div className="flex items-center gap-2">
+                        <ShieldAlert size={12} className="text-black h-10 w-10" />
+                        <div>
+                            <h2 className="text-sm font-semibold text-black flex items-center gap-1.5 uppercase tracking-wide">
+                                Provision Custom Role
+                            </h2>
+                            <p className="text-xs text-black/50">Create a custom security template with inherited module permissions.</p>
+                        </div>
                     </div>
 
                     <button
                         type="button"
                         onClick={onClose}
-                        className="w-8 h-8 rounded-full border border-light-border hover:border-black flex items-center justify-center text-black/50 hover:text-black transition cursor-pointer"
+                        className="w-9 h-8 rounded-full border border-light-border hover:border-black/70 hover:border-2 flex items-center justify-center text-black/50 hover:text-black transition cursor-pointer"
                     >
                         <X size={14} />
                     </button>
@@ -72,7 +74,7 @@ export default function CreateRoleDrawer({ isOpen, roles, onClose, onSave }: Cre
                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 space-y-6">
                     {/* Role Name */}
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-black/70 uppercase tracking-widest block font-mono">
+                        <label className="text-[10px] font-bold text-black/70 uppercase tracking-widest block ">
                             Security Identifier / Role Name
                         </label>
                         <input
@@ -83,14 +85,14 @@ export default function CreateRoleDrawer({ isOpen, roles, onClose, onSave }: Cre
                             onChange={(e) => setName(e.target.value)}
                             className="w-full h-9 px-3 border border-light-border rounded-lg text-xs text-black placeholder-black/30 focus:border-black focus:outline-hidden transition"
                         />
-                        <span className="text-[9px] text-black/40 block leading-tight">
+                        <span className="text-[11px] text-black/40 block leading-tight">
                             Converted dynamically to standard UPPER_SNAKE_CASE on submission.
                         </span>
                     </div>
 
                     {/* Base Template to Inherit */}
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-black/70 uppercase tracking-widest block font-mono">
+                        <label className="text-[10px] font-bold text-black/70 uppercase tracking-widest block ">
                             Inherit Privileges Template
                         </label>
                         <div className="relative">
@@ -109,7 +111,7 @@ export default function CreateRoleDrawer({ isOpen, roles, onClose, onSave }: Cre
                                 ▼
                             </div>
                         </div>
-                        <span className="text-[9px] text-black/40 block leading-tight flex items-center gap-1">
+                        <span className="text-[11px] text-black/40 block leading-tight flex items-center gap-1">
                             <CornerDownRight size={10} />
                             Initial scope copies all permissions matching the inherited baseline role.
                         </span>
@@ -117,7 +119,7 @@ export default function CreateRoleDrawer({ isOpen, roles, onClose, onSave }: Cre
 
                     {/* Description */}
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-black/70 uppercase tracking-widest block font-mono">
+                        <label className="text-[10px] font-bold text-black/70 uppercase tracking-widest block ">
                             Operational Description
                         </label>
                         <textarea
@@ -128,7 +130,7 @@ export default function CreateRoleDrawer({ isOpen, roles, onClose, onSave }: Cre
                             maxLength={250}
                             className="w-full p-3 border border-light-border rounded-lg text-xs text-black placeholder-black/30 focus:border-black focus:outline-hidden transition resize-none"
                         />
-                        <div className="text-right text-[9px] text-black/40 font-mono">
+                        <div className="text-right text-[11px] text-black/40 ">
                             {description.length}/250 characters
                         </div>
                     </div>

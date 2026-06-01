@@ -1,7 +1,7 @@
 "use client";
 
 import { Role } from "./RolesDashboard";
-import { Shield, ShieldAlert, ShieldCheck, UserCheck, KeyRound, Lock, Eye } from "lucide-react";
+import { Shield, ShieldAlert, UserCheck, KeyRound, Eye } from "lucide-react";
 
 interface RoleCardProps {
     role: Role;
@@ -16,72 +16,65 @@ export default function RoleCard({ role, isSelected, onSelect }: RoleCardProps) 
         <button
             type="button"
             onClick={onSelect}
-            className={`w-full text-left p-4 rounded-xl border text-black transition-all duration-300 relative overflow-hidden group cursor-pointer flex flex-col justify-between min-h-[160px] ${
+            className={`w-full text-left p-5 rounded-xl border transition-all duration-300 relative overflow-hidden group cursor-pointer flex flex-col justify-between min-h-[170px] ${
                 isSelected
-                    ? "border-black bg-white shadow-md shadow-neutral-100 ring-1 ring-black/5"
-                    : "border-light-border bg-white hover:border-black/30 hover:shadow-xs"
+                    ? "border-neutral-900 bg-neutral-900 text-white shadow-xl scale-[1.02]"
+                    : "border-light-border bg-white text-black hover:border-black/30 hover:shadow-xs"
             }`}
         >
             {/* Top row */}
-            <div className="space-y-2.5 w-full">
+            <div className="space-y-3 w-full">
                 <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-1.5 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0">
                         {isSystem ? (
-                            <Shield size={14} className="text-black/80 shrink-0" />
+                            <Shield size={14} className={isSelected ? "text-white" : "text-black/80"} />
                         ) : (
-                            <ShieldAlert size={14} className="text-black shrink-0" />
+                            <ShieldAlert size={14} className={isSelected ? "text-white" : "text-black"} />
                         )}
-                        <h3 className="font-bold text-xs truncate uppercase tracking-wide pr-2">
+                        <h3 className={`font-bold text-xs truncate uppercase tracking-wider ${isSelected ? "text-white" : "text-black"}`}>
                             {role.name.replace(/_/g, " ")}
                         </h3>
                     </div>
 
                     <span
-                        className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                            isSystem
-                                ? "bg-neutral-100 text-neutral-600 border border-neutral-200"
-                                : "bg-black text-white"
+                        className={`text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                            isSelected
+                                ? (isSystem ? "bg-white/15 text-white/90 border border-white/20" : "bg-white text-black")
+                                : (isSystem ? "bg-neutral-100 text-neutral-600 border border-neutral-200" : "bg-black text-white")
                         }`}
                     >
                         {isSystem ? "System" : "Custom"}
                     </span>
                 </div>
 
-                <p className="text-[11px] text-black/50 leading-relaxed line-clamp-3">
+                <p className={`text-xs leading-relaxed line-clamp-3 font-normal ${isSelected ? "text-neutral-300" : "text-neutral-500"}`}>
                     {role.description}
                 </p>
             </div>
 
             {/* Bottom details row */}
-            <div className="border-t border-light-border mt-4 pt-3 flex items-center justify-between text-[10px] font-bold text-black/60 w-full">
-                <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                        <KeyRound size={11} className="text-black/50" />
-                        {role.permissionsCount} Permissions
+            <div className={`border-t mt-4 pt-3 flex items-center justify-between text-xs font-semibold w-full ${isSelected ? "border-white/10" : "border-light-border"}`}>
+                <div className="flex items-center gap-3.5">
+                    <span className={`flex items-center gap-1.5 ${isSelected ? "text-neutral-300" : "text-neutral-600"}`}>
+                        <KeyRound size={12} className={isSelected ? "text-neutral-400" : "text-black/45"} />
+                        {role.permissions.length} Permissions
                     </span>
 
-                    <span className="flex items-center gap-1">
-                        <UserCheck size={11} className="text-black/50" />
+                    <span className={`flex items-center gap-1.5 ${isSelected ? "text-neutral-300" : "text-neutral-600"}`}>
+                        <UserCheck size={12} className={isSelected ? "text-neutral-400" : "text-black/45"} />
                         {role.assignedUsersCount} Active Users
                     </span>
                 </div>
 
                 <span
-                    className={`text-[10px] font-bold transition flex items-center gap-1 ${
-                        isSelected ? "text-black" : "text-black/0 group-hover:text-black/40"
+                    className={`text-xs font-bold transition flex items-center gap-1 ${
+                        isSelected ? "text-white" : "text-black/0 group-hover:text-black/60"
                     }`}
                 >
-                    <Eye size={11} />
+                    <Eye size={12} />
                     Inspect Matrix
                 </span>
             </div>
-
-            {/* Subtle decorative background detail */}
-            <div
-                className={`absolute top-0 right-0 w-24 h-24 bg-radial from-neutral-100 to-transparent -mr-6 -mt-6 rounded-full -z-10 opacity-30 transition-all duration-500 group-hover:scale-125 ${
-                    isSelected ? "scale-110 opacity-60" : ""
-                }`}
-            />
         </button>
     );
 }
