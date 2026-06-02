@@ -6,9 +6,17 @@ import { AcademicYear } from "./AcademicYearStats";
 
 interface AcademicYearTableProps {
     years: AcademicYear[];
+    isSuperAdmin: boolean;
+    onToggleActive: (id: number, nextStatus: boolean) => void;
+    updatingId: number | null;
 }
 
-export default function AcademicYearTable({ years = [] }: AcademicYearTableProps) {
+export default function AcademicYearTable({
+    years = [],
+    isSuperAdmin,
+    onToggleActive,
+    updatingId
+}: AcademicYearTableProps) {
     const [searchQuery, setSearchQuery] = useState("");
 
     const filteredYears = years.filter((year) =>
@@ -88,18 +96,51 @@ export default function AcademicYearTable({ years = [] }: AcademicYearTableProps
                                         {formatDate(year.endDate)}
                                     </td>
 
-                                    {/* Status */}
+                                    {/* Status / Toggle Action */}
                                     <td className="py-4 px-6 text-center">
                                         <div className="flex items-center justify-center">
-                                            {year.isActive ? (
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-255 leading-none">
-                                                    <CheckCircle2 size={11} />
-                                                    Active Session
-                                                </span>
+                                            {isSuperAdmin ? (
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        disabled={updatingId !== null}
+                                                        onClick={() => onToggleActive(year.id, !year.isActive)}
+                                                        className={`w-10 h-6 rounded-full p-0.5 transition-all duration-300 focus:outline-hidden cursor-pointer ${
+                                                            year.isActive ? "bg-black" : "bg-neutral-200"
+                                                        } ${updatingId !== null ? "opacity-60 cursor-not-allowed" : ""}`}
+                                                        title={
+                                                            year.isActive
+                                                                ? "Click to deactivate this session"
+                                                                : "Click to activate this session (deactivates others)"
+                                                        }
+                                                    >
+                                                        <div
+                                                            className={`w-5 h-5 rounded-full bg-white transition-transform duration-300 flex items-center justify-center shadow-xs ${
+                                                                year.isActive ? "translate-x-4" : "translate-x-0"
+                                                            }`}
+                                                        >
+                                                            {year.isActive && (
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-black" />
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-black/50">
+                                                        {year.isActive ? "Active" : "Inactive"}
+                                                    </span>
+                                                </div>
                                             ) : (
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold text-neutral-500 bg-neutral-50 border border-neutral-200 leading-none">
-                                                    Inactive
-                                                </span>
+                                                <div>
+                                                    {year.isActive ? (
+                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-255 leading-none">
+                                                            <CheckCircle2 size={11} />
+                                                            Active Session
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold text-neutral-500 bg-neutral-50 border border-neutral-200 leading-none">
+                                                            Inactive
+                                                        </span>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
                                     </td>
