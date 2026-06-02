@@ -5,6 +5,7 @@ import { Search, Mail, Shield, Circle } from "lucide-react";
 
 interface User {
     id: number;
+    userId: string | null;
     firstName: string;
     lastName: string;
     employeeCode: string;
@@ -17,7 +18,7 @@ interface User {
 
 interface SchoolUsersTableProps {
     users: User[];
-    onToggleActive: (id: number, currentStatus: boolean) => void;
+    onToggleActive: (userId: string, currentStatus: boolean) => void;
 }
 
 export default function SchoolUsersTable({
@@ -115,92 +116,105 @@ export default function SchoolUsersTable({
                     </thead>
                     <tbody className="divide-y divide-light-border text-xs">
                         {filteredUsers.length > 0 ? (
-                            filteredUsers.map((user) => (
-                                <tr key={user.id} className="hover:bg-neutral-50/50 transition duration-100">
+                            filteredUsers.map((user) => {
+                                return (
+                                    <tr key={user.userId} className="hover:bg-neutral-50/50 transition duration-100">
 
-                                    {/* Column 1: Profile Details */}
-                                    <td className="p-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-neutral-900 text-white font-bold text-xs flex items-center justify-center border border-light-border">
-                                                {user.firstName[0]}{user.lastName[0]}
-                                            </div>
-                                            <div>
-                                                <span className="font-bold text-black block hover:underline cursor-pointer">
-                                                    {user.firstName} {user.lastName}
-                                                </span>
-                                                <div className="flex items-center gap-2.5 text-[10px] text-black/40 font-medium mt-0.5">
-                                                    <span className="flex items-center gap-0.5">
-                                                        <Mail size={10} />
-                                                        {user.email || "No Email"}
+                                        {/* Column 1: Profile Details */}
+                                        <td className="p-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-neutral-900 text-white font-bold text-xs flex items-center justify-center border border-light-border">
+                                                    {user.firstName[0]}{user.lastName[0]}
+                                                </div>
+                                                <div>
+                                                    <span className="font-bold text-black block hover:underline cursor-pointer">
+                                                        {user.firstName} {user.lastName}
                                                     </span>
-                                                    <span>•</span>
-                                                    <span>{user.phone || "No Phone"}</span>
+                                                    <div className="flex items-center gap-2.5 text-[10px] text-black/40 font-medium mt-0.5">
+                                                        <span className="flex items-center gap-0.5">
+                                                            <Mail size={10} />
+                                                            {user.email || "No Email"}
+                                                        </span>
+                                                        <span>•</span>
+                                                        <span>{user.phone || "No Phone"}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
+                                        </td>
 
-                                    {/* Column 2: Employee Code */}
-                                    <td className="p-4">
-                                        <span className="font-mono font-bold text-black/60 bg-gray-50 border border-light-border px-2 py-0.5 rounded-md text-[10px]">
-                                            {user.employeeCode}
-                                        </span>
-                                    </td>
-
-                                    {/* Column 3: Designation & Role */}
-                                    <td className="p-4">
-                                        <div className="flex items-center gap-2">
-                                            <span className={`text-[9px] px-2 py-0.5 font-bold uppercase border rounded-md tracking-wider ${getRoleBadge(user.roleName)}`}>
-                                                {user.roleName}
+                                        {/* Column 2: Employee Code */}
+                                        <td className="p-4">
+                                            <span className="font-mono font-bold text-black/60 bg-gray-50 border border-light-border px-2 py-0.5 rounded-md text-[10px]">
+                                                {user.employeeCode}
                                             </span>
-                                            <span className="text-[11px] text-black/55 font-medium">
-                                                {user.designation}
-                                            </span>
-                                        </div>
-                                    </td>
+                                        </td>
 
-                                    {/* Column 4: Login Status */}
-                                    <td className="p-4">
-                                        <div className="flex items-center gap-1.5">
-                                            {user.isActive ? (
-                                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
-                                                    <Circle size={6} className="fill-green-600 text-green-600" />
-                                                    Active
+                                        {/* Column 3: Designation & Role */}
+                                        <td className="p-4">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`text-[9px] px-2 py-0.5 font-bold uppercase border rounded-md tracking-wider ${getRoleBadge(user.roleName)}`}>
+                                                    {user.roleName}
                                                 </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
-                                                    <Circle size={6} className="fill-red-600 text-red-600 animate-pulse" />
-                                                    Suspended
+                                                <span className="text-[11px] text-black/55 font-medium">
+                                                    {user.designation}
                                                 </span>
-                                            )}
-                                        </div>
-                                    </td>
+                                            </div>
+                                        </td>
 
-                                    {/* Column 5: Controls */}
-                                    <td className="p-4 text-right">
-                                        <div className="flex items-center justify-end gap-1.5">
-                                            {user.isActive ? (
-                                                <button
-                                                    onClick={() => onToggleActive(user.id, true)}
-                                                    title="Suspend Credentials"
-                                                    className="h-8 px-2.5 rounded-lg border border-red-100 bg-red-50/20 text-red-600 hover:bg-red-50 flex items-center gap-1 text-xs font-bold hover:text-red-700 transition cursor-pointer"
-                                                >
-                                                    Suspend
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={() => onToggleActive(user.id, false)}
-                                                    title="Restore Credentials"
-                                                    className="h-8 px-2.5 rounded-lg border border-green-100 bg-green-50/20 text-green-600 hover:bg-green-50 flex items-center gap-1 text-xs font-bold hover:text-green-700 transition cursor-pointer"
-                                                >
-                                                    Activate
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
+                                        {/* Column 4: Login Status */}
+                                        <td className="p-4">
+                                            <div className="flex items-center gap-1.5">
+                                                {user.isActive ? (
+                                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
+                                                        <Circle size={6} className="fill-green-600 text-green-600" />
+                                                        Active
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
+                                                        <Circle size={6} className="fill-red-600 text-red-600 animate-pulse" />
+                                                        Suspended
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
 
-                                </tr>
-                            ))
+                                        {/* Column 5: Controls */}
+                                        <td className="p-4 text-right">
+                                            <div className="flex items-center justify-end gap-1.5">
+                                                {user.userId ? (
+                                                    user.isActive ? (
+                                                        <button
+                                                            onClick={() =>
+                                                                user.userId &&
+                                                                onToggleActive(user.userId, true)
+                                                            }
+                                                            title="Suspend Credentials"
+                                                            className="h-8 px-2.5 rounded-lg border border-red-100 bg-red-50/20 text-red-600 hover:bg-red-50 flex items-center gap-1 text-xs font-bold hover:text-red-700 transition cursor-pointer"
+                                                        >
+                                                            Suspend
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() =>
+                                                                user.userId && onToggleActive(user.userId, false)}
+                                                            title="Restore Credentials"
+                                                            className="h-8 px-2.5 rounded-lg border border-green-100 bg-green-50/20 text-green-600 hover:bg-green-50 flex items-center gap-1 text-xs font-bold hover:text-green-700 transition cursor-pointer"
+                                                        >
+                                                            Activate
+                                                        </button>
+                                                    )
+                                                ) : (
+                                                    <span className="text-[10px] text-black/35 font-medium italic select-none">
+                                                        Read-only Profile
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                )
+                            }
+                            )
                         ) : (
                             <tr>
                                 <td colSpan={5} className="p-12 text-center text-black/40">
@@ -219,7 +233,7 @@ export default function SchoolUsersTable({
             {/* Pagination / Table Footer summary */}
             <div className="p-4 border-t border-light-border bg-gray-50/30 flex items-center justify-between text-[11px] font-medium text-black/45">
                 <span>Showing {filteredUsers.length} of {users.length} accounts configured</span>
-                <span>Security Sandbox Mode Active</span>
+                <span>System Directory Active</span>
             </div>
 
         </div>

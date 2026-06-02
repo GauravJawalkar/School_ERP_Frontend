@@ -15,6 +15,7 @@ import SchoolUserDrawer from "./SchoolUserDrawer";
 
 interface User {
     id: number;
+    userId: string | null;
     firstName: string;
     lastName: string;
     employeeCode: string;
@@ -36,15 +37,8 @@ export default function SchoolUsersDashboard() {
         queryKey: ["getAllSchools"],
         queryFn: async () => {
             if (!isSuperAdmin) return [];
-            try {
-                const response = await ApiClient.get(`${BASE_URL}/institute/allSchools`);
-                return response.data?.data || [];
-            } catch {
-                return [
-                    { schoolId: 1, schoolName: "High Tech Academy", schoolSlug: "high-tech" },
-                    { schoolId: 2, schoolName: "Greenwood International", schoolSlug: "greenwood" }
-                ];
-            }
+            const response = await ApiClient.get(`${BASE_URL}/institute/allSchools`);
+            return response.data?.data || [];
         },
         enabled: isSuperAdmin
     });
@@ -57,36 +51,20 @@ export default function SchoolUsersDashboard() {
 
     // Query: Fetch All Institute Staff & Users
     const fetchSchoolUsers = async (): Promise<User[]> => {
-        try {
-            let url = `${BASE_URL}/admin/directory`;
-            const params = new URLSearchParams();
+        let url = `${BASE_URL}/admin/directory`;
+        const params = new URLSearchParams();
 
-            if (isSuperAdmin && selectedSchoolSlug) {
-                const currentSchool = schools.find((s: any) => s.schoolSlug === selectedSchoolSlug);
-                if (currentSchool) {
-                    params.append("instituteId", currentSchool.schoolId.toString());
-                }
+        if (isSuperAdmin && selectedSchoolSlug) {
+            const currentSchool = schools.find((s: any) => s.schoolSlug === selectedSchoolSlug);
+            if (currentSchool) {
+                params.append("instituteId", currentSchool.schoolId.toString());
             }
-
-            const queryString = params.toString();
-            const finalUrl = queryString ? `${url}?${queryString}` : url;
-
-            const response = await ApiClient.get(finalUrl);
-            return response.data?.data || [];
-        } catch {
-            // Elegant real-world fallback dataset covering all roles
-            return [
-                { id: 101, firstName: "Aravind", lastName: "Sharma", employeeCode: "EMP-2041", designation: "Senior Mathematics HOD", email: "aravind.sharma@layernlooms.com", phone: "9812409821", roleName: "TEACHER", isActive: true },
-                { id: 102, firstName: "Kavitha", lastName: "Nair", employeeCode: "EMP-2042", designation: "Financial Controller", email: "kavitha.nair@layernlooms.com", phone: "9901452140", roleName: "ACCOUNTANT", isActive: true },
-                { id: 103, firstName: "Rohan", lastName: "Verma", employeeCode: "EMP-2043", designation: "Chief System Administrator", email: "rohan.admin@layernlooms.com", phone: "8890214532", roleName: "SCHOOL_ADMIN", isActive: true },
-                { id: 104, firstName: "Priya", lastName: "Deshmukh", employeeCode: "EMP-2044", designation: "Head Librarian", email: "priya.desh@layernlooms.com", phone: "7701428563", roleName: "LIBRARIAN", isActive: false },
-                { id: 105, firstName: "Sunita", lastName: "Rao", employeeCode: "EMP-2045", designation: "Senior Front Receptionist", email: "sunita.rao@layernlooms.com", phone: "9124093214", roleName: "RECEPTIONIST", isActive: true },
-                { id: 106, firstName: "Deepak", lastName: "Raj", employeeCode: "EMP-2046", designation: "Fleet Operations Manager", email: "deepak.transport@layernlooms.com", phone: "9988223344", roleName: "TRANSPORT_MANAGER", isActive: true },
-                { id: 501, firstName: "Aarav", lastName: "Mehta", employeeCode: "ADM-9041", designation: "Student (Roll No: 03)", email: "aarav.mehta@student.layernlooms.com", phone: "N/A", roleName: "STUDENT", isActive: true },
-                { id: 502, firstName: "Ishaan", lastName: "Patel", employeeCode: "ADM-9042", designation: "Student (Roll No: 14)", email: "ishaan.patel@student.layernlooms.com", phone: "N/A", roleName: "STUDENT", isActive: true },
-                { id: 1501, firstName: "Guardian of", lastName: "Aarav Mehta", employeeCode: "PAR-ADM-9041", designation: "Parent / Guardian", email: "aarav.parent@layernlooms.com", phone: "N/A", roleName: "PARENT", isActive: true }
-            ];
         }
+
+        const queryString = params.toString();
+        const finalUrl = queryString ? `${url}?${queryString}` : url;
+        const response = await ApiClient.get(finalUrl);
+        return response.data?.data || [];
     };
 
     const { data: users = [], isLoading, isRefetching, refetch } = useQuery({
@@ -108,9 +86,43 @@ export default function SchoolUsersDashboard() {
         onError: (err: any) => {
             const serverMsg = err?.response?.data?.message || "Failed to submit staff details.";
             toast.error(serverMsg);
+        }
+    });
 
-            // Mock success failover inside development sandbox
-            toast.success("User registered successfully (Mock mode failover)!");
+    // Mutation: Update User status
+    const updateUserStatusMutation = useMutation({
+        mutationFn: async (payload: { userId: string; isActive: boolean }) => {
+            const response = await ApiClient.patch(`${BASE_URL}/institute/updateUserStatus`, payload);
+            return response.data;
+        },
+        onMutate: async (variables) => {
+            // Cancel outgoing refetches
+            await queryClient.cancelQueries({ queryKey: ["getSchoolUsers"] });
+
+            // Snapshot the previous query data
+            const previousUsers = queryClient.getQueryData<User[]>(["getSchoolUsers"]);
+
+            // Optimistically update the list
+            queryClient.setQueryData<User[]>(["getSchoolUsers"], (old = []) => {
+                return old.map((user) =>
+                    user.userId === variables.userId ? { ...user, isActive: variables.isActive } : user
+                );
+            });
+
+            return { previousUsers };
+        },
+        onError: (err: any, variables, context) => {
+            // Roll back if error occurs
+            if (context?.previousUsers) {
+                queryClient.setQueryData(["getSchoolUsers"], context.previousUsers);
+            }
+            const serverMsg = err?.response?.data?.message || "Failed to update user status.";
+            toast.error(serverMsg);
+        },
+        onSuccess: (data, variables) => {
+            toast.success(data?.message || `User credentials ${variables.isActive ? "reactivated" : "suspended"} successfully!`);
+        },
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["getSchoolUsers"] });
         }
     });
@@ -126,22 +138,9 @@ export default function SchoolUsersDashboard() {
         createStaffMutation.mutate(payload);
     };
 
-    // Toggle user login access (Mock simulation / Endpoint call placeholder)
-    const handleToggleActive = (id: number, currentStatus: boolean) => {
-        toast.promise(
-            Promise.resolve(true), // Simulating instant response
-            {
-                loading: "Updating system access...",
-                success: () => {
-                    // Update cache client state directly for immediate visual feedback
-                    queryClient.setQueryData(["getSchoolUsers"], (old: User[] = []) => {
-                        return old.map(user => user.id === id ? { ...user, isActive: !currentStatus } : user);
-                    });
-                    return `User credentials ${currentStatus ? "suspended" : "reactivated"} successfully!`;
-                },
-                error: "Failed to switch user status state."
-            }
-        );
+    // Toggle user login access via backend patch api
+    const handleToggleActive = (userId: string, currentStatus: boolean) => {
+        updateUserStatusMutation.mutate({ userId, isActive: !currentStatus });
     };
 
     if (isLoading) {
