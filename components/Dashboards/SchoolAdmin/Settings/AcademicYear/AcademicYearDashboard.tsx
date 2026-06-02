@@ -6,12 +6,13 @@ import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
 import { CanAccess } from "@/components/Auth/CanAccess";
 import { usePermission } from "@/hooks/usePermission";
-import { Loader2, Plus, Calendar, RefreshCw, AlertCircle } from "lucide-react";
+import { Loader2, Plus, RefreshCw, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
 
-import AcademicYearStats, { AcademicYear } from "./AcademicYearStats";
+import AcademicYearStats from "./AcademicYearStats";
 import AcademicYearTable from "./AcademicYearTable";
 import CreateAcademicYearDrawer from "./CreateAcademicYearDrawer";
+import { AcademicYear } from "@/interfaces/interface";
 
 export default function AcademicYearDashboard() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);

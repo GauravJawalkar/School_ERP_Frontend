@@ -1,14 +1,7 @@
 "use client";
 
 import { Calendar, CalendarDays, CheckCircle2, Clock } from "lucide-react";
-
-export interface AcademicYear {
-    id: number;
-    name: string;
-    startDate: string;
-    endDate: string;
-    isActive: boolean;
-}
+import { AcademicYear } from "@/interfaces/interface";
 
 interface AcademicYearStatsProps {
     years: AcademicYear[];

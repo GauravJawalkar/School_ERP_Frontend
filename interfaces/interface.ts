@@ -306,3 +306,18 @@ export interface School {
 export interface ActiveSubscriptionsTableProps {
     schools: School[];
 }
+
+export interface AcademicYear {
+    id: number;
+    name: string;
+    startDate: string;
+    endDate: string;
+    isActive: boolean;
+}
+
+export interface AcademicYearTableProps {
+    years: AcademicYear[];
+    isSuperAdmin: boolean;
+    onToggleActive: (id: number, nextStatus: boolean) => void;
+    updatingId: number | null;
+}

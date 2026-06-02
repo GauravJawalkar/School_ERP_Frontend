@@ -2,14 +2,9 @@
 
 import { useState } from "react";
 import { Search, Calendar, CheckCircle2, AlertCircle } from "lucide-react";
-import { AcademicYear } from "./AcademicYearStats";
-
-interface AcademicYearTableProps {
-    years: AcademicYear[];
-    isSuperAdmin: boolean;
-    onToggleActive: (id: number, nextStatus: boolean) => void;
-    updatingId: number | null;
-}
+import { formatDate } from "@/lib/helpers/formatDate";
+import { AcademicYearTableProps } from "@/interfaces/interface";
+import { CanAccess } from "@/components/Auth/CanAccess";
 
 export default function AcademicYearTable({
     years = [],
@@ -22,20 +17,6 @@ export default function AcademicYearTable({
     const filteredYears = years.filter((year) =>
         year.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
-    // Format Date beautifully
-    const formatDate = (dateStr: string) => {
-        if (!dateStr) return "N/A";
-        try {
-            return new Date(dateStr).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-            });
-        } catch {
-            return dateStr;
-        }
-    };
 
     return (
         <div className="bg-white border border-light-border rounded-xl shadow-xs overflow-hidden">
@@ -76,9 +57,8 @@ export default function AcademicYearTable({
                             filteredYears.map((year) => (
                                 <tr
                                     key={year.id}
-                                    className={`group text-xs text-black/85 transition-colors hover:bg-neutral-50/50 ${
-                                        year.isActive ? "bg-emerald-50/5 hover:bg-emerald-50/10" : "bg-white"
-                                    }`}
+                                    className={`group text-xs text-black/85 transition-colors hover:bg-neutral-50/50 ${year.isActive ? "bg-emerald-50/5 hover:bg-emerald-50/10" : "bg-white"
+                                        }`}
                                 >
                                     {/* Name */}
                                     <td className="py-4 px-6 font-semibold flex items-center gap-2">
@@ -100,34 +80,36 @@ export default function AcademicYearTable({
                                     <td className="py-4 px-6 text-center">
                                         <div className="flex items-center justify-center">
                                             {isSuperAdmin ? (
-                                                <div className="flex items-center gap-2">
-                                                    <button
-                                                        type="button"
-                                                        disabled={updatingId !== null}
-                                                        onClick={() => onToggleActive(year.id, !year.isActive)}
-                                                        className={`w-10 h-6 rounded-full p-0.5 transition-all duration-300 focus:outline-hidden cursor-pointer ${
-                                                            year.isActive ? "bg-black" : "bg-neutral-200"
-                                                        } ${updatingId !== null ? "opacity-60 cursor-not-allowed" : ""}`}
-                                                        title={
-                                                            year.isActive
-                                                                ? "Click to deactivate this session"
-                                                                : "Click to activate this session (deactivates others)"
-                                                        }
-                                                    >
-                                                        <div
-                                                            className={`w-5 h-5 rounded-full bg-white transition-transform duration-300 flex items-center justify-center shadow-xs ${
-                                                                year.isActive ? "translate-x-4" : "translate-x-0"
-                                                            }`}
+                                                <CanAccess
+                                                    role="SUPER_ADMIN"
+                                                    permission='academic_year.update'>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            disabled={updatingId !== null}
+                                                            onClick={() => onToggleActive(year.id, !year.isActive)}
+                                                            className={`w-10 h-6 rounded-full p-0.5 transition-all duration-300 focus:outline-hidden cursor-pointer ${year.isActive ? "bg-black" : "bg-neutral-200"
+                                                                } ${updatingId !== null ? "opacity-60 cursor-not-allowed" : ""}`}
+                                                            title={
+                                                                year.isActive
+                                                                    ? "Click to deactivate this session"
+                                                                    : "Click to activate this session (deactivates others)"
+                                                            }
                                                         >
-                                                            {year.isActive && (
-                                                                <div className="w-1.5 h-1.5 rounded-full bg-black" />
-                                                            )}
-                                                        </div>
-                                                    </button>
-                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-black/50">
-                                                        {year.isActive ? "Active" : "Inactive"}
-                                                    </span>
-                                                </div>
+                                                            <div
+                                                                className={`w-5 h-5 rounded-full bg-white transition-transform duration-300 flex items-center justify-center shadow-xs ${year.isActive ? "translate-x-4" : "translate-x-0"
+                                                                    }`}
+                                                            >
+                                                                {year.isActive && (
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-black" />
+                                                                )}
+                                                            </div>
+                                                        </button>
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider text-black/50">
+                                                            {year.isActive ? "Active" : "Inactive"}
+                                                        </span>
+                                                    </div>
+                                                </CanAccess>
                                             ) : (
                                                 <div>
                                                     {year.isActive ? (
