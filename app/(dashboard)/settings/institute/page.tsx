@@ -1,9 +1,14 @@
-import React from 'react'
+import InstituteDashboard from "@/components/Dashboards/SchoolAdmin/Settings/Institute/InstituteDashboard";
 
-const page = () => {
+export const metadata = {
+    title: "Campus Configuration | School ERP",
+    description: "Manage global school settings, structure directories, modify licensing, and edit contact properties.",
+};
+
+export default function InstituteSettingsPage() {
     return (
-        <div>page</div>
-    )
+        <div>
+            <InstituteDashboard />
+        </div>
+    );
 }
-
-export default page

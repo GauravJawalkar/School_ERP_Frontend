@@ -61,7 +61,7 @@ export default function TableActionMenu({ actions }: { actions: Action[] }) {
                 <div
                     ref={menuRef}  // ← attach ref to the portal div
                     style={menuStyle}
-                    className="min-w-30 bg-white rounded-md shadow-lg border border-light-border text-sm p-1">
+                    className="min-w-30 bg-white rounded-md shadow-lg border border-light-border text-xs p-1">
                     {actions.map((action, i) => (
                         <button
                             key={i}
