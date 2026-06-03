@@ -158,7 +158,7 @@ export default function AddSectionDrawer({
                                 placeholder={classCapacity ? `Max available: ${classCapacity - currentSections.reduce((acc, curr) => acc + (curr.capacity || 0), 0)} seats` : "e.g. 30"}
                                 value={capacity}
                                 onChange={(e) => setCapacity(e.target.value)}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold font-medium"
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold"
                             />
                             {classCapacity && (
                                 <p className="text-[10px] text-black/45 font-medium">
@@ -177,7 +177,7 @@ export default function AddSectionDrawer({
                                 placeholder="e.g. Room-102"
                                 value={roomNumber}
                                 onChange={(e) => setRoomNumber(e.target.value)}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold font-medium"
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold"
                             />
                         </div>
 

@@ -134,7 +134,7 @@ export default function EditClassDrawer({
                                 placeholder="e.g. 10A, 11-Science, Prep-B"
                                 value={classNameInput}
                                 onChange={(e) => setClassNameInput(e.target.value)}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold font-medium"
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold"
                             />
                         </div>
 

@@ -69,18 +69,16 @@ export default function AddFeeCategoryDrawer({
         <div className="fixed inset-0 z-50 overflow-hidden">
             {/* Backdrop */}
             <div
-                className={`absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 ${
-                    animateIn ? "opacity-100" : "opacity-0"
-                }`}
+                className={`absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 ${animateIn ? "opacity-100" : "opacity-0"
+                    }`}
                 onClick={handleClose}
             />
 
             <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
                 {/* Slide-over panel */}
                 <div
-                    className={`w-screen max-w-lg bg-white border-l border-light-border shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out ${
-                        animateIn ? "translate-x-0" : "translate-x-full"
-                    }`}
+                    className={`w-screen max-w-lg bg-white border-l border-light-border shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out ${animateIn ? "translate-x-0" : "translate-x-full"
+                        }`}
                 >
                     {/* Header */}
                     <div className="p-6 border-b border-light-border flex items-center justify-between">
@@ -114,7 +112,7 @@ export default function AddFeeCategoryDrawer({
                                 placeholder="e.g. Tuition Fee, Hostel Rent"
                                 value={feeName}
                                 onChange={(e) => setFeeName(e.target.value)}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold font-medium"
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold"
                             />
                         </div>
 

@@ -243,7 +243,7 @@ export default function MapClassFeeDrawer({
                                 </select>
                             </div>
                             <div className="space-y-1.5 flex flex-col justify-end">
-                                <label className="flex items-start gap-3 cursor-pointer p-2.5 border border-light-border rounded-lg bg-gray-50/30 hover:bg-gray-50/60 transition h-10 items-center select-none font-semibold">
+                                <label className="flex gap-3 cursor-pointer p-2.5 border border-light-border rounded-lg bg-gray-50/30 hover:bg-gray-50/60 transition h-10 items-center select-none font-semibold">
                                     <input
                                         type="checkbox"
                                         checked={isCompulsory}
