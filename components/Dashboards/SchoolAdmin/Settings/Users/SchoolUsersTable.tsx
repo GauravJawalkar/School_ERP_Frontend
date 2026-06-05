@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Search, Mail, Shield, Circle } from "lucide-react";
+import Link from "next/link";
 
 interface User {
     id: number;
@@ -108,7 +109,7 @@ export default function SchoolUsersTable({
                     <thead>
                         <tr className="border-b border-light-border bg-gray-50/50 text-[10px] font-bold text-black/50 uppercase tracking-wider">
                             <th className="p-4">User profile details</th>
-                            <th className="p-4">Employee ID</th>
+                            <th className="p-4">Contact</th>
                             <th className="p-4">Access Role & Designation</th>
                             <th className="p-4">Login status</th>
                             <th className="p-4 text-right">Access Controls</th>
@@ -118,7 +119,7 @@ export default function SchoolUsersTable({
                         {filteredUsers.length > 0 ? (
                             filteredUsers.map((user) => {
                                 return (
-                                    <tr key={user.userId} className="hover:bg-neutral-50/50 transition duration-100">
+                                    <tr key={user.userId || `usr-${user.id}`} className="hover:bg-neutral-50/50 transition duration-100">
 
                                         {/* Column 1: Profile Details */}
                                         <td className="p-4">
@@ -135,8 +136,6 @@ export default function SchoolUsersTable({
                                                             <Mail size={10} />
                                                             {user.email || "No Email"}
                                                         </span>
-                                                        <span>•</span>
-                                                        <span>{user.phone || "No Phone"}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -144,20 +143,18 @@ export default function SchoolUsersTable({
 
                                         {/* Column 2: Employee Code */}
                                         <td className="p-4">
-                                            <span className="font-mono font-bold text-black/60 bg-gray-50 border border-light-border px-2 py-0.5 rounded-md text-[10px]">
-                                                {user.employeeCode}
-                                            </span>
+                                            <Link href={`tel:${user.phone}`} className="font-medium text-black/60 hover:text-black px-2 py-0.5 rounded-md text-xs">
+                                                {user.phone || "No Phone"}
+                                            </Link>
                                         </td>
 
                                         {/* Column 3: Designation & Role */}
                                         <td className="p-4">
                                             <div className="flex items-center gap-2">
-                                                <span className={`text-[9px] px-2 py-0.5 font-bold uppercase border rounded-md tracking-wider ${getRoleBadge(user.roleName)}`}>
+                                                <span className={`text-[9px] px-2 py-0.5 font-semibold uppercase border rounded-md tracking-wider ${getRoleBadge(user.roleName)}`}>
                                                     {user.roleName}
                                                 </span>
-                                                <span className="text-[11px] text-black/55 font-medium">
-                                                    {user.designation}
-                                                </span>
+
                                             </div>
                                         </td>
 
@@ -165,7 +162,7 @@ export default function SchoolUsersTable({
                                         <td className="p-4">
                                             <div className="flex items-center gap-1.5">
                                                 {user.isActive ? (
-                                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
+                                                    <span className="inline-flex items-center gap-1 text-xs font-normal text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
                                                         <Circle size={6} className="fill-green-600 text-green-600" />
                                                         Active
                                                     </span>
