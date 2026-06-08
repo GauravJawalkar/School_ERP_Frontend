@@ -248,7 +248,7 @@ export default function UserProfileDrawer({ isOpen, onClose, user }: UserProfile
                                     <button
                                         type="button"
                                         onClick={() => setIsEditing(true)}
-                                        className="text-[10px] font-bold text-black hover:opacity-70 flex items-center gap-1 cursor-pointer"
+                                        className="text-[11px] font-medium text-black hover:opacity-70 flex items-center gap-1 cursor-pointer"
                                     >
                                         <Edit2 size={10} />
                                         Modify Profile
@@ -262,7 +262,7 @@ export default function UserProfileDrawer({ isOpen, onClose, user }: UserProfile
                                         <Mail size={12} className="text-black/40" />
                                         Email Address
                                     </span>
-                                    <span className="font-bold text-black">{user?.email || "N/A"}</span>
+                                    <span className="font-medium text-black">{user?.email || "N/A"}</span>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 rounded-lg bg-neutral-50/50 border border-light-border/60">
@@ -270,7 +270,7 @@ export default function UserProfileDrawer({ isOpen, onClose, user }: UserProfile
                                         <Phone size={12} className="text-black/40" />
                                         Phone Number
                                     </span>
-                                    <span className="font-bold text-black">{user?.phone || "N/A"}</span>
+                                    <span className="font-medium text-black">{user?.phone || "N/A"}</span>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 rounded-lg bg-neutral-50/50 border border-light-border/60">
@@ -278,7 +278,7 @@ export default function UserProfileDrawer({ isOpen, onClose, user }: UserProfile
                                         <User size={12} className="text-black/40" />
                                         Gender Profile
                                     </span>
-                                    <span className="font-bold text-black capitalize">{user?.gender?.toLowerCase() || "N/A"}</span>
+                                    <span className="font-medium text-black capitalize">{user?.gender?.toLowerCase() || "N/A"}</span>
                                 </div>
                             </div>
 
