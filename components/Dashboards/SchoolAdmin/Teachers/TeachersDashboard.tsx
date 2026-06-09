@@ -47,6 +47,16 @@ export default function TeachersDashboard() {
         enabled: isSuperAdmin
     });
 
+    // 1b. Query: Fetch School details (to get classes & sections and subjects)
+    const { data: schoolDetails } = useQuery({
+        queryKey: ["getSchoolDetails", currentSchoolSlug],
+        queryFn: async () => {
+            const response = await ApiClient.get(`${BASE_URL}/institute/${currentSchoolSlug}`);
+            return response.data?.data;
+        },
+        enabled: !!currentSchoolSlug
+    });
+
     // 2. Query: Fetch Teachers list
     const {
         data: teachers = [],
@@ -267,6 +277,7 @@ export default function TeachersDashboard() {
                     onSubmit={handleFormSubmit}
                     isSubmitting={createTeacherMutation.isPending || updateTeacherMutation.isPending}
                     teacher={selectedTeacher}
+                    classes={schoolDetails?.classes || []}
                 />
 
             </div>

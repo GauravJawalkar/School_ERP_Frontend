@@ -22,6 +22,8 @@ interface TeacherData {
     majorSubjects?: string[];
     isClassTeacher: boolean;
     isActive?: boolean;
+    classTeacherFor?: any[];
+    subjectTeacherFor?: any[];
 }
 
 interface CreateEditTeacherDrawerProps {
@@ -30,6 +32,7 @@ interface CreateEditTeacherDrawerProps {
     onSubmit: (data: any) => void;
     isSubmitting: boolean;
     teacher: TeacherData | null;
+    classes: any[];
 }
 
 export default function CreateEditTeacherDrawer({
@@ -37,7 +40,8 @@ export default function CreateEditTeacherDrawer({
     onClose,
     onSubmit,
     isSubmitting,
-    teacher
+    teacher,
+    classes
 }: CreateEditTeacherDrawerProps) {
     const isEditMode = !!teacher;
 
@@ -61,6 +65,18 @@ export default function CreateEditTeacherDrawer({
     const [qualificationInput, setQualificationInput] = useState("");
     const [subjectInput, setSubjectInput] = useState("");
 
+    // Academic allocations state
+    const [classTeacherSections, setClassTeacherSections] = useState<any[]>([]);
+    const [subjectTeacherAllocations, setSubjectTeacherAllocations] = useState<any[]>([]);
+
+    // Dropdown selection states
+    const [selectedClassIdForCT, setSelectedClassIdForCT] = useState("");
+    const [selectedSectionIdForCT, setSelectedSectionIdForCT] = useState("");
+
+    const [selectedClassIdForSub, setSelectedClassIdForSub] = useState("");
+    const [selectedSectionIdForSub, setSelectedSectionIdForSub] = useState("");
+    const [selectedSubjectIdForSub, setSelectedSubjectIdForSub] = useState("");
+
     // Populate state on edit
     useEffect(() => {
         if (isOpen) {
@@ -80,6 +96,8 @@ export default function CreateEditTeacherDrawer({
                 setMajorSubjects(Array.isArray(teacher.majorSubjects) ? teacher.majorSubjects : []);
                 setIsClassTeacher(!!teacher.isClassTeacher);
                 setIsActive(teacher.isActive !== false);
+                setClassTeacherSections(teacher.classTeacherFor || []);
+                setSubjectTeacherAllocations(teacher.subjectTeacherFor || []);
             } else {
                 setFirstName("");
                 setLastName("");
@@ -96,9 +114,16 @@ export default function CreateEditTeacherDrawer({
                 setMajorSubjects([]);
                 setIsClassTeacher(false);
                 setIsActive(true);
+                setClassTeacherSections([]);
+                setSubjectTeacherAllocations([]);
             }
             setQualificationInput("");
             setSubjectInput("");
+            setSelectedClassIdForCT("");
+            setSelectedSectionIdForCT("");
+            setSelectedClassIdForSub("");
+            setSelectedSectionIdForSub("");
+            setSelectedSubjectIdForSub("");
         }
     }, [teacher, isOpen]);
 
@@ -173,7 +198,8 @@ export default function CreateEditTeacherDrawer({
             salaryBasic,
             qualification,
             majorSubjects,
-            isClassTeacher,
+            classTeacherSections: classTeacherSections.map(c => ({ classId: Number(c.classId), sectionId: Number(c.sectionId) })),
+            subjectTeacherAllocations: subjectTeacherAllocations.map(s => ({ classId: Number(s.classId), sectionId: Number(s.sectionId), subjectId: Number(s.subjectId) })),
             isActive
         };
 
@@ -459,23 +485,220 @@ export default function CreateEditTeacherDrawer({
 
                     <hr className="border-light-border my-2" />
 
-                    {/* Class Teacher Toggle */}
-                    <div className="flex items-center justify-between py-1">
+                    {/* Class Teacher Assignments */}
+                    <div className="space-y-3 pt-3 border-t border-light-border">
                         <div>
-                            <span className="text-xs font-semibold text-black block">Class Teacher Status</span>
-                            <span className="text-[10px] text-black/50 block">Designates whether this teacher is assigned as a class teacher.</span>
+                            <span className="text-xs font-semibold text-black block">Class Teacher Assignment</span>
+                            <span className="text-[10px] text-black/50 block">Allocate this teacher to be class teacher for specific sections.</span>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => setIsClassTeacher(!isClassTeacher)}
-                            className={`w-10 h-5.5 rounded-full p-0.5 transition-colors duration-200 cursor-pointer ${
-                                isClassTeacher ? "bg-black" : "bg-neutral-200"
-                            }`}
-                        >
-                            <div className={`w-4.5 h-4.5 rounded-full bg-white shadow-xs transition-transform duration-200 ${
-                                isClassTeacher ? "translate-x-4.5" : "translate-x-0"
-                            }`} />
-                        </button>
+
+                        <div className="flex gap-2">
+                            <div className="flex-1 grid grid-cols-2 gap-2">
+                                <select
+                                    value={selectedClassIdForCT}
+                                    onChange={(e) => {
+                                        setSelectedClassIdForCT(e.target.value);
+                                        setSelectedSectionIdForCT("");
+                                    }}
+                                    className="h-9 px-2.5 border border-light-border rounded-lg text-xs text-black focus:border-black focus:outline-hidden transition bg-white font-medium cursor-pointer"
+                                >
+                                    <option value="">Select Class...</option>
+                                    {classes.map((cls: any) => (
+                                        <option key={cls.id} value={cls.id}>
+                                            {cls.className}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <select
+                                    value={selectedSectionIdForCT}
+                                    onChange={(e) => setSelectedSectionIdForCT(e.target.value)}
+                                    disabled={!selectedClassIdForCT}
+                                    className="h-9 px-2.5 border border-light-border rounded-lg text-xs text-black focus:border-black focus:outline-hidden transition bg-white font-medium cursor-pointer disabled:opacity-50"
+                                >
+                                    <option value="">Select Section...</option>
+                                    {classes
+                                        .find((cls: any) => String(cls.id) === selectedClassIdForCT)
+                                        ?.sections?.map((sec: any) => (
+                                            <option key={sec.id} value={sec.id}>
+                                                Sec {sec.name}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (!selectedClassIdForCT || !selectedSectionIdForCT) return;
+                                    const cls = classes.find((c: any) => String(c.id) === selectedClassIdForCT);
+                                    const sec = cls?.sections?.find((s: any) => String(s.id) === selectedSectionIdForCT);
+                                    if (!cls || !sec) return;
+
+                                    // Avoid duplicates
+                                    if (classTeacherSections.some((item: any) => String(item.sectionId) === selectedSectionIdForCT)) {
+                                        toast.error("Teacher is already assigned to this section");
+                                        return;
+                                    }
+
+                                    setClassTeacherSections([
+                                        ...classTeacherSections,
+                                        {
+                                            classId: Number(selectedClassIdForCT),
+                                            sectionId: Number(selectedSectionIdForCT),
+                                            className: cls.className,
+                                            sectionName: sec.name
+                                        }
+                                    ]);
+                                    setSelectedClassIdForCT("");
+                                    setSelectedSectionIdForCT("");
+                                }}
+                                className="h-9 px-3 border border-light-border hover:border-black/70 text-black text-xs font-semibold rounded-lg bg-neutral-50 transition cursor-pointer flex items-center justify-center gap-1 shrink-0"
+                            >
+                                <Plus size={12} />
+                                Assign
+                            </button>
+                        </div>
+
+                        {/* List of class teacher assignments */}
+                        <div className="flex flex-wrap gap-1.5">
+                            {classTeacherSections.map((item: any, idx: number) => (
+                                <span key={idx} className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md text-[10px] font-semibold text-emerald-800">
+                                    {item.className}-{item.sectionName}
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setClassTeacherSections(classTeacherSections.filter((_, i) => i !== idx));
+                                        }}
+                                        className="text-emerald-600 hover:text-emerald-950 font-bold text-xs select-none"
+                                    >
+                                        ×
+                                    </button>
+                                </span>
+                            ))}
+                            {classTeacherSections.length === 0 && (
+                                <span className="text-[10px] text-black/30 italic">No class teacher assignments</span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Subject Teacher Allocations */}
+                    <div className="space-y-3 pt-3 border-t border-light-border">
+                        <div>
+                            <span className="text-xs font-semibold text-black block">Subject Allocations</span>
+                            <span className="text-[10px] text-black/50 block">Allocate specific subjects to teach for classes and sections.</span>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="grid grid-cols-3 gap-2">
+                                <select
+                                    value={selectedClassIdForSub}
+                                    onChange={(e) => {
+                                        setSelectedClassIdForSub(e.target.value);
+                                        setSelectedSectionIdForSub("");
+                                        setSelectedSubjectIdForSub("");
+                                    }}
+                                    className="h-9 px-2 border border-light-border rounded-lg text-[11px] text-black focus:border-black focus:outline-hidden transition bg-white font-medium cursor-pointer"
+                                >
+                                    <option value="">Class...</option>
+                                    {classes.map((cls: any) => (
+                                        <option key={cls.id} value={cls.id}>
+                                            {cls.className}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <select
+                                    value={selectedSectionIdForSub}
+                                    onChange={(e) => setSelectedSectionIdForSub(e.target.value)}
+                                    disabled={!selectedClassIdForSub}
+                                    className="h-9 px-2 border border-light-border rounded-lg text-[11px] text-black focus:border-black focus:outline-hidden transition bg-white font-medium cursor-pointer disabled:opacity-50"
+                                >
+                                    <option value="">Section...</option>
+                                    {classes
+                                        .find((cls: any) => String(cls.id) === selectedClassIdForSub)
+                                        ?.sections?.map((sec: any) => (
+                                            <option key={sec.id} value={sec.id}>
+                                                Sec {sec.name}
+                                            </option>
+                                        ))}
+                                </select>
+
+                                <select
+                                    value={selectedSubjectIdForSub}
+                                    onChange={(e) => setSelectedSubjectIdForSub(e.target.value)}
+                                    disabled={!selectedClassIdForSub}
+                                    className="h-9 px-2 border border-light-border rounded-lg text-[11px] text-black focus:border-black focus:outline-hidden transition bg-white font-medium cursor-pointer disabled:opacity-50"
+                                >
+                                    <option value="">Subject...</option>
+                                    {classes
+                                        .find((cls: any) => String(cls.id) === selectedClassIdForSub)
+                                        ?.classSubjects?.map((sub: any) => (
+                                            <option key={sub.id} value={sub.id}>
+                                                {sub.subjectName}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (!selectedClassIdForSub || !selectedSectionIdForSub || !selectedSubjectIdForSub) return;
+                                    const cls = classes.find((c: any) => String(c.id) === selectedClassIdForSub);
+                                    const sec = cls?.sections?.find((s: any) => String(s.id) === selectedSectionIdForSub);
+                                    const sub = cls?.classSubjects?.find((sb: any) => String(sb.id) === selectedSubjectIdForSub);
+                                    if (!cls || !sec || !sub) return;
+
+                                    // Avoid duplicates
+                                    if (subjectTeacherAllocations.some((item: any) =>
+                                        String(item.sectionId) === selectedSectionIdForSub &&
+                                        String(item.subjectId) === selectedSubjectIdForSub
+                                    )) {
+                                        toast.error("Subject is already allocated for this section");
+                                        return;
+                                    }
+
+                                    setSubjectTeacherAllocations([
+                                        ...subjectTeacherAllocations,
+                                        {
+                                            classId: Number(selectedClassIdForSub),
+                                            sectionId: Number(selectedSectionIdForSub),
+                                            subjectId: Number(selectedSubjectIdForSub),
+                                            className: cls.className,
+                                            sectionName: sec.name,
+                                            subjectName: sub.subjectName
+                                        }
+                                    ]);
+                                    setSelectedSubjectIdForSub("");
+                                }}
+                                className="w-full h-9 border border-light-border hover:border-black/70 text-black text-xs font-semibold rounded-lg bg-neutral-50 transition cursor-pointer flex items-center justify-center gap-1"
+                            >
+                                <Plus size={12} />
+                                Allocate Subject Teacher
+                            </button>
+                        </div>
+
+                        {/* List of subject allocations */}
+                        <div className="flex flex-wrap gap-1.5">
+                            {subjectTeacherAllocations.map((item: any, idx: number) => (
+                                <span key={idx} className="inline-flex items-center gap-1.5 bg-neutral-50 border border-light-border px-2 py-0.5 rounded-md text-[10px] font-semibold text-neutral-800">
+                                    {item.className}-{item.sectionName} ({item.subjectName})
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSubjectTeacherAllocations(subjectTeacherAllocations.filter((_, i) => i !== idx));
+                                        }}
+                                        className="text-neutral-500 hover:text-black font-bold text-xs select-none"
+                                    >
+                                        ×
+                                    </button>
+                                </span>
+                            ))}
+                            {subjectTeacherAllocations.length === 0 && (
+                                <span className="text-[10px] text-black/30 italic">No subject allocations</span>
+                            )}
+                        </div>
                     </div>
 
                     {/* Active Status (Edit Mode Only) */}
