@@ -91,30 +91,37 @@ export default function ViewApproveAdmissionDrawer({
 
     if (!isOpen || !application) return null;
 
-    const handleApproveSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const validateStudentTab = () => {
         if (!firstName.trim() || !lastName.trim()) {
             toast.error("Student First and Last name are required");
             setFormTab("student");
-            return;
+            return false;
         }
 
         if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             toast.error("Please enter a valid student email address");
             setFormTab("student");
-            return;
+            return false;
         }
 
         if (!phone.trim() || phone.length > 10) {
             toast.error("Please enter a valid 10-digit phone number");
             setFormTab("student");
-            return;
+            return false;
         }
 
         if (!dob) {
             toast.error("Student Date of Birth is required");
             setFormTab("student");
+            return false;
+        }
+        return true;
+    };
+
+    const handleApproveSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!validateStudentTab()) {
             return;
         }
 
@@ -521,26 +528,67 @@ export default function ViewApproveAdmissionDrawer({
                 </div>
 
                 {/* Footer Controls */}
-                <div className="p-4 border-t border-light-border bg-neutral-50/75 flex items-center justify-end gap-2.5">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        disabled={isApproving || isUpdatingStatus}
-                        className="h-9 px-4 rounded-lg border border-light-border text-xs font-semibold hover:border-black hover:bg-neutral-50 transition cursor-pointer text-black"
-                    >
-                        Close Panel
-                    </button>
-                    {application.applicationStatus !== "APPROVED" && (
+                <div className="p-4 border-t border-light-border bg-neutral-50/75 flex flex-row items-center justify-between gap-2.5">
+                    <div>
+                        {application.applicationStatus !== "APPROVED" && formTab !== "basic" && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (formTab === "student") setFormTab("basic");
+                                    if (formTab === "parent") setFormTab("student");
+                                }}
+                                className="h-9 px-4 rounded-lg border border-light-border text-xs font-semibold hover:border-black hover:bg-neutral-55 transition cursor-pointer text-black"
+                            >
+                                Back
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
                         <button
                             type="button"
-                            onClick={handleApproveSubmit}
+                            onClick={onClose}
                             disabled={isApproving || isUpdatingStatus}
-                            className="h-9 px-5 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                            className="h-9 px-4 rounded-lg border border-light-border text-xs font-semibold hover:border-black hover:bg-neutral-50 transition cursor-pointer text-black"
                         >
-                            <UserCheck size={13} />
-                            {isApproving ? "Enrolling Student..." : "Approve & Register Student"}
+                            Close Panel
                         </button>
-                    )}
+                        {application.applicationStatus !== "APPROVED" && (
+                            formTab === "basic" ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setFormTab("student")}
+                                    className="h-9 px-5 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                                >
+                                    Continue to Profile
+                                    <ChevronRight size={13} />
+                                </button>
+                            ) : formTab === "student" ? (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (validateStudentTab()) {
+                                            setFormTab("parent");
+                                        }
+                                    }}
+                                    className="h-9 px-5 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                                >
+                                    Continue to Parent
+                                    <ChevronRight size={13} />
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleApproveSubmit}
+                                    disabled={isApproving || isUpdatingStatus}
+                                    className="h-9 px-5 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                                >
+                                    <UserCheck size={13} />
+                                    {isApproving ? "Enrolling Student..." : "Approve & Register"}
+                                </button>
+                            )
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
