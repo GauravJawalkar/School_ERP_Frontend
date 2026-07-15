@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
@@ -13,6 +13,7 @@ import SaaSSubscriptionStats from "./SaaSSubscriptionStats";
 import SaaSSubscriptionDistribution from "./SaaSSubscriptionDistribution";
 import SaaSActiveContractsTable from "./SaaSActiveContractsTable";
 import SaaSPlanDrawer from "./SaaSPlanDrawer";
+import SaaSCreatePlanDrawer from "./SaaSCreatePlanDrawer";
 
 interface Contract {
     contractId: string;
@@ -31,19 +32,23 @@ interface Contract {
 interface SaaSPlan {
     planId: string;
     name: string;
-    price: number;
-    billingCycle: string;
     studentLimit: number;
     staffLimit: number;
     features: string[];
     isActive: boolean;
     dbPlanId: number;
-    dbPriceId: number;
+    prices: Array<{
+        id: number;
+        billingPeriod: string;
+        amount: string;
+    }>;
 }
 
 export default function SaaSSubscriptionDashboard() {
     const [activeTab, setActiveTab] = useState<"contracts" | "plans">("contracts");
     const [selectedPlanForEdit, setSelectedPlanForEdit] = useState<SaaSPlan | null>(null);
+    const [isCreatePlanOpen, setIsCreatePlanOpen] = useState(false);
+    const [billingCycleFilter, setBillingCycleFilter] = useState<"MONTHLY" | "HALF_YEARLY" | "ANNUALLY">("MONTHLY");
 
     const queryClient = useQueryClient();
 
@@ -64,18 +69,15 @@ export default function SaaSSubscriptionDashboard() {
         const response = await ApiClient.get(`${BASE_URL}/saas/plans`);
         const backendPlans = response.data.data;
         return backendPlans.map((p: any) => {
-            const primaryPrice = p.prices?.[0] || { id: 0, amount: "0", billingPeriod: "MONTHLY" };
             return {
                 planId: p.slug,
                 name: p.name,
-                price: parseFloat(primaryPrice.amount),
-                billingCycle: primaryPrice.billingPeriod,
                 studentLimit: p.maxStudents,
                 staffLimit: p.maxStaff,
                 features: p.features?.modules || [],
                 isActive: p.isActive,
                 dbPlanId: p.id,
-                dbPriceId: primaryPrice.id
+                prices: p.prices || []
             };
         });
     };
@@ -140,9 +142,15 @@ export default function SaaSSubscriptionDashboard() {
                 features: { modules: payload.features }
             });
 
-            // 2. Update price in parallel if a price ID exists
+            // 2. Update price if a price ID exists, otherwise create a new price record
             if (payload.dbPriceId) {
                 await ApiClient.put(`${BASE_URL}/saas/prices/${payload.dbPriceId}`, {
+                    amount: payload.price
+                });
+            } else {
+                await ApiClient.post(`${BASE_URL}/saas/prices`, {
+                    planId: payload.dbPlanId,
+                    billingPeriod: payload.billingCycle,
                     amount: payload.price
                 });
             }
@@ -150,9 +158,53 @@ export default function SaaSSubscriptionDashboard() {
         onSuccess: () => {
             toast.success("Subscription Plan details and price updated successfully!");
             queryClient.invalidateQueries({ queryKey: ["getSaaSPlans"] });
+            setSelectedPlanForEdit(null);
         },
         onError: (err: any) => {
             toast.error(err.response?.data?.message || "Failed to update subscription parameters");
+        }
+    });
+
+    // ── MUTATIONS: CREATE PLANS & PRICES ──
+    const createPlanMutation = useMutation({
+        mutationFn: async (payload: {
+            name: string;
+            slug: string;
+            description: string;
+            price: number;
+            billingCycle: string;
+            studentLimit: number;
+            staffLimit: number;
+            features: string[];
+        }) => {
+            // 1. Create the plan
+            const planRes = await ApiClient.post(`${BASE_URL}/saas/plans`, {
+                name: payload.name,
+                slug: payload.slug,
+                description: payload.description,
+                maxStudents: payload.studentLimit,
+                maxStaff: payload.staffLimit,
+                features: { modules: payload.features },
+                isActive: true
+            });
+
+            const newPlanId = planRes.data.data.id;
+
+            // 2. Create the pricing point
+            await ApiClient.post(`${BASE_URL}/saas/prices`, {
+                planId: newPlanId,
+                billingPeriod: payload.billingCycle,
+                amount: payload.price,
+                isActive: true
+            });
+        },
+        onSuccess: () => {
+            toast.success("New subscription plan and price created successfully!");
+            queryClient.invalidateQueries({ queryKey: ["getSaaSPlans"] });
+            setIsCreatePlanOpen(false);
+        },
+        onError: (err: any) => {
+            toast.error(err.response?.data?.message || "Failed to create subscription plan");
         }
     });
 
@@ -226,7 +278,7 @@ export default function SaaSSubscriptionDashboard() {
                         <SaaSActiveContractsTable
                             contracts={contracts}
                             plans={plans}
-                            onUpdateContract={(payload) => updateContractMutation.mutate(payload)}
+                            onUpdateContract={(payload) => updateContractMutation.mutateAsync(payload)}
                             onTriggerEmailAlert={(name) => triggerEmailAlertMutation.mutate(name)}
                         />
                     </div>
@@ -236,74 +288,100 @@ export default function SaaSSubscriptionDashboard() {
                 {activeTab === "plans" && (
                     <div className="space-y-6 animate-in fade-in duration-200">
 
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
                                 <h3 className="text-sm font-semibold text-black/80 uppercase tracking-wider mb-0.5">SaaS Platform Plans Directory</h3>
                                 <p className="text-xs text-black/40 font-medium">Configure resource allocations, caps, and price indices for core subscriber tiers</p>
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => toast.success("Plan creation form is coming soon!")}
-                                className="h-8 px-3 rounded-lg bg-black text-white text-xs font-bold hover:bg-black/90 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-                            >
-                                <Plus size={13} /> Create Tier Plan
-                            </button>
+
+                            <div className="flex items-center gap-3">
+                                {/* Monochromatic Pill Selector for Billing Period */}
+                                <div className="flex rounded-lg border border-light-border bg-gray-50 p-1 text-xs font-medium">
+                                    {(["MONTHLY", "HALF_YEARLY", "ANNUALLY"] as const).map((period) => (
+                                        <button
+                                            key={period}
+                                            onClick={() => setBillingCycleFilter(period)}
+                                            className={`px-3.5 py-1.25 rounded-md transition cursor-pointer ${billingCycleFilter === period
+                                                ? "bg-black text-white shadow-xs font-semibold"
+                                                : "text-black/50 hover:text-black"
+                                                }`}>
+                                            {period === "MONTHLY" ? "Monthly" : period === "HALF_YEARLY" ? "Half-Yearly" : "Annually"}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCreatePlanOpen(true)}
+                                    className="h-8 px-3 rounded-lg bg-black text-white text-xs font-bold hover:bg-black/90 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                                >
+                                    <Plus size={13} /> Create Tier Plan
+                                </button>
+                            </div>
                         </div>
 
                         {/* Plans Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {plans.map((plan) => (
-                                <div key={plan.planId} className="bg-white border border-light-border rounded-xl p-5 shadow-xs flex flex-col justify-between hover:border-black/35 transition-all">
-                                    <div className="space-y-4">
+                            {plans
+                                .filter((plan) => plan.prices?.some((pr) => pr.billingPeriod === billingCycleFilter))
+                                .map((plan) => {
+                                    const matchedPrice = plan.prices?.find(pr => pr.billingPeriod === billingCycleFilter);
+                                    const currentPrice = matchedPrice ? parseFloat(matchedPrice.amount) : 0;
+                                    const periodLabel = matchedPrice ? matchedPrice.billingPeriod.toLowerCase() : billingCycleFilter.toLowerCase();
 
-                                        <div className="flex justify-between items-start border-b border-light-border/40 pb-3">
-                                            <div>
-                                                <h4 className="text-sm font-bold text-black">{plan.name}</h4>
-                                                <p className="text-[10px] font-mono text-black/40 mt-0.5 lowercase">{plan.planId}</p>
-                                            </div>
-                                            <span className="bg-neutral-50 px-2 py-0.5 border border-light-border rounded-full text-[9px] font-bold text-black/60 uppercase">
-                                                Active
-                                            </span>
-                                        </div>
+                                    return (
+                                        <div key={plan.planId} className="bg-white border border-light-border rounded-xl p-5 shadow-xs flex flex-col justify-between hover:border-black/35 transition-all">
+                                            <div className="space-y-4">
 
-                                        <div className="space-y-1">
-                                            <span className="text-2xl font-black text-black">₹{plan.price.toLocaleString()}</span>
-                                            <span className="text-black/40 text-[10px] block font-medium uppercase tracking-wider">Per {plan.billingCycle.toLowerCase()} cycle</span>
-                                        </div>
-
-                                        <div className="space-y-2 border-t border-light-border/30 pt-3">
-                                            <div className="flex justify-between text-xs text-black/70 font-semibold">
-                                                <span>Student Seats Cap:</span>
-                                                <span className="text-black">{plan.studentLimit.toLocaleString()}</span>
-                                            </div>
-                                            <div className="flex justify-between text-xs text-black/70 font-semibold">
-                                                <span>Staff Seats Cap:</span>
-                                                <span className="text-black">{plan.staffLimit.toLocaleString()}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-2 pt-1">
-                                            <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest block">Features catalog</span>
-                                            <div className="space-y-1.5">
-                                                {plan.features.map((feature, fIdx) => (
-                                                    <div key={fIdx} className="flex items-center gap-1.5 text-xs text-black/70 font-medium">
-                                                        <Check size={11} className="text-black shrink-0" strokeWidth={3} />
-                                                        <span className="capitalize">{feature.replace('_', ' ')}</span>
+                                                <div className="flex justify-between items-start border-b border-light-border/40 pb-3">
+                                                    <div>
+                                                        <h4 className="text-sm font-bold text-black">{plan.name}</h4>
+                                                        <p className="text-[10px] font-mono text-black/40 mt-0.5 lowercase">{plan.planId}</p>
                                                     </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
+                                                    <span className="bg-neutral-50 px-2 py-0.5 border border-light-border rounded-full text-[9px] font-bold text-black/60 uppercase">
+                                                        Active
+                                                    </span>
+                                                </div>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => setSelectedPlanForEdit(plan)}
-                                        className="w-full mt-6 py-2 rounded-lg border border-light-border hover:border-black bg-white hover:bg-neutral-50 text-xs font-semibold text-black transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                                    >
-                                        <Sliders size={12} /> Configure parameters
-                                    </button>
-                                </div>
-                            ))}
+                                                <div className="space-y-1">
+                                                    <span className="text-2xl font-black text-black">₹{currentPrice.toLocaleString()}</span>
+                                                    <span className="text-black/40 text-[10px] block font-medium uppercase tracking-wider">Per {periodLabel.replace('_', ' ')} cycle</span>
+                                                </div>
+
+                                                <div className="space-y-2 border-t border-light-border/30 pt-3">
+                                                    <div className="flex justify-between text-xs text-black/70 font-semibold">
+                                                        <span>Student Seats Cap:</span>
+                                                        <span className="text-black">{plan.studentLimit.toLocaleString()}</span>
+                                                    </div>
+                                                    <div className="flex justify-between text-xs text-black/70 font-semibold">
+                                                        <span>Staff Seats Cap:</span>
+                                                        <span className="text-black">{plan.staffLimit.toLocaleString()}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-2 pt-1">
+                                                    <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest block">Bundled Features</span>
+                                                    <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-[11px] font-medium text-black/70">
+                                                        {plan.features.map((feature, fIdx) => (
+                                                            <div key={fIdx} className="flex items-center gap-1.5 min-w-0">
+                                                                <Check size={11} className="text-black shrink-0" strokeWidth={3} />
+                                                                <span className="capitalize truncate leading-none">{feature.replace('_', ' ')}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedPlanForEdit(plan)}
+                                                className="w-full mt-6 py-2 rounded-lg border border-light-border hover:border-black bg-white hover:bg-neutral-50 text-xs font-semibold text-black transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                                            >
+                                                <Sliders size={12} /> Configure parameters
+                                            </button>
+                                        </div>
+                                    );
+                                })}
                         </div>
                     </div>
                 )}
@@ -316,8 +394,20 @@ export default function SaaSSubscriptionDashboard() {
                         onClose={() => setSelectedPlanForEdit(null)}
                         onSave={(updated) => {
                             savePlanMutation.mutate(updated);
-                            setSelectedPlanForEdit(null);
                         }}
+                        isPending={savePlanMutation.isPending}
+                    />
+                )}
+
+                {/* ── CREATE PLAN DRAWER ── */}
+                {isCreatePlanOpen && (
+                    <SaaSCreatePlanDrawer
+                        isOpen={isCreatePlanOpen}
+                        onClose={() => setIsCreatePlanOpen(false)}
+                        onSave={(newPlan) => {
+                            createPlanMutation.mutate(newPlan);
+                        }}
+                        isPending={createPlanMutation.isPending}
                     />
                 )}
 

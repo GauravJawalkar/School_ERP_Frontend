@@ -1,80 +1,60 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sliders, X, Check } from "lucide-react";
+import { Plus, X, Check } from "lucide-react";
 import { AVAILABLE_MODULES } from "@/constants/subscriptionModules.constants";
 
-interface SaaSPlan {
-    planId: string;
-    name: string;
-    studentLimit: number;
-    staffLimit: number;
-    features: string[];
-    isActive: boolean;
-    dbPlanId: number;
-    prices: Array<{
-        id: number;
-        billingPeriod: string;
-        amount: string;
-    }>;
-}
-
-interface SaaSPlanDrawerProps {
-    plan: SaaSPlan;
+interface SaaSCreatePlanDrawerProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (payload: {
-        planId: string;
         name: string;
+        slug: string;
+        description: string;
+        price: number;
+        billingCycle: string;
         studentLimit: number;
         staffLimit: number;
         features: string[];
-        price: number;
-        billingCycle: string;
-        dbPlanId: number;
-        dbPriceId: number;
     }) => void;
     isPending?: boolean;
 }
 
-export default function SaaSPlanDrawer({ plan, isOpen, onClose, onSave, isPending = false }: SaaSPlanDrawerProps) {
-    const [name, setName] = useState(plan.name);
-    const [studentLimit, setStudentLimit] = useState(plan.studentLimit);
-    const [staffLimit, setStaffLimit] = useState(plan.staffLimit);
-    const [selectedModules, setSelectedModules] = useState<string[]>([]);
-    
-    // Billing and price states
-    const [billingCycle, setBillingCycle] = useState("MONTHLY");
+export default function SaaSCreatePlanDrawer({ isOpen, onClose, onSave, isPending = false }: SaaSCreatePlanDrawerProps) {
+    const [name, setName] = useState("");
+    const [slug, setSlug] = useState("");
+    const [description, setDescription] = useState("");
     const [price, setPrice] = useState(0);
-    const [dbPriceId, setDbPriceId] = useState(0);
-    
+    const [studentLimit, setStudentLimit] = useState(500);
+    const [staffLimit, setStaffLimit] = useState(50);
+    const [billingCycle, setBillingCycle] = useState("MONTHLY");
+    const [selectedModules, setSelectedModules] = useState<string[]>([]);
     const [animateIn, setAnimateIn] = useState(false);
 
+    // Auto-generate slug from name
     useEffect(() => {
-        if (isOpen && plan) {
-            setName(plan.name);
-            setStudentLimit(plan.studentLimit);
-            setStaffLimit(plan.staffLimit);
-            setSelectedModules(plan.features || []);
+        setSlug(name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
+    }, [name]);
 
-            // Match initial billing period (default: MONTHLY)
-            const initialCycle = "MONTHLY";
-            setBillingCycle(initialCycle);
-            const matchedPrice = plan.prices?.find(p => p.billingPeriod === initialCycle) || plan.prices?.[0];
-            if (matchedPrice) {
-                setPrice(parseFloat(matchedPrice.amount));
-                setDbPriceId(matchedPrice.id);
-            } else {
-                setPrice(0);
-                setDbPriceId(0);
-            }
-
+    useEffect(() => {
+        if (isOpen) {
+            setName("");
+            setSlug("");
+            setDescription("");
+            setPrice(0);
+            setStudentLimit(500);
+            setStaffLimit(50);
+            setBillingCycle("MONTHLY");
+            setSelectedModules([]);
+            
             const timer = setTimeout(() => setAnimateIn(true), 50);
             return () => clearTimeout(timer);
         } else {
             setAnimateIn(false);
         }
-    }, [isOpen, plan]);
+    }, [isOpen]);
+
+    if (!isOpen) return null;
 
     const handleClose = () => {
         if (isPending) return;
@@ -82,32 +62,20 @@ export default function SaaSPlanDrawer({ plan, isOpen, onClose, onSave, isPendin
         setTimeout(onClose, 300);
     };
 
-    const handleBillingCycleChange = (cycle: string) => {
-        setBillingCycle(cycle);
-        const matchedPrice = plan.prices?.find(p => p.billingPeriod === cycle);
-        if (matchedPrice) {
-            setPrice(parseFloat(matchedPrice.amount));
-            setDbPriceId(matchedPrice.id);
-        } else {
-            setPrice(0);
-            setDbPriceId(0);
-        }
-    };
-
-    const handleApply = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (isPending) return;
+        if (!name || !slug) return;
 
         onSave({
-            planId: plan.planId,
             name,
-            studentLimit,
-            staffLimit,
-            features: selectedModules,
+            slug,
+            description: description || `${name} subscription plan`,
             price,
             billingCycle,
-            dbPlanId: plan.dbPlanId,
-            dbPriceId
+            studentLimit,
+            staffLimit,
+            features: selectedModules
         });
     };
 
@@ -127,11 +95,11 @@ export default function SaaSPlanDrawer({ plan, isOpen, onClose, onSave, isPendin
                     <div className="p-6 border-b border-light-border flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border border-light-border text-black">
-                                <Sliders size={15} />
+                                <Plus size={15} />
                             </div>
                             <div>
-                                <h3 className="text-sm font-bold text-black tracking-tight">Configure Tier Plan</h3>
-                                <p className="text-[10px] text-black/40 font-medium">Update pricing structure & resources</p>
+                                <h3 className="text-sm font-bold text-black tracking-tight">Create Tier Plan</h3>
+                                <p className="text-[10px] text-black/40 font-medium">Add a new pricing tier to the catalog</p>
                             </div>
                         </div>
                         <button
@@ -144,10 +112,10 @@ export default function SaaSPlanDrawer({ plan, isOpen, onClose, onSave, isPendin
                         </button>
                     </div>
 
-                    <form onSubmit={handleApply} className="flex-1 overflow-y-auto p-6 space-y-5">
+                    <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5 slim-scrollbar">
 
                         <div className="p-3 bg-gray-50 border border-light-border rounded-lg text-xs text-black/60 leading-relaxed">
-                            Customizing <strong className="text-black">{plan.name}</strong> updates the catalog description and resource limits for any *new* school onboarding onto this tier.
+                            Creating a new plan tier registers it on the system, making it immediately available for new institute registrations.
                         </div>
 
                         {/* Plan Name */}
@@ -155,26 +123,40 @@ export default function SaaSPlanDrawer({ plan, isOpen, onClose, onSave, isPendin
                             <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Plan Name</label>
                             <input
                                 type="text"
+                                placeholder="e.g. Platinum Premium"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 disabled={isPending}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition text-black disabled:opacity-60 disabled:bg-neutral-50"
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition text-black placeholder:text-black/30 disabled:opacity-60 disabled:bg-neutral-50"
+                                required
                             />
                         </div>
 
-                        {/* Billing Cycle */}
+                        {/* Plan Slug */}
                         <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Configure Price For Interval</label>
-                            <select
-                                value={billingCycle}
-                                onChange={(e) => handleBillingCycleChange(e.target.value)}
+                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Slug Identifier</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. platinum-premium"
+                                value={slug}
+                                onChange={(e) => setSlug(e.target.value)}
                                 disabled={isPending}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-medium focus:ring-2 focus:ring-black/10 transition bg-white text-black disabled:opacity-60 disabled:bg-neutral-50"
-                            >
-                                <option value="MONTHLY">Monthly</option>
-                                <option value="HALF_YEARLY">Half Yearly</option>
-                                <option value="ANNUALLY">Annually</option>
-                            </select>
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-mono font-semibold focus:ring-2 focus:ring-black/10 transition text-black placeholder:text-black/30 bg-neutral-50 disabled:opacity-60"
+                                required
+                            />
+                        </div>
+
+                        {/* Description */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Description</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Tailored for enterprise operations"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                disabled={isPending}
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition text-black placeholder:text-black/30 disabled:opacity-60 disabled:bg-neutral-50"
+                            />
                         </div>
 
                         {/* Price */}
@@ -186,7 +168,23 @@ export default function SaaSPlanDrawer({ plan, isOpen, onClose, onSave, isPendin
                                 onChange={(e) => setPrice(Number(e.target.value))}
                                 disabled={isPending}
                                 className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-bold focus:ring-2 focus:ring-black/10 transition text-black disabled:opacity-60 disabled:bg-neutral-50"
+                                required
                             />
+                        </div>
+
+                        {/* Billing Cycle */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Billing Interval</label>
+                            <select
+                                value={billingCycle}
+                                onChange={(e) => setBillingCycle(e.target.value)}
+                                disabled={isPending}
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-medium focus:ring-2 focus:ring-black/10 transition bg-white text-black disabled:opacity-60 disabled:bg-neutral-50"
+                            >
+                                <option value="MONTHLY">Monthly</option>
+                                <option value="HALF_YEARLY">Half Yearly</option>
+                                <option value="ANNUALLY">Annually</option>
+                            </select>
                         </div>
 
                         {/* Student Cap */}
@@ -198,6 +196,7 @@ export default function SaaSPlanDrawer({ plan, isOpen, onClose, onSave, isPendin
                                 onChange={(e) => setStudentLimit(Number(e.target.value))}
                                 disabled={isPending}
                                 className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-bold focus:ring-2 focus:ring-black/10 transition text-black disabled:opacity-60 disabled:bg-neutral-50"
+                                required
                             />
                         </div>
 
@@ -210,10 +209,11 @@ export default function SaaSPlanDrawer({ plan, isOpen, onClose, onSave, isPendin
                                 onChange={(e) => setStaffLimit(Number(e.target.value))}
                                 disabled={isPending}
                                 className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-bold focus:ring-2 focus:ring-black/10 transition text-black disabled:opacity-60 disabled:bg-neutral-50"
+                                required
                             />
                         </div>
 
-                        {/* Features Catalog (Custom Checklist) */}
+                        {/* Features Catalog (Custom Sleek Checklist) */}
                         <div className="space-y-2 border-t border-light-border/40 pt-4 pb-2">
                             <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Features Catalog</label>
                             <p className="text-[10px] text-black/45 font-medium -mt-1 mb-3 leading-relaxed">Select system modules to bundle inside this plan tier</p>
@@ -263,11 +263,11 @@ export default function SaaSPlanDrawer({ plan, isOpen, onClose, onSave, isPendin
                         </button>
                         <button
                             type="submit"
-                            onClick={handleApply}
+                            onClick={handleSubmit}
                             disabled={isPending}
                             className="w-1/2 py-2.5 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {isPending ? "Updating..." : "Update Catalog"}
+                            {isPending ? "Creating..." : "Create Plan"}
                         </button>
                     </div>
                 </div>

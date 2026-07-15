@@ -3,6 +3,21 @@
 import { useState, useEffect } from "react";
 import { X, Calendar, Info } from "lucide-react";
 
+interface SaaSPlan {
+    planId: string;
+    name: string;
+    studentLimit: number;
+    staffLimit: number;
+    features: string[];
+    isActive: boolean;
+    dbPlanId: number;
+    prices: Array<{
+        id: number;
+        billingPeriod: string;
+        amount: string;
+    }>;
+}
+
 interface Contract {
     contractId: string;
     instituteId: number;
@@ -14,19 +29,7 @@ interface Contract {
     billingStatus: string;
     startDate: string;
     renewalDate: string;
-}
-
-interface SaaSPlan {
-    planId: string;
-    name: string;
-    price: number;
-    billingCycle: string;
-    studentLimit: number;
-    staffLimit: number;
-    features: string[];
-    isActive: boolean;
-    dbPlanId: number;
-    dbPriceId: number;
+    lastPaymentTxId?: string;
 }
 
 interface SaaSContractDrawerProps {
@@ -42,7 +45,7 @@ interface SaaSContractDrawerProps {
         amount: number;
         paymentGateway: string;
         gatewayTransactionId: string;
-    }) => void;
+    }) => Promise<any> | void;
 }
 
 export default function SaaSContractDrawer({
@@ -58,9 +61,11 @@ export default function SaaSContractDrawer({
     const [paymentGateway, setPaymentGateway] = useState("MANUAL");
     const [gatewayTransactionId, setGatewayTransactionId] = useState("");
     const [animateIn, setAnimateIn] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         if (contract && isOpen && plans.length > 0) {
+            setIsSaving(false);
             const matchedPlan = plans.find(p => p.name.toLowerCase() === contract.tierName.toLowerCase()) || plans[0];
             if (matchedPlan) {
                 setSelectedPlanId(matchedPlan.planId);
@@ -79,52 +84,79 @@ export default function SaaSContractDrawer({
     if (!contract || !isOpen) return null;
 
     const handleClose = () => {
+        if (isSaving) return;
         setAnimateIn(false);
         setTimeout(onClose, 300);
     };
 
     const handlePlanChange = (planId: string) => {
+        if (isSaving) return;
         setSelectedPlanId(planId);
         const plan = plans.find(p => p.planId === planId);
         if (plan) {
-            setAmount(plan.price);
-            setSelectedBillingPeriod(plan.billingCycle);
+            const matchedPrice = plan.prices?.find(pr => pr.billingPeriod === selectedBillingPeriod) || plan.prices?.[0];
+            if (matchedPrice) {
+                setAmount(parseFloat(matchedPrice.amount));
+                setSelectedBillingPeriod(matchedPrice.billingPeriod);
+            }
         }
     };
 
-    const handleSave = (e: React.FormEvent) => {
+    const handleBillingPeriodChange = (period: string) => {
+        if (isSaving) return;
+        setSelectedBillingPeriod(period);
+        const plan = plans.find(p => p.planId === selectedPlanId);
+        if (plan) {
+            const matchedPrice = plan.prices?.find(pr => pr.billingPeriod === period);
+            if (matchedPrice) {
+                setAmount(parseFloat(matchedPrice.amount));
+            }
+        }
+    };
+
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSaving) return;
+
         const plan = plans.find(p => p.planId === selectedPlanId);
         if (!plan) return;
 
-        onSave({
-            instituteId: contract.instituteId,
-            planId: plan.dbPlanId,
-            priceId: plan.dbPriceId,
-            billingPeriod: selectedBillingPeriod,
-            amount,
-            paymentGateway,
-            gatewayTransactionId
-        });
-        handleClose();
+        const priceObj = plan.prices?.find(pr => pr.billingPeriod === selectedBillingPeriod) || plan.prices?.[0];
+        if (!priceObj) return;
+
+        try {
+            setIsSaving(true);
+            await onSave({
+                instituteId: contract.instituteId,
+                planId: plan.dbPlanId,
+                priceId: priceObj.id,
+                billingPeriod: selectedBillingPeriod,
+                amount,
+                paymentGateway,
+                gatewayTransactionId
+            });
+            handleClose();
+        } catch (error) {
+            // Keep drawer open for admin revision if saving fails
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
         <div className="fixed inset-0 z-50 overflow-hidden">
             {/* Backdrop */}
-            <div 
-                className={`absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 ${
-                    animateIn ? "opacity-100" : "opacity-0"
-                }`}
+            <div
+                className={`absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 ${animateIn ? "opacity-100" : "opacity-0"
+                    }`}
                 onClick={handleClose}
             />
 
             <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
                 {/* Slide-over panel */}
-                <div 
-                    className={`w-screen max-w-md bg-white border-l border-light-border shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out ${
-                        animateIn ? "translate-x-0" : "translate-x-full"
-                    }`}
+                <div
+                    className={`w-screen max-w-md bg-white border-l border-light-border shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out ${animateIn ? "translate-x-0" : "translate-x-full"
+                        }`}
                 >
                     {/* Header */}
                     <div className="p-6 border-b border-light-border flex items-center justify-between">
@@ -137,10 +169,11 @@ export default function SaaSContractDrawer({
                                 <p className="text-[10px] text-black/40 font-medium">Override plan quotas & log transaction</p>
                             </div>
                         </div>
-                        <button 
+                        <button
                             type="button"
                             onClick={handleClose}
-                            className="h-8 w-8 rounded-lg border border-light-border bg-white flex items-center justify-center text-black/50 hover:text-black transition hover:bg-neutral-50 shadow-xs cursor-pointer"
+                            disabled={isSaving}
+                            className="h-8 w-8 rounded-lg border border-light-border bg-white flex items-center justify-center text-black/50 hover:text-black transition hover:bg-neutral-50 shadow-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <X size={14} />
                         </button>
@@ -148,7 +181,7 @@ export default function SaaSContractDrawer({
 
                     {/* Body */}
                     <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-5 slim-scrollbar">
-                        
+
                         <div className="p-3 bg-neutral-50 border border-light-border rounded-lg flex gap-2.5 text-xs text-black/60 leading-relaxed">
                             <Info size={16} className="shrink-0 text-black/70 mt-0.5" />
                             <span>Updating the subscription tier for <strong className="text-black">{contract.schoolName}</strong> will immediately supersede any previous active plans and update the resource caps.</span>
@@ -157,10 +190,11 @@ export default function SaaSContractDrawer({
                         {/* Plan Dropdown */}
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Select Tier Plan</label>
-                            <select 
+                            <select
                                 value={selectedPlanId}
                                 onChange={(e) => handlePlanChange(e.target.value)}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition bg-white text-black"
+                                disabled={isSaving}
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition bg-white text-black disabled:opacity-60 disabled:bg-neutral-50"
                             >
                                 {plans.map(plan => (
                                     <option key={plan.planId} value={plan.planId}>{plan.name}</option>
@@ -171,10 +205,11 @@ export default function SaaSContractDrawer({
                         {/* Billing Cycle */}
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Billing Interval</label>
-                            <select 
+                            <select
                                 value={selectedBillingPeriod}
-                                onChange={(e) => setSelectedBillingPeriod(e.target.value)}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition bg-white text-black"
+                                onChange={(e) => handleBillingPeriodChange(e.target.value)}
+                                disabled={isSaving}
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition bg-white text-black disabled:opacity-60 disabled:bg-neutral-50"
                             >
                                 <option value="MONTHLY">Monthly</option>
                                 <option value="HALF_YEARLY">Half Yearly</option>
@@ -185,24 +220,26 @@ export default function SaaSContractDrawer({
                         {/* Price */}
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Contract Price Amount (₹)</label>
-                            <input 
-                                type="number" 
+                            <input
+                                type="number"
                                 value={amount}
                                 onChange={(e) => setAmount(Number(e.target.value))}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-bold focus:ring-2 focus:ring-black/10 transition text-black"
+                                disabled={isSaving}
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-bold focus:ring-2 focus:ring-black/10 transition text-black disabled:opacity-60 disabled:bg-neutral-50"
                             />
                         </div>
 
                         <div className="border-t border-light-border/40 my-2 pt-4">
                             <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest block mb-3">Audit Trail Ledger Details</span>
-                            
+
                             {/* Gateway */}
                             <div className="space-y-1.5 mb-4">
                                 <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Payment Method</label>
-                                <select 
+                                <select
                                     value={paymentGateway}
                                     onChange={(e) => setPaymentGateway(e.target.value)}
-                                    className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition bg-white text-black"
+                                    disabled={isSaving}
+                                    className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition bg-white text-black disabled:opacity-60 disabled:bg-neutral-50"
                                 >
                                     <option value="MANUAL">Manual Settlement (Cash/Bank Transfer)</option>
                                     <option value="RAZORPAY">Razorpay Gateway Integration</option>
@@ -213,12 +250,13 @@ export default function SaaSContractDrawer({
                             {/* Txn ID */}
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Gateway Transaction ID (Optional)</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     placeholder="e.g. TXN-90210-987"
                                     value={gatewayTransactionId}
                                     onChange={(e) => setGatewayTransactionId(e.target.value)}
-                                    className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition text-black placeholder:text-black/30"
+                                    disabled={isSaving}
+                                    className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-semibold focus:ring-2 focus:ring-black/10 transition text-black placeholder:text-black/30 disabled:opacity-60 disabled:bg-neutral-50"
                                 />
                             </div>
                         </div>
@@ -227,19 +265,21 @@ export default function SaaSContractDrawer({
 
                     {/* Actions */}
                     <div className="p-6 border-t border-light-border bg-gray-50/50 flex gap-3">
-                        <button 
+                        <button
                             type="button"
                             onClick={handleClose}
-                            className="w-1/2 py-2.5 rounded-lg border border-light-border bg-white text-xs font-semibold text-black hover:bg-neutral-50 transition cursor-pointer"
+                            disabled={isSaving}
+                            className="w-1/2 py-2.5 rounded-lg border border-light-border bg-white text-xs font-semibold text-black hover:bg-neutral-50 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Cancel
                         </button>
-                        <button 
+                        <button
                             type="submit"
                             onClick={handleSave}
-                            className="w-1/2 py-2.5 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition cursor-pointer"
+                            disabled={isSaving}
+                            className="w-1/2 py-2.5 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Save & Activate
+                            {isSaving ? "Saving & Activating..." : "Save & Activate"}
                         </button>
                     </div>
 

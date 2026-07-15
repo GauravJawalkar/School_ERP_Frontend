@@ -21,7 +21,7 @@ interface Contract {
 interface SaaSActiveContractsTableProps {
     contracts: Contract[];
     plans: any[];
-    onUpdateContract: (payload: any) => void;
+    onUpdateContract: (payload: any) => Promise<any> | void;
     onTriggerEmailAlert: (schoolName: string) => void;
 }
 
@@ -112,7 +112,7 @@ export default function SaaSActiveContractsTable({
                                         {/* School name & domain */}
                                         <td className="px-4 py-3.5">
                                             <div>
-                                                <span className="font-bold text-black text-sm block tracking-tight">
+                                                <span className="font-medium text-black text-xs block tracking-normal capitalize">
                                                     {contract.schoolName}
                                                 </span>
                                                 <span className="text-xs text-black/40 font-medium flex items-center gap-1 mt-0.5 lowercase font-mono">
