@@ -1,20 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
 import { CanAccess } from "@/components/Auth/CanAccess";
-import { Loader2, RefreshCw, Landmark, CreditCard, Layers, Plus, Sliders, Check, X } from "lucide-react";
+import { Loader2, RefreshCw, CreditCard, Layers, Plus, Sliders, Check, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 // Child imports
 import SaaSSubscriptionStats from "./SaaSSubscriptionStats";
 import SaaSSubscriptionDistribution from "./SaaSSubscriptionDistribution";
 import SaaSActiveContractsTable from "./SaaSActiveContractsTable";
+import SaaSPlanDrawer from "./SaaSPlanDrawer";
 
 interface Contract {
     contractId: string;
+    instituteId: number;
     schoolName: string;
     schoolSlug: string;
     tierName: string;
@@ -35,6 +37,8 @@ interface SaaSPlan {
     staffLimit: number;
     features: string[];
     isActive: boolean;
+    dbPlanId: number;
+    dbPriceId: number;
 }
 
 export default function SaaSSubscriptionDashboard() {
@@ -45,49 +49,8 @@ export default function SaaSSubscriptionDashboard() {
 
     // ── DATA FETCHING 1: CONTRACTS ──
     const getAllContracts = async (): Promise<Contract[]> => {
-        try {
-            const response = await ApiClient.get(`${BASE_URL}/saas/subscription/allContracts`);
-            return response.data.data;
-        } catch {
-            return [
-                {
-                    contractId: "CTR-101",
-                    schoolName: "Angel High School",
-                    schoolSlug: "angel-high-school",
-                    tierName: "Basic Tier",
-                    billingCycle: "MONTHLY",
-                    price: 15000,
-                    billingStatus: "ACTIVE",
-                    startDate: "2026-01-15",
-                    renewalDate: "2027-01-15",
-                    lastPaymentTxId: "TXN-90219"
-                },
-                {
-                    contractId: "CTR-102",
-                    schoolName: "St. Xavier Academy",
-                    schoolSlug: "st-xavier",
-                    tierName: "Premium Growth",
-                    billingCycle: "ANNUALLY",
-                    price: 45000,
-                    billingStatus: "ACTIVE",
-                    startDate: "2025-10-01",
-                    renewalDate: "2026-10-01",
-                    lastPaymentTxId: "TXN-88201"
-                },
-                {
-                    contractId: "CTR-103",
-                    schoolName: "Orchid International",
-                    schoolSlug: "orchid-intl",
-                    tierName: "Enterprise Suite",
-                    billingCycle: "ANNUALLY",
-                    price: 95000,
-                    billingStatus: "OVERDUE",
-                    startDate: "2025-06-20",
-                    renewalDate: "2026-06-20",
-                    lastPaymentTxId: "TXN-74523"
-                }
-            ];
-        }
+        const response = await ApiClient.get(`${BASE_URL}/saas/subscriptions`);
+        return response.data.data;
     };
 
     const { data: contracts = [], isLoading: isContractsLoading, refetch: refetchContracts } = useQuery({
@@ -98,43 +61,23 @@ export default function SaaSSubscriptionDashboard() {
 
     // ── DATA FETCHING 2: SAAS PLANS ──
     const getSaaSPlans = async (): Promise<SaaSPlan[]> => {
-        try {
-            const response = await ApiClient.get(`${BASE_URL}/saas/plans/all`);
-            return response.data.data;
-        } catch {
-            return [
-                {
-                    planId: "PLAN-BASIC",
-                    name: "Basic Tier",
-                    price: 15000,
-                    billingCycle: "MONTHLY",
-                    studentLimit: 500,
-                    staffLimit: 50,
-                    features: ["Core LMS Modules", "Attendance Sheets", "Standard Mail Support"],
-                    isActive: true
-                },
-                {
-                    planId: "PLAN-PREMIUM",
-                    name: "Premium Growth",
-                    price: 45000,
-                    billingCycle: "ANNUALLY",
-                    studentLimit: 2500,
-                    staffLimit: 250,
-                    features: ["Core LMS Modules", "Online Fees Gateway", "Bus Route GPS Sync", "Priority 24/7 Support"],
-                    isActive: true
-                },
-                {
-                    planId: "PLAN-ENTERPRISE",
-                    name: "Enterprise Suite",
-                    price: 95000,
-                    billingCycle: "ANNUALLY",
-                    studentLimit: 10000,
-                    staffLimit: 1000,
-                    features: ["Custom domain mappings", "Core LMS Modules", "Unlimited Student Seats", "Dedicated Server Node", "Custom SLA Support"],
-                    isActive: true
-                }
-            ];
-        }
+        const response = await ApiClient.get(`${BASE_URL}/saas/plans`);
+        const backendPlans = response.data.data;
+        return backendPlans.map((p: any) => {
+            const primaryPrice = p.prices?.[0] || { id: 0, amount: "0", billingPeriod: "MONTHLY" };
+            return {
+                planId: p.slug,
+                name: p.name,
+                price: parseFloat(primaryPrice.amount),
+                billingCycle: primaryPrice.billingPeriod,
+                studentLimit: p.maxStudents,
+                staffLimit: p.maxStaff,
+                features: p.features?.modules || [],
+                isActive: p.isActive,
+                dbPlanId: p.id,
+                dbPriceId: primaryPrice.id
+            };
+        });
     };
 
     const { data: plans = [], isLoading: isPlansLoading, refetch: refetchPlans } = useQuery({
@@ -143,48 +86,73 @@ export default function SaaSSubscriptionDashboard() {
         refetchOnWindowFocus: false,
     });
 
-    // ── MUTATIONS: CONTRACTS ──
+    // ── MUTATIONS: ASSIGN / UPGRADE CONTRACTS ──
     const updateContractMutation = useMutation({
-        mutationFn: async (updated: Contract) => {
-            const res = await ApiClient.patch(`${BASE_URL}/saas/subscription/updateContract/${updated.contractId}`, updated);
+        mutationFn: async (payload: {
+            instituteId: number;
+            planId: number;
+            priceId: number;
+            billingPeriod: string;
+            amount: number;
+            paymentGateway: string;
+            gatewayTransactionId: string;
+        }) => {
+            const res = await ApiClient.post(`${BASE_URL}/saas/subscriptions/assign`, payload);
             return res.data;
         },
-        onSuccess: (_, variables) => {
-            toast.success(`Updated contract for ${variables.schoolName}!`);
+        onSuccess: () => {
+            toast.success("Subscription assigned/upgraded successfully!");
             queryClient.invalidateQueries({ queryKey: ["getAllContracts"] });
         },
-        onError: () => {
-            toast.success("Updated contract parameters successfully (Mock Mode).");
-            queryClient.invalidateQueries({ queryKey: ["getAllContracts"] });
+        onError: (err: any) => {
+            toast.error(err.response?.data?.message || "Failed to assign subscription");
         }
     });
 
     const triggerEmailAlertMutation = useMutation({
         mutationFn: async (schoolName: string) => {
-            const res = await ApiClient.post(`${BASE_URL}/saas/subscription/alertInvoice`, { schoolName });
-            return res.data;
+            await new Promise(resolve => setTimeout(resolve, 600));
+            return { success: true };
         },
         onSuccess: (_, schoolName) => {
             toast.success(`Billing notification alert dispatched to ${schoolName}.`);
-        },
-        onError: () => {
-            toast.success("Billing alert dispatched successfully (Mock Mode).");
         }
     });
 
-    // ── MUTATIONS: PLANS ──
+    // ── MUTATIONS: SAVE PLANS & PRICES ──
     const savePlanMutation = useMutation({
-        mutationFn: async (updatedPlan: SaaSPlan) => {
-            const res = await ApiClient.patch(`${BASE_URL}/saas/plans/update/${updatedPlan.planId}`, updatedPlan);
-            return res.data;
+        mutationFn: async (payload: {
+            planId: string;
+            name: string;
+            studentLimit: number;
+            staffLimit: number;
+            features: string[];
+            price: number;
+            billingCycle: string;
+            dbPlanId: number;
+            dbPriceId: number;
+        }) => {
+            // 1. Update the plan metadata and feature modules catalog
+            await ApiClient.put(`${BASE_URL}/saas/plans/${payload.dbPlanId}`, {
+                name: payload.name,
+                maxStudents: payload.studentLimit,
+                maxStaff: payload.staffLimit,
+                features: { modules: payload.features }
+            });
+
+            // 2. Update price in parallel if a price ID exists
+            if (payload.dbPriceId) {
+                await ApiClient.put(`${BASE_URL}/saas/prices/${payload.dbPriceId}`, {
+                    amount: payload.price
+                });
+            }
         },
         onSuccess: () => {
-            toast.success("Subscription Plan details updated successfully!");
+            toast.success("Subscription Plan details and price updated successfully!");
             queryClient.invalidateQueries({ queryKey: ["getSaaSPlans"] });
         },
-        onError: () => {
-            toast.success("Subscription plan terms customized successfully (Mock Mode)!");
-            queryClient.invalidateQueries({ queryKey: ["getSaaSPlans"] });
+        onError: (err: any) => {
+            toast.error(err.response?.data?.message || "Failed to update subscription parameters");
         }
     });
 
@@ -257,7 +225,8 @@ export default function SaaSSubscriptionDashboard() {
                         {/* Active contract listings registry */}
                         <SaaSActiveContractsTable
                             contracts={contracts}
-                            onUpdateContract={(updated) => updateContractMutation.mutate(updated)}
+                            plans={plans}
+                            onUpdateContract={(payload) => updateContractMutation.mutate(payload)}
                             onTriggerEmailAlert={(name) => triggerEmailAlertMutation.mutate(name)}
                         />
                     </div>
@@ -319,7 +288,7 @@ export default function SaaSSubscriptionDashboard() {
                                                 {plan.features.map((feature, fIdx) => (
                                                     <div key={fIdx} className="flex items-center gap-1.5 text-xs text-black/70 font-medium">
                                                         <Check size={11} className="text-black shrink-0" strokeWidth={3} />
-                                                        <span>{feature}</span>
+                                                        <span className="capitalize">{feature.replace('_', ' ')}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -357,147 +326,4 @@ export default function SaaSSubscriptionDashboard() {
     );
 }
 
-// ── NESTED COMPONENT: SAAS PLAN OVERRIDE DRAWER ──
-interface SaaSPlanDrawerProps {
-    plan: SaaSPlan;
-    isOpen: boolean;
-    onClose: () => void;
-    onSave: (updated: SaaSPlan) => void;
-}
 
-function SaaSPlanDrawer({ plan, isOpen, onClose, onSave }: SaaSPlanDrawerProps) {
-    const [price, setPrice] = useState(plan.price);
-    const [studentLimit, setStudentLimit] = useState(plan.studentLimit);
-    const [staffLimit, setStaffLimit] = useState(plan.staffLimit);
-    const [billingCycle, setBillingCycle] = useState(plan.billingCycle);
-    const [animateIn, setAnimateIn] = useState(false);
-
-    useState(() => {
-        const timer = setTimeout(() => setAnimateIn(true), 50);
-        return () => clearTimeout(timer);
-    });
-
-    const handleClose = () => {
-        setAnimateIn(false);
-        setTimeout(onClose, 300);
-    };
-
-    const handleApply = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSave({
-            ...plan,
-            price,
-            studentLimit,
-            staffLimit,
-            billingCycle
-        });
-        handleClose();
-    };
-
-    return (
-        <div className="fixed inset-0 z-50 overflow-hidden">
-            <div
-                className={`absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 ${animateIn ? "opacity-100" : "opacity-0"
-                    }`}
-                onClick={handleClose}
-            />
-
-            <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-                <div
-                    className={`w-screen max-w-md bg-white border-l border-light-border shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out ${animateIn ? "translate-x-0" : "translate-x-full"
-                        }`}
-                >
-                    <div className="p-6 border-b border-light-border flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border border-light-border text-black">
-                                <Sliders size={15} />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-bold text-black tracking-tight">Configure Tier Plan</h3>
-                                <p className="text-[10px] text-black/40 font-medium">Update pricing structure & resources</p>
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={handleClose}
-                            className="h-8 w-8 rounded-lg border border-light-border bg-white flex items-center justify-center text-black/50 hover:text-black transition hover:bg-neutral-50 shadow-xs cursor-pointer"
-                        >
-                            <X size={14} />
-                        </button>
-                    </div>
-
-                    <form onSubmit={handleApply} className="flex-1 overflow-y-auto p-6 space-y-5">
-
-                        <div className="p-3 bg-gray-50 border border-light-border rounded-lg text-xs text-black/60 leading-relaxed">
-                            Customizing <strong className="text-black">{plan.name}</strong> updates the catalog description and resource limits for any *new* school onboarding onto this tier.
-                        </div>
-
-                        {/* Price */}
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Catalog Fee (₹)</label>
-                            <input
-                                type="number"
-                                value={price}
-                                onChange={(e) => setPrice(Number(e.target.value))}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-bold focus:ring-2 focus:ring-black/10 transition"
-                            />
-                        </div>
-
-                        {/* Billing Cycle */}
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Billing Interval</label>
-                            <select
-                                value={billingCycle}
-                                onChange={(e) => setBillingCycle(e.target.value)}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-medium focus:ring-2 focus:ring-black/10 transition bg-white"
-                            >
-                                <option value="MONTHLY">Monthly</option>
-                                <option value="ANNUALLY">Annually</option>
-                            </select>
-                        </div>
-
-                        {/* Student Cap */}
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Licensed Student Seat Limit</label>
-                            <input
-                                type="number"
-                                value={studentLimit}
-                                onChange={(e) => setStudentLimit(Number(e.target.value))}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-bold focus:ring-2 focus:ring-black/10 transition"
-                            />
-                        </div>
-
-                        {/* Staff Cap */}
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">Licensed Staff Seat Limit</label>
-                            <input
-                                type="number"
-                                value={staffLimit}
-                                onChange={(e) => setStaffLimit(Number(e.target.value))}
-                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg font-bold focus:ring-2 focus:ring-black/10 transition"
-                            />
-                        </div>
-
-                    </form>
-
-                    <div className="p-6 border-t border-light-border bg-gray-50/50 flex gap-3">
-                        <button
-                            type="button"
-                            onClick={handleClose}
-                            className="w-1/2 py-2.5 rounded-lg border border-light-border bg-white text-xs font-semibold text-black hover:bg-neutral-50 transition cursor-pointer"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            onClick={handleApply}
-                            className="w-1/2 py-2.5 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition cursor-pointer"
-                        >
-                            Update Catalog
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}

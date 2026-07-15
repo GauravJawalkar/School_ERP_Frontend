@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Globe, CreditCard, Mail, Sliders, CheckCircle2, ShieldAlert, AlertTriangle } from "lucide-react";
+import { Search, Globe, Mail, Sliders, CheckCircle2, ShieldAlert, AlertTriangle } from "lucide-react";
 import SaaSContractDrawer from "./SaaSContractDrawer";
 
 interface Contract {
     contractId: string;
+    instituteId: number;
     schoolName: string;
     schoolSlug: string;
     tierName: string;
@@ -19,12 +20,14 @@ interface Contract {
 
 interface SaaSActiveContractsTableProps {
     contracts: Contract[];
-    onUpdateContract: (updatedContract: Contract) => void;
+    plans: any[];
+    onUpdateContract: (payload: any) => void;
     onTriggerEmailAlert: (schoolName: string) => void;
 }
 
 export default function SaaSActiveContractsTable({
     contracts = [],
+    plans = [],
     onUpdateContract,
     onTriggerEmailAlert
 }: SaaSActiveContractsTableProps) {
@@ -49,14 +52,14 @@ export default function SaaSActiveContractsTable({
 
     return (
         <div className="bg-white border border-light-border rounded-xl p-5 shadow-xs space-y-4">
-            
+
             {/* Header and Search */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                     <h3 className="text-sm font-semibold text-black/80 uppercase tracking-wider mb-0.5">Active Client Subscription Contracts</h3>
                     <p className="text-xs text-black/40">Audit financial commitments, pricing contracts, and renewal states</p>
                 </div>
-                
+
                 <div className="relative min-w-xs">
                     <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-black/40" />
                     <input
@@ -105,7 +108,7 @@ export default function SaaSActiveContractsTable({
 
                                 return (
                                     <tr key={contract.contractId} className="hover:bg-gray-50/40 transition">
-                                        
+
                                         {/* School name & domain */}
                                         <td className="px-4 py-3.5">
                                             <div>
@@ -201,6 +204,7 @@ export default function SaaSActiveContractsTable({
             {/* ── HIGH-END CONFIGURATION SLIDE-OVER DRAWER ── */}
             <SaaSContractDrawer
                 contract={selectedContract}
+                plans={plans}
                 isOpen={isDrawerOpen}
                 onClose={() => {
                     setIsDrawerOpen(false);
