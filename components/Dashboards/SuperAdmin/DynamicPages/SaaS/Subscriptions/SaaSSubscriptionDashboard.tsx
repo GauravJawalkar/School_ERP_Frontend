@@ -14,6 +14,7 @@ import SaaSSubscriptionDistribution from "./SaaSSubscriptionDistribution";
 import SaaSActiveContractsTable from "./SaaSActiveContractsTable";
 import SaaSPlanDrawer from "./SaaSPlanDrawer";
 import SaaSCreatePlanDrawer from "./SaaSCreatePlanDrawer";
+import DeletePlanDrawer from "./DeletePlanDrawer";
 
 interface Contract {
     contractId: string;
@@ -48,6 +49,7 @@ export default function SaaSSubscriptionDashboard() {
     const [activeTab, setActiveTab] = useState<"contracts" | "plans">("contracts");
     const [selectedPlanForEdit, setSelectedPlanForEdit] = useState<SaaSPlan | null>(null);
     const [isCreatePlanOpen, setIsCreatePlanOpen] = useState(false);
+    const [planToDelete, setPlanToDelete] = useState<SaaSPlan | null>(null);
     const [billingCycleFilter, setBillingCycleFilter] = useState<"MONTHLY" | "HALF_YEARLY" | "ANNUALLY">("MONTHLY");
 
     const queryClient = useQueryClient();
@@ -133,13 +135,15 @@ export default function SaaSSubscriptionDashboard() {
             billingCycle: string;
             dbPlanId: number;
             dbPriceId: number;
+            isActive: boolean;
         }) => {
             // 1. Update the plan metadata and feature modules catalog
             await ApiClient.put(`${BASE_URL}/saas/plans/${payload.dbPlanId}`, {
                 name: payload.name,
                 maxStudents: payload.studentLimit,
                 maxStaff: payload.staffLimit,
-                features: { modules: payload.features }
+                features: { modules: payload.features },
+                isActive: payload.isActive
             });
 
             // 2. Update price if a price ID exists, otherwise create a new price record
@@ -156,12 +160,27 @@ export default function SaaSSubscriptionDashboard() {
             }
         },
         onSuccess: () => {
-            toast.success("Subscription Plan details and price updated successfully!");
+            toast.success("Subscription Plan details and status updated successfully!");
             queryClient.invalidateQueries({ queryKey: ["getSaaSPlans"] });
             setSelectedPlanForEdit(null);
         },
         onError: (err: any) => {
             toast.error(err.response?.data?.message || "Failed to update subscription parameters");
+        }
+    });
+
+    // ── MUTATIONS: DELETE PLANS ──
+    const deletePlanMutation = useMutation({
+        mutationFn: async (dbPlanId: number) => {
+            await ApiClient.delete(`${BASE_URL}/saas/plans/${dbPlanId}`);
+        },
+        onSuccess: () => {
+            toast.success("Subscription plan deleted successfully!");
+            queryClient.invalidateQueries({ queryKey: ["getSaaSPlans"] });
+            setSelectedPlanForEdit(null);
+        },
+        onError: (err: any) => {
+            toast.error(err.response?.data?.message || "Failed to delete subscription plan");
         }
     });
 
@@ -338,8 +357,12 @@ export default function SaaSSubscriptionDashboard() {
                                                         <h4 className="text-sm font-bold text-black">{plan.name}</h4>
                                                         <p className="text-[10px] font-mono text-black/40 mt-0.5 lowercase">{plan.planId}</p>
                                                     </div>
-                                                    <span className="bg-neutral-50 px-2 py-0.5 border border-light-border rounded-full text-[9px] font-bold text-black/60 uppercase">
-                                                        Active
+                                                    <span className={`px-2 py-0.5 border rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                                                        plan.isActive 
+                                                            ? "bg-neutral-50 border-light-border text-black/60" 
+                                                            : "bg-red-50 border-red-200 text-red-600"
+                                                    }`}>
+                                                        {plan.isActive ? "Active" : "Inactive"}
                                                     </span>
                                                 </div>
 
@@ -395,6 +418,9 @@ export default function SaaSSubscriptionDashboard() {
                         onSave={(updated) => {
                             savePlanMutation.mutate(updated);
                         }}
+                        onDelete={() => {
+                            setPlanToDelete(selectedPlanForEdit);
+                        }}
                         isPending={savePlanMutation.isPending}
                     />
                 )}
@@ -408,6 +434,24 @@ export default function SaaSSubscriptionDashboard() {
                             createPlanMutation.mutate(newPlan);
                         }}
                         isPending={createPlanMutation.isPending}
+                    />
+                )}
+
+                {/* ── DELETE PLAN CONFIRMATION DRAWER ── */}
+                {planToDelete && (
+                    <DeletePlanDrawer
+                        isOpen={!!planToDelete}
+                        planName={planToDelete.name}
+                        onClose={() => setPlanToDelete(null)}
+                        onConfirm={async () => {
+                            try {
+                                await deletePlanMutation.mutateAsync(planToDelete.dbPlanId);
+                                setPlanToDelete(null);
+                            } catch (error) {
+                                // Keep drawer open if delete mutation fails
+                            }
+                        }}
+                        isPending={deletePlanMutation.isPending}
                     />
                 )}
 

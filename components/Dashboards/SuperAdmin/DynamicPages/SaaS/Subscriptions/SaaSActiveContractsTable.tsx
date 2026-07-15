@@ -73,7 +73,7 @@ export default function SaaSActiveContractsTable({
             </div>
 
             {/* Contracts Table */}
-            <div className="overflow-x-auto border border-light-border rounded-lg">
+            <div className="overflow-x-auto border border-light-border rounded-lg slim-scrollbar">
                 <table className="w-full text-xs min-w-max">
                     <thead>
                         <tr className="bg-neutral-50 border-b border-light-border text-left text-black/60 font-semibold uppercase tracking-wider text-[10px]">
