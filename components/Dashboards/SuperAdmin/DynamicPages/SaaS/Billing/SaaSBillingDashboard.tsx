@@ -32,53 +32,8 @@ export default function SaaSBillingDashboard() {
 
     // Fetch all invoice statement transactions
     const getAllTransactions = async (): Promise<Transaction[]> => {
-        try {
-            const response = await ApiClient.get(`${BASE_URL}/saas/billing/allTransactions`);
-            return response.data.data;
-        } catch {
-            return [
-                {
-                    invoiceId: "INV-90219",
-                    schoolName: "Angel High School",
-                    schoolSlug: "angel-high-school",
-                    amount: 15000,
-                    paymentMethod: "STRIPE",
-                    status: "PAID",
-                    invoiceDate: "2026-05-15",
-                    dueDate: "2026-05-22"
-                },
-                {
-                    invoiceId: "INV-88201",
-                    schoolName: "St. Xavier Academy",
-                    schoolSlug: "st-xavier",
-                    amount: 45000,
-                    paymentMethod: "RAZORPAY",
-                    status: "PAID",
-                    invoiceDate: "2026-05-01",
-                    dueDate: "2026-05-08"
-                },
-                {
-                    invoiceId: "INV-74523",
-                    schoolName: "Orchid International",
-                    schoolSlug: "orchid-intl",
-                    amount: 95000,
-                    paymentMethod: "BANK_TRANSFER",
-                    status: "UNPAID",
-                    invoiceDate: "2026-05-20",
-                    dueDate: "2026-05-27"
-                },
-                {
-                    invoiceId: "INV-55102",
-                    schoolName: "Delhi Public School",
-                    schoolSlug: "dps-pune",
-                    amount: 15000,
-                    paymentMethod: "STRIPE",
-                    status: "FAILED",
-                    invoiceDate: "2026-05-10",
-                    dueDate: "2026-05-17"
-                }
-            ];
-        }
+        const response = await ApiClient.get(`${BASE_URL}/saas/billing/allTransactions`);
+        return response.data.data;
     };
 
     const { data: transactions = [], isLoading, isRefetching, refetch } = useQuery({
@@ -90,20 +45,16 @@ export default function SaaSBillingDashboard() {
     // 1. Mutation: Reconcile Outstanding Statement
     const reconcileMutation = useMutation({
         mutationFn: async (invoiceId: string) => {
-            const res = await ApiClient.patch(`${BASE_URL}/saas/billing/reconcile/${invoiceId}`, { status: "PAID" });
+            const res = await ApiClient.patch(`${BASE_URL}/saas/billing/reconcile/${invoiceId}`);
             return res.data;
         },
         onSuccess: (_, invoiceId) => {
             toast.success(`Statement ${invoiceId} has been successfully settled & cleared!`);
             queryClient.invalidateQueries({ queryKey: ["getAllTransactions"] });
         },
-        onError: (_, invoiceId) => {
-            // Simulated local updates
-            toast.success(`Statement ${invoiceId} marked as settled locally (Mock Flow).`);
-            queryClient.setQueryData(["getAllTransactions"], (old: Transaction[] = []) =>
-                old.map(tx => tx.invoiceId === invoiceId ? { ...tx, status: "PAID" } : tx)
-            );
-            queryClient.invalidateQueries({ queryKey: ["getAllTransactions"] });
+        onError: (error: any, invoiceId) => {
+            const errMsg = error.response?.data?.message || "Failed to reconcile statement.";
+            toast.error(errMsg);
         }
     });
 
@@ -116,8 +67,9 @@ export default function SaaSBillingDashboard() {
         onSuccess: (_, variables) => {
             toast.success(`Statement reminder successfully dispatched to ${variables.schoolName}.`);
         },
-        onError: (_, variables) => {
-            toast.success(`Payment link reminder resent to ${variables.schoolName} (Mock Flow).`);
+        onError: (error: any) => {
+            const errMsg = error.response?.data?.message || "Failed to dispatch email reminder.";
+            toast.error(errMsg);
         }
     });
 
@@ -131,10 +83,9 @@ export default function SaaSBillingDashboard() {
             toast.success("New manual SaaS invoice issued!");
             queryClient.invalidateQueries({ queryKey: ["getAllTransactions"] });
         },
-        onError: (_, variables) => {
-            toast.success(`SaaS invoice issued successfully for ${variables.schoolName} (Mock Flow).`);
-            queryClient.setQueryData(["getAllTransactions"], (old: Transaction[] = []) => [variables, ...old]);
-            queryClient.invalidateQueries({ queryKey: ["getAllTransactions"] });
+        onError: (error: any) => {
+            const errMsg = error.response?.data?.message || "Failed to issue SaaS invoice.";
+            toast.error(errMsg);
         }
     });
 

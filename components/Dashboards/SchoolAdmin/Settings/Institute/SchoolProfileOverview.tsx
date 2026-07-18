@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
     FileText,
     Activity,
@@ -20,6 +19,19 @@ interface SchoolProfileOverviewProps {
 export default function SchoolProfileOverview({ schoolDetails }: SchoolProfileOverviewProps) {
     const contactInfo = schoolDetails?.contactInfo || {};
     const additionalInfo = schoolDetails?.additionalInfo || {};
+
+    const getValuesArray = (val: any): string[] => {
+        if (Array.isArray(val)) return val;
+        if (typeof val === "string") {
+            return val.split(",").map(s => s.trim()).filter(Boolean);
+        }
+        return [];
+    };
+
+    const boards = getValuesArray(additionalInfo.boardsAffiliated);
+    const coreValues = getValuesArray(additionalInfo.coreValues);
+    const notableAlumni = getValuesArray(additionalInfo.notableAlumni);
+    const tags = getValuesArray(additionalInfo.tags);
 
     return (
         <div className="space-y-6">
@@ -155,8 +167,8 @@ export default function SchoolProfileOverview({ schoolDetails }: SchoolProfileOv
                     <div>
                         <h4 className="font-bold text-black/60 mb-2">Boards Affiliated</h4>
                         <div className="flex flex-wrap gap-1.5">
-                            {additionalInfo.boardsAffiliated?.length > 0 ? (
-                                additionalInfo.boardsAffiliated.map((board: string, i: number) => (
+                            {boards.length > 0 ? (
+                                boards.map((board: string, i: number) => (
                                     <span key={i} className="px-2 py-0.5 bg-neutral-50 border border-light-border rounded-md font-bold text-[10px] text-black/75 uppercase select-none">
                                         {board}
                                     </span>
@@ -171,8 +183,8 @@ export default function SchoolProfileOverview({ schoolDetails }: SchoolProfileOv
                     <div>
                         <h4 className="font-bold text-black/60 mb-2">Core Campus Values</h4>
                         <div className="flex flex-wrap gap-1.5">
-                            {additionalInfo.coreValues?.length > 0 ? (
-                                additionalInfo.coreValues.map((value: string, i: number) => (
+                            {coreValues.length > 0 ? (
+                                coreValues.map((value: string, i: number) => (
                                     <span key={i} className="px-2 py-0.5 bg-neutral-50 border border-light-border rounded-md font-bold text-[10px] text-black/75 uppercase select-none">
                                         {value}
                                     </span>
@@ -187,8 +199,8 @@ export default function SchoolProfileOverview({ schoolDetails }: SchoolProfileOv
                     <div>
                         <h4 className="font-bold text-black/60 mb-2">Notable Alumni</h4>
                         <div className="flex flex-wrap gap-1.5">
-                            {additionalInfo.notableAlumni?.length > 0 ? (
-                                additionalInfo.notableAlumni.map((alumnus: string, i: number) => (
+                            {notableAlumni.length > 0 ? (
+                                notableAlumni.map((alumnus: string, i: number) => (
                                     <span key={i} className="px-2 py-0.5 bg-neutral-50 border border-light-border rounded-md font-bold text-[10px] text-black/75 uppercase select-none">
                                         {alumnus}
                                     </span>
@@ -203,8 +215,8 @@ export default function SchoolProfileOverview({ schoolDetails }: SchoolProfileOv
                     <div>
                         <h4 className="font-bold text-black/60 mb-2">Search Tags</h4>
                         <div className="flex flex-wrap gap-1.5">
-                            {additionalInfo.tags?.length > 0 ? (
-                                additionalInfo.tags.map((tag: string, i: number) => (
+                            {tags.length > 0 ? (
+                                tags.map((tag: string, i: number) => (
                                     <span key={i} className="px-2 py-0.5 bg-neutral-50 border border-light-border rounded-md font-bold text-[10px] text-black/75 uppercase select-none">
                                         {tag}
                                     </span>

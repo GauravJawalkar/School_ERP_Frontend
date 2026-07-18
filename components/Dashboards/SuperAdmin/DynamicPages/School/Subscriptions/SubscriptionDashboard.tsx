@@ -8,7 +8,6 @@ import { CanAccess } from "@/components/Auth/CanAccess";
 import { Loader2, RefreshCw, Landmark, IndianRupee, ShieldAlert, Sparkles } from "lucide-react";
 
 // Child imports
-import PlanGrid from "./PlanGrid";
 import ActiveSubscriptionsTable from "./ActiveSubscriptionsTable";
 
 export default function SubscriptionDashboard() {
@@ -27,6 +26,7 @@ export default function SubscriptionDashboard() {
     // Dynamically calculate subscription revenue stats based on active schools and capacities
     const billingMetrics = useMemo(() => {
         let totalARR = 0;
+        let totalMRR = 0;
         let totalStudents = 0;
         let activeCount = 0;
 
@@ -34,20 +34,19 @@ export default function SubscriptionDashboard() {
             const students = Number(school.totalStudents || school.students || 0);
             totalStudents += students;
 
-            if (school.schoolStatus === "ACTIVE" || school.status === "ACTIVE") {
+            const isSubActive = ["ACTIVE", "TRIALING", "PAST_DUE"].includes(school.subscriptionStatus);
+            if (isSubActive || school.schoolStatus === "ACTIVE" || school.status === "ACTIVE") {
                 activeCount++;
-                // Resolve tier price dynamically
-                if (students > 2500) {
-                    totalARR += 95000;
-                } else if (students > 500) {
-                    totalARR += 45000;
-                } else {
-                    totalARR += 15000;
+                const price = Number(school.planPrice || 0);
+                if (school.billingCycle === "ANNUALLY") {
+                    totalARR += price;
+                    totalMRR += Math.round(price / 12);
+                } else if (school.billingCycle === "MONTHLY") {
+                    totalARR += price * 12;
+                    totalMRR += price;
                 }
             }
         });
-
-        const totalMRR = Math.round(totalARR / 12);
 
         return {
             totalARR,
@@ -141,9 +140,6 @@ export default function SubscriptionDashboard() {
                         </div>
                     ))}
                 </div>
-
-                {/* Plan Pricing Grid */}
-                <PlanGrid schools={allSchools} />
 
                 {/* Active Subscriptions Registry */}
                 <ActiveSubscriptionsTable schools={allSchools} />

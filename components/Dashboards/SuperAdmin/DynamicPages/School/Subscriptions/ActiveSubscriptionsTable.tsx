@@ -9,24 +9,30 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
     const [searchQuery, setSearchQuery] = useState("");
 
     // Calculate details dynamically based on school limits
-    const getPlanDetails = (studentCount: number) => {
-        if (studentCount > 2500) {
-            return { name: "Enterprise Suite", price: "₹95,000", bg: "bg-neutral-100 text-black border-neutral-200" };
-        } else if (studentCount > 500) {
-            return { name: "Premium Growth", price: "₹45,000", bg: "bg-black text-white border-black/90" };
-        } else {
-            return { name: "Basic Tier", price: "₹15,000", bg: "bg-gray-50 text-black/60 border-light-border" };
+    const getPlanBadgeStyle = (planName: string) => {
+        if (!planName || planName === "No Active Plan") {
+            return "bg-neutral-100 text-black border-neutral-200";
         }
+        if (planName.toLowerCase().includes("premium") || planName.toLowerCase().includes("enterprise")) {
+            return "bg-black text-white border-black/90";
+        }
+        return "bg-gray-50 text-black/60 border-light-border";
     };
 
     // Format billing dates cleanly relative to when they were created
-    const getNextBillingDate = (createdAtStr: string) => {
+    const getNextBillingDate = (renewalDateStr: string | Date | null | undefined, createdAtStr: string) => {
+        if (renewalDateStr) {
+            try {
+                const date = new Date(renewalDateStr);
+                return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+            } catch { }
+        }
         try {
             const date = new Date(createdAtStr);
             date.setFullYear(date.getFullYear() + 1); // 1 year cycle
             return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
         } catch {
-            return "Apr 15, 2027";
+            return "N/A";
         }
     };
 
@@ -82,13 +88,16 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
                             filtered.map((school) => {
                                 const students = Number(school.totalStudents || school.students || 0);
                                 const staff = Number(school.totalStaff || school.staff || 0);
-                                const plan = getPlanDetails(students);
+                                const planName = school.planName || "No Active Plan";
+                                const planBadge = getPlanBadgeStyle(planName);
+                                const price = school.planPrice ? `₹${Number(school.planPrice).toLocaleString()}` : "₹0";
+                                const cycleLabel = school.billingCycle === "ANNUALLY" ? "/ yr" : school.billingCycle === "MONTHLY" ? "/ mo" : "";
                                 const city = school.schoolInfo?.address_details?.city || school.city || "N/A";
-                                const renewalDate = getNextBillingDate(school.createdAt);
-                                const status = school.schoolStatus || school.status || "INACTIVE";
+                                const renewalDate = getNextBillingDate(school.renewalDate, school.createdAt);
+                                const subStatus = school.subscriptionStatus || "INACTIVE";
 
                                 return (
-                                    <tr key={school.schoolId} className="hover:bg-gray-50/40 transition">
+                                    <tr key={school.schoolId + Math.floor(Math.random() * 10000)} className="hover:bg-gray-50/40 transition">
 
                                         {/* School & City */}
                                         <td className="px-4 py-3.5">
@@ -104,8 +113,8 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
 
                                         {/* Plan Name */}
                                         <td className="px-4 py-3.5">
-                                            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border ${plan.bg}`}>
-                                                {plan.name}
+                                            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${planBadge}`}>
+                                                {planName}
                                             </span>
                                         </td>
 
@@ -128,9 +137,11 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
                                         {/* Price */}
                                         <td className="px-4 py-3.5">
                                             <span className="font-semibold text-sm text-black">
-                                                {plan.price}
+                                                {price}
                                             </span>
-                                            <span className="text-xs text-black/40 font-medium ml-1">/ yr</span>
+                                            {cycleLabel && (
+                                                <span className="text-xs text-black/40 font-medium ml-1">{cycleLabel}</span>
+                                            )}
                                         </td>
 
                                         {/* Next Renewal */}
@@ -140,9 +151,13 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
 
                                         {/* Status */}
                                         <td className="px-4 py-3.5">
-                                            {status === "ACTIVE" ? (
+                                            {["ACTIVE", "TRIALING"].includes(subStatus) ? (
                                                 <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-0.5 rounded-full text-xs font-semibold border border-green-200">
                                                     <CheckCircle2 size={10} /> Good Standing
+                                                </span>
+                                            ) : subStatus === "PAST_DUE" ? (
+                                                <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full text-xs font-semibold border border-amber-200">
+                                                    <CheckCircle2 size={10} /> Grace Period
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2.5 py-0.5 rounded-full text-xs font-semibold border border-red-200">
@@ -155,7 +170,7 @@ export default function ActiveSubscriptionsTable({ schools = [] }: ActiveSubscri
                                         <td className="px-4 py-3.5 text-right">
                                             <Link
                                                 href={`/schools/${school?.schoolSlug ?? '/'}`}
-                                                className="h-7 w-7 rounded-md border border-light-border bg-white flex items-center justify-center text-black/60 hover:text-black hover:bg-neutral-50 shadow-xs cursor-pointer transition inline-flex"
+                                                className="h-7 w-7 rounded-md border border-light-border bg-white flex items-center justify-center text-black/60 hover:text-black hover:bg-neutral-50 shadow-xs cursor-pointer transition"
                                             >
                                                 <ChevronRight size={14} />
                                             </Link>

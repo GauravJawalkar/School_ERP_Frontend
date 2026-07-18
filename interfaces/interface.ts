@@ -301,6 +301,11 @@ export interface School {
             city?: string;
         }
     };
+    planName?: string;
+    planPrice?: string | number | null;
+    billingCycle?: string;
+    subscriptionStatus?: string;
+    renewalDate?: string | Date | null;
 }
 
 export interface ActiveSubscriptionsTableProps {
