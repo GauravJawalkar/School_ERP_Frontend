@@ -78,7 +78,7 @@ export default function AddAdminModal({ isOpen, school, onClose }: { isOpen: boo
         onClick={onClose}
       />
 
-      <div className="relative w-full sm:w-[500px] bg-white h-full sm:h-dvh shadow-2xl flex flex-col sm:rounded-l-lg overflow-hidden border-l border-neutral-200 transition-transform transform"
+      <div className="relative w-full sm:w-125 bg-white h-full sm:h-dvh shadow-2xl flex flex-col sm:rounded-l-lg overflow-hidden border-l border-neutral-200 transition-transform transform"
         style={{ animation: 'slideInRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards' }}>
         <style>{`
           @keyframes slideInRight {
@@ -240,7 +240,7 @@ export default function AddAdminModal({ isOpen, school, onClose }: { isOpen: boo
                         <label className="text-[13px] font-medium text-black flex items-center gap-1">
                           Account Status <RequiredBadge />
                         </label>
-                        <div className="flex items-center gap-3 h-[42px]">
+                        <div className="flex items-center gap-3 h-10.5">
                           <button
                             type="button"
                             onClick={() => field.handleChange(!isActive)}
