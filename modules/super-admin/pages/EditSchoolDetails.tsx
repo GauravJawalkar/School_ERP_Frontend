@@ -1,7 +1,7 @@
 "use client"
 import ErrorFallback from '@/components/Commons/Errors/ErrorFallback'
 import EditSchoolDetailsSkeleton from '@/components/Commons/Skeletons/EditSchoolDetailsSkeleton'
-import AddSchoolForm from '@/components/Dashboards/SchoolAdmin/AddSchoolForm'
+import AddSchoolForm from '@/modules/settings/components/forms/AddSchoolForm'
 import { BASE_URL } from '@/constants/constants'
 import { ApiClient } from '@/interceptors/ApiClient'
 import { useQuery } from '@tanstack/react-query'

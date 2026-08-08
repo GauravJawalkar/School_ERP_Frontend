@@ -1,4 +1,4 @@
-import AddSchoolForm from "@/components/Dashboards/SchoolAdmin/AddSchoolForm"
+import AddSchoolForm from "@/modules/settings/components/forms/AddSchoolForm";
 
 const AddSchoolPage = () => {
     return (

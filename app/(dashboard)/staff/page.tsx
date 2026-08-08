@@ -1,5 +1,5 @@
 import React from "react";
-import StaffDashboard from "@/components/Dashboards/SchoolAdmin/Staff/StaffDashboard";
+import { StaffDashboard } from "@/modules/school-admin";
 
 export const metadata = {
     title: "Staff Directory Management",

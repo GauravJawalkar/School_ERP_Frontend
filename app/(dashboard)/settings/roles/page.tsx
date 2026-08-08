@@ -1,5 +1,5 @@
 import React from "react";
-import RolesDashboard from "@/components/Dashboards/SchoolAdmin/Settings/Roles/RolesDashboard";
+import { RolesDashboard } from "@/modules/roles-permissions";
 
 export const metadata = {
     title: "Security Roles & Permissions | School ERP",

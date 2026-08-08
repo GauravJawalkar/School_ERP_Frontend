@@ -1,4 +1,4 @@
-import InstituteDashboard from "@/components/Dashboards/SchoolAdmin/Settings/Institute/InstituteDashboard";
+import { InstituteDashboard } from "@/modules/settings";
 
 export const metadata = {
     title: "Campus Configuration | School ERP",

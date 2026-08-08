@@ -1,4 +1,4 @@
-import AcademicYearDashboard from "@/components/Dashboards/SchoolAdmin/Settings/AcademicYear/AcademicYearDashboard";
+import { AcademicYearDashboard } from "@/modules/settings";
 
 export const metadata = {
     title: "Academic Years Configuration | School ERP",

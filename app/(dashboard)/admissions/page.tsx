@@ -1,5 +1,5 @@
 import React from "react";
-import AdmissionsDashboard from "@/components/Dashboards/SchoolAdmin/Admissions/AdmissionsDashboard";
+import { AdmissionsDashboard } from "@/modules/school-admin";
 
 export const metadata = {
     title: "Admissions Registry Management",

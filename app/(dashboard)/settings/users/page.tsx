@@ -1,4 +1,4 @@
-import SchoolUsersDashboard from '@/components/Dashboards/SchoolAdmin/Settings/Users/SchoolUsersDashboard'
+import { SchoolUsersDashboard } from '@/modules/settings'
 
 export default function SchoolUsersPage() {
     return <SchoolUsersDashboard />

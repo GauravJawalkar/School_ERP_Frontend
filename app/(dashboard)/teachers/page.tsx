@@ -1,5 +1,5 @@
 import React from "react";
-import TeachersDashboard from "@/components/Dashboards/SchoolAdmin/Teachers/TeachersDashboard";
+import { TeachersDashboard } from "@/modules/school-admin";
 
 export const metadata = {
     title: "Teachers Registry Management",
