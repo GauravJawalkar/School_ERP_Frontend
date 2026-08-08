@@ -1,9 +1,7 @@
-import SubscriptionDashboard from "@/components/Dashboards/SuperAdmin/DynamicPages/School/Subscriptions/SubscriptionDashboard";
+import { SubscriptionDashboard } from "@/modules/super-admin";
 
 const page = () => {
-    return (
-        <SubscriptionDashboard />
-    )
-}
+  return <SubscriptionDashboard />;
+};
 
-export default page
+export default page;

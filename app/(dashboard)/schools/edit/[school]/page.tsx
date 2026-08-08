@@ -1,13 +1,13 @@
-import EditSchoolDetails from "@/components/Dashboards/SuperAdmin/DynamicPages/School/EditSchoolDetails";
+import { EditSchoolDetails } from "@/modules/super-admin";
 
 const EditSchoolPage = async ({ params }: { params: Promise<{ school: string }> }) => {
-    const { school } = await params;
+  const { school } = await params;
 
-    return (
-        <div>
-            <EditSchoolDetails schoolSlug={school} />
-        </div>
-    )
-}
+  return (
+    <div>
+      <EditSchoolDetails schoolSlug={school} />
+    </div>
+  );
+};
 
-export default EditSchoolPage 
+export default EditSchoolPage;

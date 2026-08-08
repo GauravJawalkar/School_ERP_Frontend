@@ -1,15 +1,14 @@
-import Stats from "@/components/Commons/Stats"
-import AllInstituteTable from "@/components/Dashboards/SuperAdmin/Tables/InstituteTable"
-import { dummySchoolStats } from "@/data/dummySuperAdminStats"
+import Stats from "@/components/Commons/Stats";
+import { InstituteTable } from "@/modules/super-admin";
+import { dummySchoolStats } from "@/data/dummySuperAdminStats";
 
 const page = () => {
-    return (
-        <div className="space-y-6">
-            {/* Creating the new page for schools */}
-            <Stats dashboardStats={dummySchoolStats} />
-            <AllInstituteTable />
-        </div>
-    )
-}
+  return (
+    <div className="space-y-6">
+      <Stats dashboardStats={dummySchoolStats} />
+      <InstituteTable />
+    </div>
+  );
+};
 
-export default page
+export default page;

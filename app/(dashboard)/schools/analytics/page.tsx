@@ -1,12 +1,7 @@
-import React from "react";
-import SchoolAnalyticsDashboard from "@/components/Dashboards/SuperAdmin/DynamicPages/School/Analytics/SchoolAnalyticsDashboard";
+import { SchoolAnalyticsDashboard } from "@/modules/super-admin";
 
 const page = () => {
-    return (
-        <>
-            <SchoolAnalyticsDashboard />
-        </>
-    )
-}
+  return <SchoolAnalyticsDashboard />;
+};
 
-export default page
+export default page;

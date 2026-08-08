@@ -1,11 +1,11 @@
-import SchoolAdminsTable from "@/components/Dashboards/SuperAdmin/Tables/SchoolAdminsTable"
+import { SchoolAdminsTable } from "@/modules/super-admin";
 
 const page = () => {
-    return (
-        <div>
-            <SchoolAdminsTable />
-        </div>
-    )
-}
+  return (
+    <div>
+      <SchoolAdminsTable />
+    </div>
+  );
+};
 
-export default page
+export default page;

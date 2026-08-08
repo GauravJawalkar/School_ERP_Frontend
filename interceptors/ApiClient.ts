@@ -1,14 +1,15 @@
 import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
+import { BASE_URL } from "@/constants/constants";
 
 export const ApiClient = axios.create({
-    baseURL: process.env.BASE_URL,
+    baseURL: process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL || BASE_URL,
     withCredentials: true
 });
 
 // For endpoints that don't require authentication we can use this client without interceptors to avoid unnecessary token handling and potential issues with missing tokens.
 export const PublicApiClient = axios.create({
-    baseURL: process.env.BASE_URL,
+    baseURL: process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL || BASE_URL,
     withCredentials: true
 });
 
@@ -18,10 +19,11 @@ ApiClient.interceptors.request.use(
         const { accessToken } = useAuthStore.getState();
         const token = accessToken;
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`
+            config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
-    });
+    }
+);
 
 // Response Interceptor
 ApiClient.interceptors.response.use(
@@ -29,10 +31,9 @@ ApiClient.interceptors.response.use(
         const newToken = response.headers['authorization'];
         if (newToken) {
             const token = newToken.replace('Bearer ', '').trim();
-            // Store this new accessToken in zustand
-            useAuthStore.getState().setAccessToken(token)
+            useAuthStore.getState().setAccessToken(token);
         }
-        return response
+        return response;
     },
     (error) => {
         if (error.response?.status === 401) {
@@ -41,4 +42,4 @@ ApiClient.interceptors.response.use(
         }
         return Promise.reject(error);
     }
-)
+);

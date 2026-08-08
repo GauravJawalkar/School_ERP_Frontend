@@ -1,10 +1,12 @@
 import Logout from "@/components/Auth/Logout";
 import Stats from "@/components/Commons/Stats";
-import RevenueChart from "@/components/Dashboards/SuperAdmin/MonthlyRevenueChart";
-import RevenueByPlanChart from "@/components/Dashboards/SuperAdmin/RevenueByPlanChart";
-import RevenueTrendChart from "@/components/Dashboards/SuperAdmin/RevenueTrendChart";
-import SubscriptionStatus from "@/components/Dashboards/SuperAdmin/SubscriptionStatus";
-import TopRevenueInstitutesChart from "@/components/Dashboards/SuperAdmin/TopRevenueInstitutesChart";
+import {
+  MonthlyRevenueChart as RevenueChart,
+  RevenueByPlanChart,
+  RevenueTrendChart,
+  SubscriptionStatus,
+  TopRevenueInstitutesChart,
+} from "@/modules/super-admin";
 import { superAdminDashboardStats } from "@/data/dummySuperAdminStats";
 
 export default function Home() {

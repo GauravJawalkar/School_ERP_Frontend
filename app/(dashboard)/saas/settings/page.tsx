@@ -1,5 +1,14 @@
-import SaaSSettingsDashboard from '@/components/Dashboards/SuperAdmin/DynamicPages/SaaS/Settings/SaaSSettingsDashboard'
+"use client";
 
-export default function SaaSSettingsPage() {
-    return <SaaSSettingsDashboard />
+import { SaaSSettingsDashboard } from "@/modules/super-admin";
+import { WithPermission } from "@/components/Auth/WithPermission";
+import { PERMISSIONS } from "@/constants/permission.constants";
+
+function Page() {
+  return <SaaSSettingsDashboard />;
 }
+
+export default WithPermission(Page, {
+  permission: PERMISSIONS.SAAS.SETTINGS_MANAGE,
+  redirectTo: "/dashboard",
+});
