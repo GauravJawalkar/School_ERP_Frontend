@@ -113,7 +113,7 @@ export default function RolesDashboard() {
 
     if (isLoading || isPermsLoading || roles.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+            <div className="flex flex-col items-center justify-center min-h-100 gap-3">
                 <Loader2 className="animate-spin text-neutral-800" size={24} />
                 <p className="text-xs font-mono font-bold uppercase tracking-widest text-neutral-400">Loading Access Profiles...</p>
             </div>

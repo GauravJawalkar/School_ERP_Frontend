@@ -238,7 +238,7 @@ export default function StaffDashboard() {
                                         setSelectedSchoolId(undefined);
                                     }
                                 }}
-                                className="border border-input-border text-xs px-3 py-1.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 bg-white font-semibold cursor-pointer min-w-[240px]"
+                                className="border border-input-border text-xs px-3 py-1.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 bg-white font-semibold cursor-pointer min-w-60"
                             >
                                 <option value="">Select Campus Location</option>
                                 {schools.map((school) => (
