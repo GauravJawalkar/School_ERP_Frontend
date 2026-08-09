@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Search, Calendar, CheckCircle2, AlertCircle } from "lucide-react";
 import { formatDate } from "@/lib/helpers/formatDate";
-import { AcademicYearTableProps } from "../../types/settings.types";
+import { AcademicYearTableProps, AcademicYear } from "../../types/settings.types";
 import { CanAccess } from "@/components/Auth/CanAccess";
 
 export default function AcademicYearTable({
@@ -14,7 +14,7 @@ export default function AcademicYearTable({
 }: AcademicYearTableProps) {
     const [searchQuery, setSearchQuery] = useState("");
 
-    const filteredYears = years.filter((year) =>
+    const filteredYears = years.filter((year: AcademicYear) =>
         year.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -47,16 +47,16 @@ export default function AcademicYearTable({
                     </thead>
                     <tbody className="divide-y divide-light-border">
                         {filteredYears.length === 0 ? (
-                            <tr>
+                            <tr key="empty">
                                 <td colSpan={4} className="py-10 text-center text-xs text-black/40 font-medium">
                                     <AlertCircle size={20} className="mx-auto mb-2 text-black/30" />
                                     No academic year records matching the active search query.
                                 </td>
                             </tr>
                         ) : (
-                            filteredYears.map((year) => (
+                            filteredYears.map((year: AcademicYear, index: number) => (
                                 <tr
-                                    key={year.id}
+                                    key={year.id ? `ay-${year.id}` : `ay-idx-${index}`}
                                     className={`group text-xs text-black/85 transition-colors hover:bg-neutral-50/50 ${year.isActive ? "bg-emerald-50/5 hover:bg-emerald-50/10" : "bg-white"
                                         }`}
                                 >

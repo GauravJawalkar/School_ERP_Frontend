@@ -21,14 +21,14 @@ export default function FacultyTable({ staff }: FacultyTableProps) {
                     </thead>
                     <tbody className="divide-y divide-light-border text-xs">
                         {!staff || staff.length === 0 ? (
-                            <tr>
+                            <tr key="empty">
                                 <td colSpan={4} className="p-8 text-center text-black/40 font-semibold">
                                     No campus staff members registered in this profile query.
                                 </td>
                             </tr>
                         ) : (
-                            staff.map((st) => (
-                                <tr key={st.id} className="hover:bg-neutral-50/50 transition">
+                            staff.map((st, index) => (
+                                <tr key={st.id ? `staff-${st.id}` : `staff-idx-${index}`} className="hover:bg-neutral-50/50 transition">
                                     <td className="p-4">
                                         <div className="flex items-center gap-2">
                                             <div className="w-8 h-8 rounded-full bg-neutral-100 text-black font-bold flex items-center justify-center border border-neutral-200 select-none text-[10px]">

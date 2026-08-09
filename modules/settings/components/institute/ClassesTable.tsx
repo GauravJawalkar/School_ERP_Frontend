@@ -273,17 +273,17 @@ export default function ClassesTable({
                         </thead>
                         <tbody className="divide-y divide-light-border text-xs">
                             {!classes || classes.length === 0 ? (
-                                <tr>
+                                <tr key="empty">
                                     <td colSpan={canEdit ? 4 : 3} className="p-8 text-center text-black/40 font-semibold">
                                         No classroom configurations registered in this profile query.
                                     </td>
                                 </tr>
                             ) : (
-                                classes.map((cls) => {
+                                classes.map((cls, index) => {
                                     const matchedYear = academicYears.find((ay: any) => ay.id === cls.academicYearId);
                                     const formatYear = cls.academicYearName || (matchedYear ? matchedYear.name : "N/A");
                                     return (
-                                        <tr key={cls.id} className="hover:bg-neutral-50/50 transition">
+                                        <tr key={cls.id ? `cls-${cls.id}` : `cls-idx-${index}`} className="hover:bg-neutral-50/50 transition">
                                             <td className="p-4">
                                                 <div className="font-bold text-black text-xs">
                                                     Class {cls.className}

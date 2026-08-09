@@ -6,6 +6,7 @@ export interface SchoolSummary {
     medium?: string;
     affiliationNumber?: string;
     status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "PENDING_APPROVAL" | string;
+    address?: string;
     city?: string;
     state?: string;
     totalStudents?: number;
@@ -88,8 +89,16 @@ export interface AcademicYear {
     startDate: string;
     endDate: string;
     status: "ACTIVE" | "INACTIVE" | "UPCOMING" | "ARCHIVED" | string;
+    isActive?: boolean;
     isCurrent?: boolean;
     description?: string;
+}
+
+export interface AcademicYearTableProps {
+    years: AcademicYear[];
+    isSuperAdmin: boolean;
+    onToggleActive: (id: number, isActive: boolean) => void;
+    updatingId: number | null;
 }
 
 export interface StaffMember {

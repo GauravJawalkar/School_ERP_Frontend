@@ -77,26 +77,26 @@ export default function SchoolsTable({
                         </thead>
                         <tbody className="divide-y divide-light-border text-xs">
                             {isLoading ? (
-                                <tr>
+                                <tr key="loading">
                                     <td colSpan={6} className="p-8 text-center text-black/40 font-semibold uppercase tracking-wider">
                                         Scanning schools databases...
                                     </td>
                                 </tr>
                             ) : isError ? (
-                                <tr>
+                                <tr key="error">
                                     <td colSpan={6} className="p-8 text-center text-red-500 font-semibold">
                                         Error fetching campus profiles from directory.
                                     </td>
                                 </tr>
                             ) : filteredSchools.length === 0 ? (
-                                <tr>
+                                <tr key="empty">
                                     <td colSpan={6} className="p-8 text-center text-black/40 font-semibold">
                                         No registered institutes found matching query.
                                     </td>
                                 </tr>
                             ) : (
-                                filteredSchools.map((school) => (
-                                    <tr key={school.id} className="hover:bg-neutral-50/50 transition">
+                                filteredSchools.map((school, index) => (
+                                    <tr key={school.id ? `school-${school.id}` : (school.slug ? `school-${school.slug}` : `school-idx-${index}`)} className="hover:bg-neutral-50/50 transition">
                                         <td className="p-4">
                                             <div className="flex items-center gap-3">
                                                 {school.logoUrl ? (

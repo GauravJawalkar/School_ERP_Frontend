@@ -229,16 +229,16 @@ export default function FeesTable({
                         </thead>
                         <tbody className="divide-y divide-light-border text-xs">
                             {!feeStructures || feeStructures.length === 0 ? (
-                                <tr>
+                                <tr key="empty">
                                     <td colSpan={canEdit ? 7 : 6} className="p-8 text-center text-black/40 font-semibold">
                                         No active fee structure configurations mapped to this school profile.
                                     </td>
                                 </tr>
                             ) : (
-                                feeStructures.map((fee) => {
+                                feeStructures.map((fee, index) => {
                                     const matchedClass = classes.find((c: any) => c.id === fee.classId);
                                     return (
-                                        <tr key={fee.id} className="hover:bg-neutral-50/50 transition">
+                                        <tr key={fee.id ? `fee-${fee.id}` : `fee-idx-${index}`} className="hover:bg-neutral-50/50 transition">
                                             <td className="p-4 font-bold text-black">
                                                 {fee.feeHeadName || "Unspecified Category"}
                                                 {fee.feeType && (
