@@ -17,20 +17,40 @@ export default function SchoolUsersTable({
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter] = useState("ALL");
 
-    // Search and filter logic
-    const filteredUsers = users.filter(user => {
-        const matchesSearch =
-            `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.employeeCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (user.email && user.email.toLowerCase().includes(searchQuery.toLowerCase()));
+    // Dynamic list of unique roles present in current dataset
+    const availableRoles = Array.from(
+        new Set(users.map((u) => u.roleName).filter(Boolean))
+    ) as string[];
 
-        const matchesRole = roleFilter === "ALL" || user.roleName === roleFilter;
+    // Search and filter logic
+    const filteredUsers = users.filter((user) => {
+        const query = searchQuery.toLowerCase().trim();
+        const firstName = user.firstName || "";
+        const lastName = user.lastName || "";
+        const fullName = `${firstName} ${lastName}`.toLowerCase();
+        const email = (user.email || "").toLowerCase();
+        const code = (user.employeeCode || "").toLowerCase();
+        const phone = (user.phone || "").toLowerCase();
+        const role = (user.roleName || "").toLowerCase();
+
+        const matchesSearch =
+            !query ||
+            fullName.includes(query) ||
+            email.includes(query) ||
+            code.includes(query) ||
+            phone.includes(query) ||
+            role.includes(query);
+
+        const matchesRole =
+            roleFilter === "ALL" ||
+            (user.roleName || "").toUpperCase() === roleFilter.toUpperCase();
 
         return matchesSearch && matchesRole;
     });
 
-    const getRoleBadge = (role: string) => {
-        switch (role) {
+    const getRoleBadge = (role?: string) => {
+        const normalizedRole = (role || "").toUpperCase();
+        switch (normalizedRole) {
             case "SUPER_ADMIN":
                 return "bg-black text-white border-black font-semibold";
             case "SCHOOL_ADMIN":
@@ -54,6 +74,12 @@ export default function SchoolUsersTable({
         }
     };
 
+    const getInitials = (first?: string, last?: string) => {
+        const f = first ? first.charAt(0) : "";
+        const l = last ? last.charAt(0) : "";
+        return `${f}${l}`.toUpperCase() || "US";
+    };
+
     return (
         <div className="bg-white border border-light-border rounded-xl shadow-xs overflow-hidden">
 
@@ -70,23 +96,24 @@ export default function SchoolUsersTable({
                     />
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
-                    <span className="text-[10px] font-bold text-black/40 uppercase tracking-wider hidden sm:inline">Role Group:</span>
+                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end overflow-x-auto slim-scrollbar">
+                    <span className="text-[10px] font-bold text-black/40 uppercase tracking-wider hidden sm:inline">Role Filter:</span>
                     <select
                         value={roleFilter}
                         onChange={(e) => setRoleFilter(e.target.value)}
                         className="border border-input-border text-xs px-2.5 py-1.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 bg-white font-medium cursor-pointer"
                     >
-                        <option value="ALL">All Roles</option>
-                        <option value="SUPER_ADMIN">Platform Super Admin</option>
-                        <option value="SCHOOL_ADMIN">School Admin</option>
-                        <option value="TEACHER">Educator (Teacher)</option>
-                        <option value="ACCOUNTANT">Accountant</option>
-                        <option value="LIBRARIAN">Librarian</option>
-                        <option value="RECEPTIONIST">Receptionist</option>
-                        <option value="TRANSPORT_MANAGER">Transport Manager</option>
-                        <option value="STUDENT">Active Student</option>
-                        <option value="PARENT">Parent / Guardian</option>
+                        <option value="ALL">All Roles ({users.length})</option>
+                        {availableRoles.map((role) => {
+                            const count = users.filter(
+                                (u) => (u.roleName || "").toUpperCase() === role.toUpperCase()
+                            ).length;
+                            return (
+                                <option key={role} value={role}>
+                                    {role.replace(/_/g, " ")} ({count})
+                                </option>
+                            );
+                        })}
                     </select>
                 </div>
             </div>
@@ -112,12 +139,12 @@ export default function SchoolUsersTable({
                                         {/* Column 1: Profile Details */}
                                         <td className="p-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-neutral-900 text-white font-bold text-xs flex items-center justify-center border border-light-border">
-                                                    {user.firstName[0]}{user.lastName[0]}
+                                                <div className="w-8 h-8 rounded-full bg-neutral-900 text-white font-bold text-xs flex items-center justify-center border border-light-border shrink-0">
+                                                    {getInitials(user.firstName, user.lastName)}
                                                 </div>
                                                 <div>
                                                     <span className="font-bold text-black block hover:underline cursor-pointer">
-                                                        {user.firstName} {user.lastName}
+                                                        {user.firstName || ""} {user.lastName || ""}
                                                     </span>
                                                     <div className="flex items-center gap-2.5 text-[10px] text-black/40 font-medium mt-0.5">
                                                         <span className="flex items-center gap-0.5">

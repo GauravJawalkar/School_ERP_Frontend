@@ -6,6 +6,7 @@ import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
 import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { Loader2, RefreshCw, Landmark, IndianRupee, ShieldAlert, Sparkles } from "lucide-react";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 import ActiveSubscriptionsTable from "../components/tables/ActiveSubscriptionsTable";
 
 export function SubscriptionDashboard() {
@@ -53,12 +54,7 @@ export function SubscriptionDashboard() {
   }, [allSchools]);
 
   if (isLoading) {
-    return (
-      <div className="h-[75vh] w-full flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-black" />
-        <span className="text-sm font-medium text-black/50 tracking-wide uppercase">Mapping billing databases...</span>
-      </div>
-    );
+    return <LoadingSpinner message="Mapping billing databases..." containerHeight="h-[75vh]" />;
   }
 
   const cards = [

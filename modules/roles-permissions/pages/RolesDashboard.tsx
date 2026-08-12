@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { ShieldCheck, KeyRound, Plus, Lock, Loader2, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 
 import RoleCard from "../components/RoleCard";
 import PermissionMatrix from "../components/PermissionMatrix";
@@ -112,12 +113,7 @@ export default function RolesDashboard() {
     };
 
     if (isLoading || isPermsLoading || roles.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-100 gap-3">
-                <Loader2 className="animate-spin text-neutral-800" size={24} />
-                <p className="text-xs font-mono font-bold uppercase tracking-widest text-neutral-400">Loading Access Profiles...</p>
-            </div>
-        );
+        return <LoadingSpinner message="Loading Access Profiles..." containerHeight="h-[60vh]" />;
     }
 
     return (

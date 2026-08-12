@@ -6,6 +6,7 @@ import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
 import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { Loader2, RefreshCw, SlidersHorizontal, Search } from "lucide-react";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 
 import AnalyticsStatsGrid from "../components/analytics/AnalyticsStatsGrid";
 import RegistrationGrowthChart from "../components/analytics/RegistrationGrowthChart";
@@ -89,12 +90,7 @@ export function SchoolAnalyticsDashboard() {
   }, [filteredSchools]);
 
   if (isLoading) {
-    return (
-      <div className="h-[75vh] w-full flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-black" />
-        <span className="text-sm font-medium text-black/50 tracking-wide uppercase">Assembling analytics workspace...</span>
-      </div>
-    );
+    return <LoadingSpinner message="Assembling analytics workspace..." containerHeight="h-[75vh]" />;
   }
 
   return (

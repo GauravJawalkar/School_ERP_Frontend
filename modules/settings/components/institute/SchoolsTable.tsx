@@ -112,7 +112,7 @@ export default function SchoolsTable({
                                                 )}
                                                 <div>
                                                     <h2 className="font-bold text-black">{school.schoolName}</h2>
-                                                    <p className="text-[10px] text-black/40 font-medium">/{school.slug}</p>
+                                                    <p className="text-[10px] text-black/40 font-medium">/{school.slug || (school as any).schoolSlug}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -131,8 +131,8 @@ export default function SchoolsTable({
                                         </td>
                                         <td className="p-4">
                                             <select
-                                                value={school.status}
-                                                onChange={(e) => onStatusChange(school.slug, e.target.value)}
+                                                value={school.status || (school as any).schoolStatus || "ACTIVE"}
+                                                onChange={(e) => onStatusChange(school.slug || (school as any).schoolSlug, e.target.value)}
                                                 className="px-2.5 py-1 border border-input-border rounded-md text-[11px] font-bold bg-white text-black/80 cursor-pointer"
                                             >
                                                 <option value="ACTIVE">Active</option>
@@ -143,7 +143,7 @@ export default function SchoolsTable({
                                         </td>
                                         <td className="p-4 text-right">
                                             <button
-                                                onClick={() => onManageSchool(school.slug)}
+                                                onClick={() => onManageSchool(school.slug || (school as any).schoolSlug)}
                                                 className="h-8 px-3 rounded-lg bg-black text-white hover:bg-black/90 font-bold text-xs transition cursor-pointer"
                                             >
                                                 Manage

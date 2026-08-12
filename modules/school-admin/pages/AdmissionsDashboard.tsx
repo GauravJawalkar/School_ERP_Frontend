@@ -7,6 +7,7 @@ import { BASE_URL } from "@/constants/constants";
 import { useAuthStore } from "@/store/authStore";
 import { Loader2, Plus, RefreshCw, AlertCircle, BookOpen, GraduationCap, Building2 } from "lucide-react";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 
 import AdmissionsTable from "../components/admissions/AdmissionsTable";
 import CreateAdmissionDrawer from "../components/admissions/CreateAdmissionDrawer";
@@ -211,12 +212,7 @@ export default function AdmissionsDashboard() {
     };
 
     if (isYearsLoading || (isSuperAdmin && isSchoolsLoading)) {
-        return (
-            <div className="h-[60vh] w-full flex flex-col items-center justify-center gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-black" />
-                <span className="text-xs font-semibold text-black/50 tracking-wider uppercase">Loading Admission Timelines...</span>
-            </div>
-        );
+        return <LoadingSpinner message="Loading Admission Timelines..." containerHeight="h-[60vh]" />;
     }
 
     return (
@@ -318,10 +314,7 @@ export default function AdmissionsDashboard() {
                     </p>
                 </div>
             ) : isAdmissionsLoading ? (
-                <div className="h-[40vh] w-full flex flex-col items-center justify-center gap-2">
-                    <Loader2 className="w-6 h-6 animate-spin text-black" />
-                    <span className="text-xs text-black/40">Querying admission records...</span>
-                </div>
+                <LoadingSpinner message="Querying admission records..." containerHeight="h-[40vh]" />
             ) : (
                 /* Table Display */
                 <AdmissionsTable

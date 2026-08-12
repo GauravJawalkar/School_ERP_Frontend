@@ -45,25 +45,40 @@ export default function StaffTable({
     const [roleFilter, setRoleFilter] = useState<string>("ALL");
 
     // Extract all unique roles present in the staff registry dynamically
-    const rolesList = Array.from(new Set(staff.map((s) => s.roleName))).filter(Boolean);
+    const rolesList = Array.from(new Set(staff.map((s) => s.roleName).filter(Boolean))) as string[];
 
     // Search and role filtering
     const filteredStaff = staff.filter((member) => {
-        const fullName = `${member.firstName} ${member.lastName}`.toLowerCase();
-        const matchesSearch =
-            fullName.includes(searchQuery.toLowerCase()) ||
-            member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            member.employeeCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            member.phone.includes(searchQuery) ||
-            member.designation.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            member.roleName.toLowerCase().includes(searchQuery.toLowerCase());
+        const query = searchQuery.toLowerCase().trim();
+        const firstName = member.firstName || "";
+        const lastName = member.lastName || "";
+        const fullName = `${firstName} ${lastName}`.toLowerCase();
+        const email = (member.email || "").toLowerCase();
+        const code = (member.employeeCode || "").toLowerCase();
+        const phone = (member.phone || "").toLowerCase();
+        const designation = (member.designation || "").toLowerCase();
+        const department = (member.department || "").toLowerCase();
+        const role = (member.roleName || "").toLowerCase();
 
-        const matchesRole = roleFilter === "ALL" || member.roleName === roleFilter;
+        const matchesSearch =
+            !query ||
+            fullName.includes(query) ||
+            email.includes(query) ||
+            code.includes(query) ||
+            phone.includes(query) ||
+            designation.includes(query) ||
+            department.includes(query) ||
+            role.includes(query);
+
+        const matchesRole =
+            roleFilter === "ALL" ||
+            (member.roleName || "").toUpperCase() === roleFilter.toUpperCase();
 
         return matchesSearch && matchesRole;
     });
 
-    const formatDate = (dateStr: string) => {
+    const formatDate = (dateStr?: string) => {
+        if (!dateStr) return "N/A";
         try {
             return new Date(dateStr).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -75,9 +90,11 @@ export default function StaffTable({
         }
     };
 
-    const formatCurrency = (amount: string | number) => {
+    const formatCurrency = (amount?: string | number) => {
+        if (amount === undefined || amount === null || amount === "") return "₹0";
         try {
             const num = typeof amount === "string" ? parseFloat(amount) : amount;
+            if (isNaN(num)) return "₹0";
             return new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",
@@ -88,8 +105,10 @@ export default function StaffTable({
         }
     };
 
-    const getInitials = (first: string, last: string) => {
-        return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
+    const getInitials = (first?: string, last?: string) => {
+        const f = first ? first.charAt(0) : "";
+        const l = last ? last.charAt(0) : "";
+        return `${f}${l}`.toUpperCase() || "ST";
     };
 
     return (
@@ -114,23 +133,26 @@ export default function StaffTable({
                         onClick={() => setRoleFilter("ALL")}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${roleFilter === "ALL"
                                 ? "bg-black text-white"
-                                : "bg-white text-black/55 hover:bg-neutral-55 hover:text-black border border-light-border"
+                                : "bg-white text-black/55 hover:bg-neutral-50 hover:text-black border border-light-border"
                             }`}
                     >
-                        All Staff
+                        All Staff ({staff.length})
                     </button>
-                    {rolesList.map((role) => (
-                        <button
-                            key={role}
-                            onClick={() => setRoleFilter(role)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${roleFilter === role
-                                    ? "bg-black text-white"
-                                    : "bg-white text-black/55 hover:bg-neutral-55 hover:text-black border border-light-border"
-                                }`}
-                        >
-                            {role.replace(/_/g, " ")}
-                        </button>
-                    ))}
+                    {rolesList.map((role) => {
+                        const count = staff.filter((s) => (s.roleName || "").toUpperCase() === role.toUpperCase()).length;
+                        return (
+                            <button
+                                key={role}
+                                onClick={() => setRoleFilter(role)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${roleFilter === role
+                                        ? "bg-black text-white"
+                                        : "bg-white text-black/55 hover:bg-neutral-50 hover:text-black border border-light-border"
+                                    }`}
+                            >
+                                {role.replace(/_/g, " ")} ({count})
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -167,13 +189,15 @@ export default function StaffTable({
                                 actions.push({
                                     label: "Permanently Delete",
                                     icon: <Trash2 size={14} />,
-                                    onClick: () => onDelete(member.id),
+                                    onClick: () => onDelete(member.id || member.userId),
                                     danger: true
                                 });
                             }
 
+                            const key = member.id || member.userId || member.employeeCode;
+
                             return (
-                                <tr key={member.userId} className="hover:bg-neutral-50/50 transition duration-100">
+                                <tr key={key} className="hover:bg-neutral-50/50 transition duration-100">
                                     {/* Avatar & Name */}
                                     <td className="p-4">
                                         <div className="flex items-center gap-3">
@@ -182,10 +206,10 @@ export default function StaffTable({
                                             </div>
                                             <div>
                                                 <span className="font-bold text-black block hover:underline cursor-pointer" onClick={() => onEdit(member)}>
-                                                    {member.firstName} {member.lastName}
+                                                    {member.firstName || ""} {member.lastName || ""}
                                                 </span>
                                                 <span className="text-[10px] text-black/55 font-medium block mt-0.5">
-                                                    Code: {member.employeeCode}
+                                                    Code: {member.employeeCode || "N/A"}
                                                 </span>
                                             </div>
                                         </div>
@@ -194,8 +218,8 @@ export default function StaffTable({
                                     {/* Contact */}
                                     <td className="p-4">
                                         <div className="space-y-0.5 text-black/70 font-medium">
-                                            <span className="block">{member.email}</span>
-                                            <span className="text-[10px] text-black/40 block">{member.phone}</span>
+                                            <span className="block">{member.email || "N/A"}</span>
+                                            <span className="text-[10px] text-black/40 block">{member.phone || "N/A"}</span>
                                         </div>
                                     </td>
 
@@ -205,11 +229,11 @@ export default function StaffTable({
                                             <div className="flex items-center gap-1.5">
                                                 <Award size={12} className="text-black/55" />
                                                 <span className="text-[10px] font-bold text-black uppercase tracking-wider">
-                                                    {member.roleName.replace(/_/g, " ")}
+                                                    {(member.roleName || "STAFF").replace(/_/g, " ")}
                                                 </span>
                                             </div>
                                             <span className="text-[10px] text-black/55 font-medium block">
-                                                {member.designation} • {member.department || "General"}
+                                                {member.designation || "Staff Member"} • {member.department || "General"}
                                             </span>
                                         </div>
                                     </td>

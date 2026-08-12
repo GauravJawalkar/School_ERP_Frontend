@@ -136,6 +136,8 @@ export interface SchoolUser {
     isActive: boolean;
 }
 
+export type SystemUser = SchoolUser;
+
 // DTOs
 export interface CreateClassDTO {
     className: string;

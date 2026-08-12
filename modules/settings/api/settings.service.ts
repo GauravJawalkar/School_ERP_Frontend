@@ -21,7 +21,21 @@ export const settingsService = {
     // School Directory & Institute Management
     getAllSchools: async (): Promise<SchoolSummary[]> => {
         const res = await ApiClient.get(`${BASE_URL}/institute/allSchools`);
-        return res.data?.data || [];
+        const rawData = res.data?.data || [];
+        return rawData.map((item: any) => ({
+            id: item.id || item.schoolId,
+            schoolName: item.schoolName,
+            slug: item.slug || item.schoolSlug,
+            affiliationNumber: item.affiliationNumber,
+            status: item.status || item.schoolStatus || "ACTIVE",
+            address: item.address,
+            city: item.city || item.schoolInfo?.address_details?.city,
+            state: item.state || item.schoolInfo?.address_details?.state,
+            logoUrl: item.logoUrl,
+            totalStudents: Number(item.totalStudents || 0),
+            totalStaff: Number(item.totalStaff || 0),
+            createdAt: item.createdAt,
+        }));
     },
 
     getSchoolDetails: async (slug: string): Promise<SchoolDetails> => {

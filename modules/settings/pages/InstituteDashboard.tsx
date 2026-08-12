@@ -13,6 +13,8 @@ import {
 } from "@/modules/settings";
 
 
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
+
 // Sub-components
 import SchoolsTable from "../components/institute/SchoolsTable";
 import SchoolProfileOverview from "../components/institute/SchoolProfileOverview";
@@ -96,12 +98,7 @@ export default function InstituteDashboard() {
 
     // --- RENDER 2: Specific School Detailed Workspace ---
     if (isDetailsLoading) {
-        return (
-            <div className="h-[60vh] w-full flex flex-col items-center justify-center gap-3">
-                <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs font-semibold text-black/50 tracking-wider uppercase">Loading campus configurations...</span>
-            </div>
-        );
+        return <LoadingSpinner message="Loading campus configurations..." containerHeight="h-[60vh]" />;
     }
 
     if (isDetailsError || !schoolDetails) {

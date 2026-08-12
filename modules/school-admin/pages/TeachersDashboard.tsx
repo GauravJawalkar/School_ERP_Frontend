@@ -9,6 +9,7 @@ import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { usePermission } from "@/hooks/usePermission";
 import { Loader2, Plus, GraduationCap, ShieldAlert, RefreshCw, Landmark } from "lucide-react";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 
 import TeachersTable from "../components/teachers/TeachersTable";
 import CreateEditTeacherDrawer from "../components/teachers/CreateEditTeacherDrawer";
@@ -151,12 +152,7 @@ export default function TeachersDashboard() {
     };
 
     if (isSuperAdmin && isSchoolsLoading) {
-        return (
-            <div className="h-[60vh] w-full flex flex-col items-center justify-center gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-black" />
-                <span className="text-xs font-semibold text-black/50 tracking-wider uppercase">Loading Campus Directory...</span>
-            </div>
-        );
+        return <LoadingSpinner message="Loading Campus Directory..." containerHeight="h-[60vh]" />;
     }
 
     return (
@@ -241,10 +237,7 @@ export default function TeachersDashboard() {
                         </p>
                     </div>
                 ) : isTeachersLoading ? (
-                    <div className="h-[40vh] w-full flex flex-col items-center justify-center gap-2">
-                        <Loader2 className="w-6 h-6 animate-spin text-black" />
-                        <span className="text-xs text-black/40">Loading teachers directory...</span>
-                    </div>
+                    <LoadingSpinner message="Loading teachers directory..." containerHeight="h-[40vh]" />
                 ) : (
                     <TeachersTable
                         teachers={teachersList}

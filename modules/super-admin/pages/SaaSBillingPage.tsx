@@ -7,6 +7,7 @@ import { BASE_URL } from "@/constants/constants";
 import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { Loader2, RefreshCw, Plus } from "lucide-react";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 
 // Child imports
 import SaaSBillingStats from "../components/saas-billing/SaaSBillingStats";
@@ -102,12 +103,7 @@ export function SaaSBillingPage() {
     });
 
     if (isLoading) {
-        return (
-            <div className="h-[75vh] w-full flex flex-col items-center justify-center gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-black" />
-                <span className="text-sm font-medium text-black/50 tracking-wide uppercase">Assembling platform balance sheets...</span>
-            </div>
-        );
+        return <LoadingSpinner message="Assembling platform balance sheets..." containerHeight="h-[75vh]" />;
     }
 
     return (

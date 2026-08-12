@@ -8,6 +8,7 @@ import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { usePermission } from "@/hooks/usePermission";
 import { Loader2, Plus, UserCheck, Users, ShieldAlert, RefreshCw, Landmark } from "lucide-react";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 
 import StaffTable from "../components/staff/StaffTable";
 import CreateEditStaffDrawer from "../components/staff/CreateEditStaffDrawer";
@@ -37,7 +38,13 @@ export default function StaffDashboard() {
         queryKey: ["getSchoolsSettingsList"],
         queryFn: async () => {
             const response = await ApiClient.get(`${BASE_URL}/institute/allSchools`);
-            return response.data?.data || [];
+            const rawSchools = response.data?.data || [];
+            return rawSchools.map((s: any) => ({
+                schoolId: Number(s.id || s.schoolId),
+                schoolName: s.schoolName || s.name || "School",
+                schoolSlug: s.slug || s.schoolSlug || "",
+                schoolStatus: s.status || s.schoolStatus || "ACTIVE"
+            }));
         },
         enabled: isSuperAdmin
     });
@@ -60,7 +67,7 @@ export default function StaffDashboard() {
     } = useQuery({
         queryKey: ["getStaffList", selectedSchoolId],
         queryFn: async () => {
-            let url = `${BASE_URL}/admin/directory`;
+            let url = `${BASE_URL}/admin/staff`;
             if (isSuperAdmin && selectedSchoolId) {
                 url += `?instituteId=${selectedSchoolId}`;
             }
@@ -93,7 +100,7 @@ export default function StaffDashboard() {
 
     // Mutation: Update Existing Staff Details
     const updateStaffMutation = useMutation({
-        mutationFn: async ({ staffId, payload }: { staffId: number; payload: any }) => {
+        mutationFn: async ({ staffId, payload }: { staffId: number | string; payload: any }) => {
             const response = await ApiClient.put(`${BASE_URL}/admin/updateStaff/${staffId}`, payload);
             return response.data;
         },
@@ -129,7 +136,7 @@ export default function StaffDashboard() {
 
     // Mutation: Delete Staff Member
     const deleteStaffMutation = useMutation({
-        mutationFn: async (staffId: number) => {
+        mutationFn: async (staffId: number | string) => {
             const response = await ApiClient.delete(`${BASE_URL}/admin/deleteStaff/${staffId}`);
             return response.data;
         },
@@ -144,7 +151,8 @@ export default function StaffDashboard() {
 
     const handleCreateOrEditSubmit = (formData: any) => {
         if (selectedStaff) {
-            updateStaffMutation.mutate({ staffId: selectedStaff.id, payload: formData });
+            const targetId = (selectedStaff.id && selectedStaff.id > 0) ? selectedStaff.id : selectedStaff.userId;
+            updateStaffMutation.mutate({ staffId: targetId, payload: formData });
         } else {
             createStaffMutation.mutate(formData);
         }
@@ -164,19 +172,14 @@ export default function StaffDashboard() {
         toggleStatusMutation.mutate({ userId, isActive });
     };
 
-    const handleDeleteStaff = (staffId: number) => {
+    const handleDeleteStaff = (staffId: number | string) => {
         if (window.confirm("Are you sure you want to permanently remove this staff profile?")) {
             deleteStaffMutation.mutate(staffId);
         }
     };
 
     if (isSuperAdmin && isSchoolsLoading) {
-        return (
-            <div className="h-[60vh] w-full flex flex-col items-center justify-center gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-black" />
-                <span className="text-xs font-semibold text-black/50 tracking-wider uppercase">Querying Campus Directory...</span>
-            </div>
-        );
+        return <LoadingSpinner message="Querying Campus Directory..." containerHeight="h-[60vh]" />;
     }
 
     return (
@@ -261,10 +264,7 @@ export default function StaffDashboard() {
                         </p>
                     </div>
                 ) : isStaffLoading ? (
-                    <div className="h-[40vh] w-full flex flex-col items-center justify-center gap-2">
-                        <Loader2 className="w-6 h-6 animate-spin text-black" />
-                        <span className="text-xs text-black/40">Loading staff profiles...</span>
-                    </div>
+                    <LoadingSpinner message="Loading staff profiles..." containerHeight="h-[40vh]" />
                 ) : (
                     <StaffTable
                         staff={staffList}

@@ -8,6 +8,7 @@ import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { usePermission } from "@/hooks/usePermission";
 import { Loader2, Plus, RefreshCw, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 
 import AcademicYearStats from "../components/academic-year/AcademicYearStats";
 import AcademicYearTable from "../components/academic-year/AcademicYearTable";
@@ -117,12 +118,7 @@ export default function AcademicYearDashboard() {
     };
 
     if (isLoading) {
-        return (
-            <div className="h-[60vh] w-full flex flex-col items-center justify-center gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-black" />
-                <span className="text-xs font-semibold text-black/50 tracking-wider uppercase">Loading academic calendar cycles...</span>
-            </div>
-        );
+        return <LoadingSpinner message="Loading academic calendar cycles..." containerHeight="h-[60vh]" />;
     }
 
     return (

@@ -8,6 +8,7 @@ import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { Loader2, Plus, UserCog, RefreshCw, KeyRound } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 
 import SchoolUsersStats from "../components/users/SchoolUsersStats";
 import SchoolUsersTable from "../components/users/SchoolUsersTable";
@@ -183,10 +184,7 @@ export default function SchoolUsersDashboard() {
 
             {/* Loading Spinner */}
             {isLoading ? (
-                <div className="h-[40vh] w-full flex flex-col items-center justify-center gap-3">
-                    <Loader2 className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    <span className="text-xs font-semibold text-black/50 tracking-wider uppercase">Fetching user profiles...</span>
-                </div>
+                <LoadingSpinner message="Fetching user profiles..." containerHeight="h-[40vh]" />
             ) : (
                 <>
                     {/* Stats overview */}

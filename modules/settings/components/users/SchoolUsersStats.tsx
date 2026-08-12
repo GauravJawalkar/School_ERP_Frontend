@@ -10,8 +10,8 @@ interface SchoolUsersStatsProps {
 export default function SchoolUsersStats({ users = [] }: SchoolUsersStatsProps) {
     const totalUsers = users.length;
     const activeUsers = users.filter(u => u.isActive).length;
-    const teachersCount = users.filter(u => u.roleName === "TEACHER").length;
-    const financeCount = users.filter(u => u.roleName === "ACCOUNTANT").length;
+    const teachersCount = users.filter(u => (u.roleName || "").toUpperCase() === "TEACHER").length;
+    const financeCount = users.filter(u => (u.roleName || "").toUpperCase() === "ACCOUNTANT").length;
     const suspendedCount = users.filter(u => !u.isActive).length;
 
     const stats = [

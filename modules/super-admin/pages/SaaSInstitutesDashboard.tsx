@@ -6,6 +6,7 @@ import { BASE_URL } from "@/constants/constants";
 import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { Loader2, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/shared_components/Commons/LoadingSpinner";
 
 import SaaSStatsGrid from "../components/stats/SaaSStatsGrid";
 import SaaSInstitutesTable from "../components/tables/SaaSInstitutesTable";
@@ -72,14 +73,7 @@ export function SaaSInstitutesDashboard() {
   });
 
   if (isLoading) {
-    return (
-      <div className="h-[75vh] w-full flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-black" />
-        <span className="text-sm font-medium text-black/50 tracking-wide uppercase">
-          Assembling platform directories...
-        </span>
-      </div>
-    );
+    return <LoadingSpinner message="Assembling platform directories..." containerHeight="h-[75vh]" />;
   }
 
   return (
