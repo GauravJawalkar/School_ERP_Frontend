@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Search, Mail, Phone, Calendar, BookOpen, Trash2, CheckCircle2, AlertTriangle, ArrowUpRight, Check, Eye } from "lucide-react";
-import TableActionMenu from "@/components/Commons/TableActionMenu";
+import TableActionMenu from "@/shared_components/Commons/TableActionMenu";
 import { Action } from "@/interfaces/interface";
 
 interface AdmissionApplication {
@@ -99,11 +99,10 @@ export default function AdmissionsTable({
                         <button
                             key={status}
                             onClick={() => setStatusFilter(status)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
-                                statusFilter === status
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${statusFilter === status
                                     ? "bg-black text-white"
                                     : "bg-white text-black/55 hover:bg-neutral-55 hover:text-black border border-light-border"
-                            }`}
+                                }`}
                         >
                             {status === "ALL" ? "All Requests" : status === "PENDING" ? "Pending" : status === "INQUIRY" ? "Inquiry" : status === "APPROVED" ? "Approved" : "Rejected"}
                         </button>

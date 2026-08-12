@@ -1,6 +1,6 @@
 "use client"
 
-import ErrorFallback from "@/components/Commons/Errors/ErrorFallback";
+import ErrorFallback from "@/shared_components/Commons/Errors/ErrorFallback";
 import { BASE_URL } from "@/constants/constants";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { useQuery } from "@tanstack/react-query";
@@ -9,8 +9,8 @@ import SchoolStats from "../components/school-details/SchoolStats";
 import SchoolAdminsSection from "../components/school-details/SchoolAdminsSection";
 import SchoolSubscriptionSection from "../components/school-details/SchoolSubscriptionSection";
 import SchoolAcademicsSection from "../components/school-details/SchoolAcademicsSection";
-import SchoolHeroSkeleton from "@/components/Commons/Skeletons/SchoolHeroSkeleton";
-import SchoolStatsSkeleton from "@/components/Commons/Skeletons/SchoolStatsSkeleton";
+import SchoolHeroSkeleton from "@/shared_components/Commons/Skeletons/SchoolHeroSkeleton";
+import SchoolStatsSkeleton from "@/shared_components/Commons/Skeletons/SchoolStatsSkeleton";
 import React from "react";
 
 export function SchoolDetails({ schoolSlug }: { schoolSlug: string }) {

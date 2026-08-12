@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
-import { CanAccess } from "@/components/Auth/CanAccess";
+import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { Loader2, RefreshCw, CreditCard, Layers, Plus, Sliders, Check } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -376,11 +376,10 @@ export function SaaSSubscriptionsPage() {
                                                         <h4 className="text-sm font-bold text-black">{plan.name}</h4>
                                                         <p className="text-[10px] font-mono text-black/40 mt-0.5 lowercase">{plan.planId}</p>
                                                     </div>
-                                                    <span className={`px-2 py-0.5 border rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                                                        plan.isActive 
-                                                            ? "bg-neutral-50 border-light-border text-black/60" 
+                                                    <span className={`px-2 py-0.5 border rounded-full text-[9px] font-bold uppercase tracking-wider ${plan.isActive
+                                                            ? "bg-neutral-50 border-light-border text-black/60"
                                                             : "bg-red-50 border-red-200 text-red-600"
-                                                    }`}>
+                                                        }`}>
                                                         {plan.isActive ? "Active" : "Inactive"}
                                                     </span>
                                                 </div>

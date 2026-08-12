@@ -1,6 +1,6 @@
 "use client"
-import ErrorFallback from '@/components/Commons/Errors/ErrorFallback'
-import EditSchoolDetailsSkeleton from '@/components/Commons/Skeletons/EditSchoolDetailsSkeleton'
+import ErrorFallback from '@/shared_components/Commons/Errors/ErrorFallback'
+import EditSchoolDetailsSkeleton from '@/shared_components/Commons/Skeletons/EditSchoolDetailsSkeleton'
 import AddSchoolForm from '@/modules/settings/components/forms/AddSchoolForm'
 import { BASE_URL } from '@/constants/constants'
 import { ApiClient } from '@/interceptors/ApiClient'

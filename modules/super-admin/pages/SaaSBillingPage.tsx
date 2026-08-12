@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
-import { CanAccess } from "@/components/Auth/CanAccess";
+import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { Loader2, RefreshCw, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -27,7 +27,7 @@ interface Transaction {
 
 export function SaaSBillingPage() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    
+
     const queryClient = useQueryClient();
 
     // Fetch all invoice statement transactions
@@ -113,7 +113,7 @@ export function SaaSBillingPage() {
     return (
         <CanAccess role="SUPER_ADMIN">
             <div className="space-y-7 max-w-7xl mx-auto pb-10">
-                
+
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-light-border pb-5">
                     <div className="flex items-center gap-3">
@@ -131,7 +131,7 @@ export function SaaSBillingPage() {
                         >
                             <Plus size={13} /> Issue Invoice
                         </button>
-                        
+
                         <button
                             type="button"
                             onClick={() => refetch()}
@@ -151,14 +151,14 @@ export function SaaSBillingPage() {
                 <SaaSBillingHistoryChart />
 
                 {/* Issued Invoices Registry Table */}
-                <SaaSTransactionsTable 
+                <SaaSTransactionsTable
                     transactions={transactions}
                     onReconcile={(id) => reconcileMutation.mutate(id)}
                     onResendInvoice={(id, name) => resendMutation.mutate({ invoiceId: id, schoolName: name })}
                 />
 
                 {/* ── MANUAL INVOICE GENERATOR SLIDE-OVER DRAWER ── */}
-                <SaaSInvoiceDrawer 
+                <SaaSInvoiceDrawer
                     isOpen={isDrawerOpen}
                     onClose={() => setIsDrawerOpen(false)}
                     onGenerate={(newInv) => generateInvoiceMutation.mutate(newInv)}

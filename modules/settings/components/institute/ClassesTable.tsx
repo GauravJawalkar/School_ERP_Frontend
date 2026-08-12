@@ -19,7 +19,7 @@ import AddSectionDrawer from "./AddSectionDrawer";
 import EditSectionDrawer from "./EditSectionDrawer";
 import DeleteClassDrawer from "./DeleteClassDrawer";
 import DeleteSectionDrawer from "./DeleteSectionDrawer";
-import TableActionMenu from "@/components/Commons/TableActionMenu";
+import TableActionMenu from "@/shared_components/Commons/TableActionMenu";
 import { CampusClass, CampusSection, StaffMember } from "../../types/settings.types";
 
 interface ClassesTableProps {

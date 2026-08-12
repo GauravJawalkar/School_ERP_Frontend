@@ -1,16 +1,16 @@
 "use client"
 import { useEffect, useRef, useState } from 'react'
-import { CanAccess } from '@/components/Auth/CanAccess'
+import { CanAccess } from '@/shared_components/Auth/CanAccess'
 import { Ban, Check, CircleCheckBig, CirclePlus, CircleQuestionMark, Pencil, Settings2, ShieldAlert, Trash2, UserCog } from 'lucide-react'
 import Link from 'next/link';
-import TableActionMenu from '@/components/Commons/TableActionMenu';
+import TableActionMenu from '@/shared_components/Commons/TableActionMenu';
 import { ApiClient } from '@/interceptors/ApiClient';
 import { BASE_URL } from '@/constants/constants';
 import { useQuery } from '@tanstack/react-query';
 import { schoolDataApi } from '@/interfaces/interface';
 import { formatDate } from '@/lib/helpers/formatDate';
-import TableSkeleton from '@/components/Commons/Skeletons/TableSkeleton';
-import ErrorFallback from '@/components/Commons/Errors/ErrorFallback';
+import TableSkeleton from '@/shared_components/Commons/Skeletons/TableSkeleton';
+import ErrorFallback from '@/shared_components/Commons/Errors/ErrorFallback';
 import { useRouter } from 'next/navigation';
 
 const tableColumns = ['School Name', 'City', 'Email', 'Phone', 'Students', 'Staff', 'Status', 'Created At']

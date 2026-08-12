@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Search, Edit, Trash2, CheckCircle2, XCircle, ShieldAlert, Award } from "lucide-react";
-import TableActionMenu from "@/components/Commons/TableActionMenu";
+import TableActionMenu from "@/shared_components/Commons/TableActionMenu";
 import { Action } from "@/interfaces/interface";
 import { usePermission } from "@/hooks/usePermission";
 
@@ -112,11 +112,10 @@ export default function StaffTable({
                 <div className="flex items-center gap-1 overflow-x-auto slim-scrollbar w-full md:w-auto self-start md:self-auto pb-1 md:pb-0">
                     <button
                         onClick={() => setRoleFilter("ALL")}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
-                            roleFilter === "ALL"
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${roleFilter === "ALL"
                                 ? "bg-black text-white"
                                 : "bg-white text-black/55 hover:bg-neutral-55 hover:text-black border border-light-border"
-                        }`}
+                            }`}
                     >
                         All Staff
                     </button>
@@ -124,11 +123,10 @@ export default function StaffTable({
                         <button
                             key={role}
                             onClick={() => setRoleFilter(role)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
-                                roleFilter === role
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${roleFilter === role
                                     ? "bg-black text-white"
                                     : "bg-white text-black/55 hover:bg-neutral-55 hover:text-black border border-light-border"
-                            }`}
+                                }`}
                         >
                             {role.replace(/_/g, " ")}
                         </button>
@@ -226,11 +224,10 @@ export default function StaffTable({
 
                                     {/* Status */}
                                     <td className="p-4 text-center">
-                                        <span className={`inline-flex items-center gap-1.5 text-[9px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-wider select-none ${
-                                            member.isActive
+                                        <span className={`inline-flex items-center gap-1.5 text-[9px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-wider select-none ${member.isActive
                                                 ? "bg-green-50 text-green-700 border-green-200"
                                                 : "bg-red-50 text-red-700 border-red-200"
-                                        }`}>
+                                            }`}>
                                             <span className={`w-1 h-1 rounded-full ${member.isActive ? "bg-green-500" : "bg-red-500"}`} />
                                             {member.isActive ? "Active" : "Inactive"}
                                         </span>

@@ -17,7 +17,7 @@ import MapClassFeeDrawer from "./MapClassFeeDrawer";
 import AddFeeCategoryDrawer from "./AddFeeCategoryDrawer";
 import EditClassFeeDrawer from "./EditClassFeeDrawer";
 import DeleteFeeStructureDrawer from "./DeleteFeeStructureDrawer";
-import TableActionMenu from "@/components/Commons/TableActionMenu";
+import TableActionMenu from "@/shared_components/Commons/TableActionMenu";
 import { FeeStructure } from "../../types/schoolAdmin.types";
 
 interface FeesTableProps {
@@ -258,11 +258,10 @@ export default function FeesTable({
                                             </td>
                                             <td className="p-4">
                                                 <span
-                                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                                        fee.isCompulsory
+                                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${fee.isCompulsory
                                                             ? "bg-green-50 text-green-700 border border-green-200"
                                                             : "bg-gray-50 text-gray-500 border border-light-border"
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {fee.isCompulsory ? "Compulsory" : "Optional"}
                                                 </span>

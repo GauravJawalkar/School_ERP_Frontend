@@ -1,6 +1,6 @@
 "use client";
 
-import { CanAccess } from "@/components/Auth/CanAccess";
+import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { StatItem } from "@/interfaces/interface";
 import { CircleQuestionMark, Gift, ShieldCheck, ShieldOff } from "lucide-react";
 

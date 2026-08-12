@@ -1,5 +1,5 @@
-import Logout from "@/components/Auth/Logout";
-import Stats from "@/components/Commons/Stats";
+import Logout from "@/shared_components/Auth/Logout";
+import Stats from "@/shared_components/Commons/Stats";
 import {
   MonthlyRevenueChart as RevenueChart,
   RevenueByPlanChart,

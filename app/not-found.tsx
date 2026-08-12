@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Sidebar } from "@/components/Sidebar/Sidebar";
-import { Header } from "@/components/Navigation/Header";
+import { Sidebar } from "@/shared_components/Sidebar/Sidebar";
+import { Header } from "@/shared_components/Navigation/Header";
 import { Compass, ArrowLeft, Home, Settings, ShieldAlert, Users } from "lucide-react";
 
 export default function NotFound() {

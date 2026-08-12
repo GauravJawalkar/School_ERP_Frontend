@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Search, BookOpen, Edit, CheckCircle2, XCircle, ShieldAlert } from "lucide-react";
-import TableActionMenu from "@/components/Commons/TableActionMenu";
+import TableActionMenu from "@/shared_components/Commons/TableActionMenu";
 import { Action } from "@/interfaces/interface";
 import { usePermission } from "@/hooks/usePermission";
 
@@ -42,14 +42,14 @@ export default function TeachersTable({
 }: TeachersTableProps) {
     const { can } = usePermission();
     const canUpdate = can("teacher.update");
-    
+
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter] = useState<"ALL" | "CLASS_TEACHER" | "SUBJECT_TEACHER">("ALL");
 
     // Search and role filtering
     const filteredTeachers = teachers.filter((teacher) => {
         const fullName = `${teacher.firstName} ${teacher.lastName}`.toLowerCase();
-        
+
         const matchesSearch =
             fullName.includes(searchQuery.toLowerCase()) ||
             teacher.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -106,11 +106,10 @@ export default function TeachersTable({
                         <button
                             key={filter}
                             onClick={() => setRoleFilter(filter)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${
-                                roleFilter === filter
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shrink-0 ${roleFilter === filter
                                     ? "bg-black text-white"
                                     : "bg-white text-black/55 hover:bg-neutral-55 hover:text-black border border-light-border"
-                            }`}
+                                }`}
                         >
                             {filter === "ALL" ? "All Teachers" : filter === "CLASS_TEACHER" ? "Class Teachers" : "Subject Teachers"}
                         </button>
@@ -238,11 +237,10 @@ export default function TeachersTable({
 
                                     {/* Status Badge */}
                                     <td className="p-4 text-center">
-                                        <span className={`inline-flex items-center gap-1.5 text-[9px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-wider select-none ${
-                                            teacher.isActive
+                                        <span className={`inline-flex items-center gap-1.5 text-[9px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-wider select-none ${teacher.isActive
                                                 ? "bg-green-50 text-green-700 border-green-200"
                                                 : "bg-red-50 text-red-700 border-red-200"
-                                        }`}>
+                                            }`}>
                                             <span className={`w-1 h-1 rounded-full ${teacher.isActive ? "bg-green-500" : "bg-red-500"}`} />
                                             {teacher.isActive ? "Active" : "Inactive"}
                                         </span>

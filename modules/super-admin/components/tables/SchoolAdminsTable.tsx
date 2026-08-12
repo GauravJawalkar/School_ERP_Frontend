@@ -1,15 +1,15 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
-import { CanAccess } from '@/components/Auth/CanAccess'
+import { CanAccess } from '@/shared_components/Auth/CanAccess'
 import { Check, CircleCheckBig, CirclePlus, CircleQuestionMark, ChevronDown, Pencil, Settings2, ShieldAlert, Trash2, UserCog, UserRound, BadgeCheck, BadgeX, Plus } from 'lucide-react'
 import Link from 'next/link';
-import TableActionMenu from '@/components/Commons/TableActionMenu';
+import TableActionMenu from '@/shared_components/Commons/TableActionMenu';
 import { ApiClient } from '@/interceptors/ApiClient';
 import { BASE_URL } from '@/constants/constants';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { schoolAdminsApi } from '@/interfaces/interface';
-import TableSkeleton from '@/components/Commons/Skeletons/TableSkeleton';
-import ErrorFallback from '@/components/Commons/Errors/ErrorFallback';
+import TableSkeleton from '@/shared_components/Commons/Skeletons/TableSkeleton';
+import ErrorFallback from '@/shared_components/Commons/Errors/ErrorFallback';
 import { useRouter } from 'next/navigation';
 import AddAdminModal from '../drawers/AddAdminModal';
 import toast from 'react-hot-toast';

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Search, Calendar, CheckCircle2, AlertCircle } from "lucide-react";
 import { formatDate } from "@/lib/helpers/formatDate";
 import { AcademicYearTableProps, AcademicYear } from "../../types/settings.types";
-import { CanAccess } from "@/components/Auth/CanAccess";
+import { CanAccess } from "@/shared_components/Auth/CanAccess";
 
 export default function AcademicYearTable({
     years = [],

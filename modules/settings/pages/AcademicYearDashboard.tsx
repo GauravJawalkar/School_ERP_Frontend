@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
-import { CanAccess } from "@/components/Auth/CanAccess";
+import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { usePermission } from "@/hooks/usePermission";
 import { Loader2, Plus, RefreshCw, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";

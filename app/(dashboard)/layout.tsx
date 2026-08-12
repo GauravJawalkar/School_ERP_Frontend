@@ -1,8 +1,8 @@
 "use client"
 
 import "../globals.css";
-import { Sidebar } from "@/components/Sidebar/Sidebar";
-import { Header } from "@/components/Navigation/Header";
+import { Sidebar } from "@/shared_components/Sidebar/Sidebar";
+import { Header } from "@/shared_components/Navigation/Header";
 import { useState } from "react";
 
 

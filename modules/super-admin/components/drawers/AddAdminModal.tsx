@@ -1,6 +1,6 @@
 "use client"
-import { RequiredBadge } from "@/components/Commons/RequiredBadge";
-import FormInput from "@/components/Forms/FormInput";
+import { RequiredBadge } from "@/shared_components/Commons/RequiredBadge";
+import FormInput from "@/shared_components/Forms/FormInput";
 import { BASE_URL } from "@/constants/constants";
 import { schoolAdmin } from "@/constants/roles.constants";
 import { ApiClient } from "@/interceptors/ApiClient";

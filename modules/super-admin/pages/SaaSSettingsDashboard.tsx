@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
-import { CanAccess } from "@/components/Auth/CanAccess";
+import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { Loader2, Save, Shield, CreditCard, Cloud, Server, Mail } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -203,11 +203,10 @@ export function SaaSSettingsDashboard() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`w-full px-3 py-2.5 rounded-lg font-semibold text-left transition flex items-center gap-2 cursor-pointer ${
-                  activeTab === tab.id
+                className={`w-full px-3 py-2.5 rounded-lg font-semibold text-left transition flex items-center gap-2 cursor-pointer ${activeTab === tab.id
                     ? "bg-black text-white"
                     : "text-black/60 bg-white border border-light-border hover:bg-neutral-50"
-                }`}
+                  }`}
               >
                 {tab.icon}
                 {tab.label}

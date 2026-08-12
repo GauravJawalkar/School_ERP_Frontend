@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ApiClient } from "@/interceptors/ApiClient";
 import { BASE_URL } from "@/constants/constants";
-import { CanAccess } from "@/components/Auth/CanAccess";
+import { CanAccess } from "@/shared_components/Auth/CanAccess";
 import { Loader2, RefreshCw, SlidersHorizontal, Search } from "lucide-react";
 
 import AnalyticsStatsGrid from "../components/analytics/AnalyticsStatsGrid";

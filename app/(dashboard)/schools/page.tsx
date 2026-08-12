@@ -1,4 +1,4 @@
-import Stats from "@/components/Commons/Stats";
+import Stats from "@/shared_components/Commons/Stats";
 import { InstituteTable } from "@/modules/super-admin";
 import { dummySchoolStats } from "@/data/dummySuperAdminStats";
 
