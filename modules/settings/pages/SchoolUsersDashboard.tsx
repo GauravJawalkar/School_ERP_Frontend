@@ -149,7 +149,7 @@ export default function SchoolUsersDashboard() {
                         <RefreshCw size={14} className={isRefetching ? "animate-spin" : ""} />
                     </button>
 
-                    <CanAccess role={["SCHOOL_ADMIN", "SUPER_ADMIN"]}>
+                    <CanAccess anyRole={["SCHOOL_ADMIN", "SUPER_ADMIN"]}>
                         <button
                             onClick={() => setIsDrawerOpen(true)}
                             className="h-9 px-4 rounded-lg bg-black text-white text-xs font-semibold hover:bg-black/90 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
