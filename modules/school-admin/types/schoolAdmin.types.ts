@@ -3,6 +3,7 @@ export interface SchoolSummary {
     schoolName: string;
     slug: string;
     logoUrl?: string;
+    address?: string;
     medium?: string;
     affiliationNumber?: string;
     status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "PENDING_APPROVAL" | string;
@@ -55,6 +56,7 @@ export interface CampusSection {
 export interface CampusClass {
     id: number;
     className: string;
+    board?: string;
     capacity: number | null;
     orderIndex: number | null;
     academicYearId: number;
@@ -117,6 +119,7 @@ export interface SchoolDetails extends SchoolSummary {
 // DTOs
 export interface CreateClassDTO {
     className: string;
+    board?: string;
     academicYearId: number;
     capacity: number | null;
     instituteId?: number;
@@ -124,6 +127,7 @@ export interface CreateClassDTO {
 
 export interface UpdateClassDTO {
     className?: string;
+    board?: string;
     academicYearId?: number;
     capacity?: number | null;
 }

@@ -9,11 +9,13 @@ interface AddClassDrawerProps {
     onClose: () => void;
     onSave: (payload: {
         className: string;
+        board?: string;
         academicYearId: number;
         capacity: number | null;
     }) => void;
     isPending: boolean;
     academicYears: any[];
+    affiliatedBoards?: string[];
 }
 
 export default function AddClassDrawer({
@@ -21,18 +23,25 @@ export default function AddClassDrawer({
     onClose,
     onSave,
     isPending,
-    academicYears
+    academicYears,
+    affiliatedBoards = []
 }: AddClassDrawerProps) {
     const [animateIn, setAnimateIn] = useState(false);
 
     // Form inputs
     const [classNameInput, setClassNameInput] = useState("");
+    const [board, setBoard] = useState("CBSE");
     const [academicYearId, setAcademicYearId] = useState("");
     const [capacity, setCapacity] = useState("");
+
+    const availableBoards = affiliatedBoards.length > 0
+        ? affiliatedBoards
+        : ["CBSE", "ICSE", "STATE_BOARD", "IB", "CAMBRIDGE", "NIOS", "OTHER"];
 
     useEffect(() => {
         if (isOpen) {
             setClassNameInput("");
+            setBoard(availableBoards[0] || "CBSE");
             setAcademicYearId("");
             setCapacity("");
             const timer = setTimeout(() => setAnimateIn(true), 50);
@@ -61,6 +70,7 @@ export default function AddClassDrawer({
 
         onSave({
             className: classNameInput.trim(),
+            board: board || "CBSE",
             academicYearId: Number(academicYearId),
             capacity: capacity ? Number(capacity) : null
         });
@@ -89,7 +99,7 @@ export default function AddClassDrawer({
                             </div>
                             <div>
                                 <h3 className="text-sm font-semibold text-black tracking-tight">Create Academic Class</h3>
-                                <p className="text-xs text-black/40 font-normal">Configure classroom boundaries and capacity limit</p>
+                                <p className="text-xs text-black/40 font-normal">Configure classroom boundaries, board, and capacity limit</p>
                             </div>
                         </div>
                         <button
@@ -115,6 +125,24 @@ export default function AddClassDrawer({
                                 onChange={(e) => setClassNameInput(e.target.value)}
                                 className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold"
                             />
+                        </div>
+
+                        {/* Educational Board Selection */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">
+                                Educational Board
+                            </label>
+                            <select
+                                value={board}
+                                onChange={(e) => setBoard(e.target.value)}
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold cursor-pointer"
+                            >
+                                {availableBoards.map((b: string) => (
+                                    <option key={b} value={b}>
+                                        {b}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         {/* Academic Year Selection */}

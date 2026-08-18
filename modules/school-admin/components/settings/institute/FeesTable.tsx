@@ -18,7 +18,7 @@ import AddFeeCategoryDrawer from "./AddFeeCategoryDrawer";
 import EditClassFeeDrawer from "./EditClassFeeDrawer";
 import DeleteFeeStructureDrawer from "./DeleteFeeStructureDrawer";
 import TableActionMenu from "@/shared_components/Commons/TableActionMenu";
-import { FeeStructure } from "../../types/schoolAdmin.types";
+import { FeeStructure } from "@/modules/school-admin/types/schoolAdmin.types";
 
 interface FeesTableProps {
     feeStructures: FeeStructure[];

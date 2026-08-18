@@ -56,6 +56,7 @@ export interface CampusSection {
 export interface CampusClass {
     id: number;
     className: string;
+    board?: string;
     capacity: number | null;
     orderIndex: number | null;
     academicYearId: number;
@@ -141,6 +142,7 @@ export type SystemUser = SchoolUser;
 // DTOs
 export interface CreateClassDTO {
     className: string;
+    board?: string;
     academicYearId: number;
     capacity: number | null;
     instituteId?: number;
@@ -148,6 +150,7 @@ export interface CreateClassDTO {
 
 export interface UpdateClassDTO {
     className?: string;
+    board?: string;
     academicYearId?: number;
     capacity?: number | null;
 }

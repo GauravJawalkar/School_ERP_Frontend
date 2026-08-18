@@ -9,6 +9,6 @@ function Page() {
 }
 
 export default WithPermission(Page, {
-  permission: PERMISSIONS.SAAS.SETTINGS_MANAGE,
+  permission: PERMISSIONS.SAAS.INSTITUTE_VIEW_ALL,
   redirectTo: "/dashboard",
 });

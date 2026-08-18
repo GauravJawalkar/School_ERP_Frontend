@@ -293,6 +293,7 @@ export default function InstituteDashboard() {
                         schoolId={schoolDetails.id}
                         canEdit={isSuperAdmin || user?.roles?.includes("SCHOOL_ADMIN")}
                         refetchSchoolDetails={refetchDetails}
+                        affiliatedBoards={schoolDetails.additionalInfo?.boardsAffiliated || []}
                     />
                 )}
 

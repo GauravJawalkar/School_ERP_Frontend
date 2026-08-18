@@ -28,6 +28,7 @@ interface ClassesTableProps {
     schoolId: number;
     canEdit: boolean;
     refetchSchoolDetails: () => void;
+    affiliatedBoards?: string[];
 }
 
 export default function ClassesTable({
@@ -35,7 +36,8 @@ export default function ClassesTable({
     staff,
     schoolId,
     canEdit,
-    refetchSchoolDetails
+    refetchSchoolDetails,
+    affiliatedBoards = []
 }: ClassesTableProps) {
     // Class Drawer States
     const [isAddClassDrawerOpen, setIsAddClassDrawerOpen] = useState(false);
@@ -70,6 +72,7 @@ export default function ClassesTable({
     const createClassMutation = useMutation({
         mutationFn: async (payload: {
             className: string;
+            board?: string;
             academicYearId: number;
             capacity: number | null;
         }) => {
@@ -285,8 +288,15 @@ export default function ClassesTable({
                                     return (
                                         <tr key={cls.id ? `cls-${cls.id}` : `cls-idx-${index}`} className="hover:bg-neutral-50/50 transition">
                                             <td className="p-4">
-                                                <div className="font-bold text-black text-xs">
-                                                    Class {cls.className}
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-black text-xs">
+                                                        Class {cls.className}
+                                                    </span>
+                                                    {cls.board && (
+                                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 border border-light-border text-black/70">
+                                                            {cls.board}
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 {/* Inline Sections Display */}
                                                 <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -385,6 +395,7 @@ export default function ClassesTable({
                 onSave={handleCreateClass}
                 isPending={createClassMutation.isPending}
                 academicYears={academicYears}
+                affiliatedBoards={affiliatedBoards}
             />
 
             <EditClassDrawer
@@ -394,6 +405,7 @@ export default function ClassesTable({
                 isPending={updateClassMutation.isPending}
                 selectedClass={selectedClass}
                 academicYears={academicYears}
+                affiliatedBoards={affiliatedBoards}
             />
 
             {/* Modular Slide-over Drawers (Section) */}

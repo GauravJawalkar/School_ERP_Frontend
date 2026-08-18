@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Search } from "lucide-react";
-import { SchoolSummary } from "../../types/schoolAdmin.types";
+import { SchoolSummary } from "@/modules/school-admin/types/schoolAdmin.types";
 
 interface SchoolsTableProps {
     schools: SchoolSummary[];

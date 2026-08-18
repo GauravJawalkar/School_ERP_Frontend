@@ -28,6 +28,7 @@ interface ClassesTableProps {
     schoolId: number;
     canEdit: boolean;
     refetchSchoolDetails: () => void;
+    affiliatedBoards?: string[];
 }
 
 export default function ClassesTable({
@@ -35,7 +36,8 @@ export default function ClassesTable({
     staff,
     schoolId,
     canEdit,
-    refetchSchoolDetails
+    refetchSchoolDetails,
+    affiliatedBoards = []
 }: ClassesTableProps) {
     // Class Drawer States
     const [isAddClassDrawerOpen, setIsAddClassDrawerOpen] = useState(false);
@@ -70,6 +72,7 @@ export default function ClassesTable({
     const createClassMutation = useMutation({
         mutationFn: async (payload: {
             className: string;
+            board?: string;
             academicYearId: number;
             capacity: number | null;
         }) => {
@@ -134,13 +137,13 @@ export default function ClassesTable({
             return response.data;
         },
         onSuccess: () => {
-            toast.success("Section added successfully");
+            toast.success("Section created successfully");
             refetchSchoolDetails();
             setIsAddSectionDrawerOpen(false);
             setTargetClassForSection(null);
         },
         onError: (err: any) => {
-            toast.error(err?.response?.data?.message || "Failed to add section");
+            toast.error(err?.response?.data?.message || "Failed to create section");
         }
     });
 
@@ -213,9 +216,9 @@ export default function ClassesTable({
         });
     };
 
-    const triggerDeleteSection = (sec: CampusSection, cls: CampusClass) => {
+    const triggerDeleteSection = (sec: CampusSection, parentClass: CampusClass) => {
         setSectionToDelete(sec);
-        setParentClassOfSectionToDelete(cls);
+        setParentClassOfSectionToDelete(parentClass);
         setIsDeleteSectionDrawerOpen(true);
     };
 
@@ -285,8 +288,15 @@ export default function ClassesTable({
                                     return (
                                         <tr key={cls.id} className="hover:bg-neutral-50/50 transition">
                                             <td className="p-4">
-                                                <div className="font-bold text-black text-xs">
-                                                    Class {cls.className}
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-black text-xs">
+                                                        Class {cls.className}
+                                                    </span>
+                                                    {cls.board && (
+                                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 border border-light-border text-black/70">
+                                                            {cls.board}
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 {/* Inline Sections Display */}
                                                 <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -319,7 +329,7 @@ export default function ClassesTable({
                                                                                 className="p-0.2 hover:text-red-600 text-red-400 cursor-pointer transition"
                                                                                 title="Delete Section"
                                                                             >
-                                                                                <X size={8} />
+                                                                                <Trash2 size={8} />
                                                                             </button>
                                                                         </div>
                                                                     )}
@@ -327,31 +337,38 @@ export default function ClassesTable({
                                                             );
                                                         })
                                                     ) : (
-                                                        <span className="text-[10px] text-black/35 italic">No sections configured</span>
+                                                        <span className="text-[10px] text-black/35 italic">No sections created</span>
                                                     )}
+                                                    {/* Quick Add Section Button */}
                                                     {canEdit && (
                                                         <button
                                                             onClick={() => openAddSectionDrawer(cls)}
-                                                            className="inline-flex items-center gap-0.5 px-2 py-0.5 border border-dashed border-light-border hover:border-black text-[9px] font-bold text-black/55 hover:text-black rounded-md transition cursor-pointer"
+                                                            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 border border-dashed border-neutral-300 hover:border-black rounded-md text-[10px] font-semibold text-black/50 hover:text-black transition cursor-pointer"
                                                         >
-                                                            + Section
+                                                            <Plus size={9} />
+                                                            <span>Add Section</span>
                                                         </button>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="p-4 text-center font-semibold text-black/75">
-                                                {cls.capacity || "N/A"} seats
+
+                                            <td className="p-4 text-center font-bold text-black/70 text-xs">
+                                                {cls.capacity ? `${cls.capacity} seats` : <span className="text-black/30 font-normal">Unrestricted</span>}
                                             </td>
-                                            <td className="p-4 text-center font-semibold text-black/60">
-                                                {formatYear}
+
+                                            <td className="p-4 text-center font-semibold text-black/70 text-xs">
+                                                <span className="px-2 py-0.5 rounded-full bg-neutral-100 border border-light-border text-black/70 text-[10px] font-semibold">
+                                                    {formatYear}
+                                                </span>
                                             </td>
+
                                             {canEdit && (
                                                 <td className="p-4 text-right">
                                                     <div className="inline-flex items-center justify-end">
                                                         <TableActionMenu
                                                             actions={[
                                                                 {
-                                                                    label: "Edit Class",
+                                                                    label: "Modify Class Details",
                                                                     icon: <Pencil size={14} />,
                                                                     onClick: () => {
                                                                         setSelectedClass(cls);
@@ -359,7 +376,7 @@ export default function ClassesTable({
                                                                     }
                                                                 },
                                                                 {
-                                                                    label: "Delete Class",
+                                                                    label: "Delete Class Entry",
                                                                     icon: <Trash2 size={14} />,
                                                                     danger: true,
                                                                     onClick: () => triggerDeleteClass(cls)
@@ -385,6 +402,7 @@ export default function ClassesTable({
                 onSave={handleCreateClass}
                 isPending={createClassMutation.isPending}
                 academicYears={academicYears}
+                affiliatedBoards={affiliatedBoards}
             />
 
             <EditClassDrawer
@@ -394,6 +412,7 @@ export default function ClassesTable({
                 isPending={updateClassMutation.isPending}
                 selectedClass={selectedClass}
                 academicYears={academicYears}
+                affiliatedBoards={affiliatedBoards}
             />
 
             {/* Modular Slide-over Drawers (Section) */}

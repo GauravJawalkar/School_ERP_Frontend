@@ -11,7 +11,7 @@ import {
     Shield,
     ExternalLink
 } from "lucide-react";
-import { SchoolDetails } from "../../types/schoolAdmin.types";
+import { SchoolDetails } from "@/modules/school-admin/types/schoolAdmin.types";
 
 interface SchoolProfileOverviewProps {
     details?: SchoolDetails | any;

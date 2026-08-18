@@ -189,7 +189,7 @@ export default function StaffTable({
                                 actions.push({
                                     label: "Permanently Delete",
                                     icon: <Trash2 size={14} />,
-                                    onClick: () => onDelete(member.id || member.userId),
+                                    onClick: () => onDelete(Number(member.id)),
                                     danger: true
                                 });
                             }

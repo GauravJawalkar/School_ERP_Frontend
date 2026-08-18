@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 interface CampusClass {
     id: number;
     className: string;
+    board?: string;
     capacity: number | null;
     orderIndex: number | null;
     academicYearId: number;
@@ -17,12 +18,14 @@ interface EditClassDrawerProps {
     onClose: () => void;
     onSave: (payload: {
         className: string;
+        board?: string;
         academicYearId: number;
         capacity: number | null;
     }) => void;
     isPending: boolean;
     selectedClass: CampusClass | null;
     academicYears: any[];
+    affiliatedBoards?: string[];
 }
 
 export default function EditClassDrawer({
@@ -31,18 +34,25 @@ export default function EditClassDrawer({
     onSave,
     isPending,
     selectedClass,
-    academicYears
+    academicYears,
+    affiliatedBoards = []
 }: EditClassDrawerProps) {
     const [animateIn, setAnimateIn] = useState(false);
 
     // Form inputs
     const [classNameInput, setClassNameInput] = useState("");
+    const [board, setBoard] = useState("CBSE");
     const [academicYearId, setAcademicYearId] = useState("");
     const [capacity, setCapacity] = useState("");
+
+    const availableBoards = affiliatedBoards.length > 0
+        ? affiliatedBoards
+        : ["CBSE", "ICSE", "STATE_BOARD", "IB", "CAMBRIDGE", "NIOS", "OTHER"];
 
     useEffect(() => {
         if (isOpen && selectedClass) {
             setClassNameInput(selectedClass.className);
+            setBoard(selectedClass.board || availableBoards[0] || "CBSE");
             setAcademicYearId(String(selectedClass.academicYearId || ""));
             setCapacity(selectedClass.capacity !== null ? String(selectedClass.capacity) : "");
 
@@ -72,6 +82,7 @@ export default function EditClassDrawer({
 
         onSave({
             className: classNameInput.trim(),
+            board: board || "CBSE",
             academicYearId: Number(academicYearId),
             capacity: capacity ? Number(capacity) : null
         });
@@ -136,6 +147,24 @@ export default function EditClassDrawer({
                                 onChange={(e) => setClassNameInput(e.target.value)}
                                 className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold"
                             />
+                        </div>
+
+                        {/* Educational Board Selection */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-black/70 block uppercase tracking-wider">
+                                Educational Board
+                            </label>
+                            <select
+                                value={board}
+                                onChange={(e) => setBoard(e.target.value)}
+                                className="w-full border border-input-border text-xs p-2.5 outline-none rounded-lg focus:ring-2 focus:ring-black/10 transition bg-white font-semibold cursor-pointer"
+                            >
+                                {availableBoards.map((b: string) => (
+                                    <option key={b} value={b}>
+                                        {b}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         {/* Academic Year Selection */}
