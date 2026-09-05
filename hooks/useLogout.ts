@@ -1,15 +1,20 @@
-"use client"
+"use client";
 
 import { useAuthStore } from "@/store/authStore";
-import { useRouter } from "next/navigation";
+import { clearCookies } from "@/lib/helpers/clearCookies";
 
 export function useLogout() {
     const { clearAuth } = useAuthStore();
-    const router = useRouter();
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            await clearCookies();
+        } catch (e) {
+            console.error("Error clearing cookies on logout:", e);
+        }
         clearAuth();
-        router.replace('/login');
-    }
+        window.location.href = "/login";
+    };
+
     return { logout };
 }

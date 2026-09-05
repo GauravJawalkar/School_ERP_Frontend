@@ -25,13 +25,11 @@ export const useAuthStore = create<AuthState>()(
                 setUser: (user) => set({ user }),
                 setResetPasswordEmail: (email) => set({ resetPasswordEmail: email }),
                 clearAuth: () => {
-                    set(
-                        {
-                            accessToken: null,
-                            user: null
-                        }
-                    )
-                    clearCookies();
+                    set({
+                        accessToken: null,
+                        user: null,
+                        resetPasswordEmail: null
+                    });
                 }
             }
         ),

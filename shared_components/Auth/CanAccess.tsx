@@ -1,17 +1,23 @@
-"use client"
+"use client";
 
 import { usePermission } from "@/hooks/usePermission";
 import { CanAccessProps } from "@/interfaces/interface";
 
-export function CanAccess({ children,
+export function CanAccess({
+    children,
     permission,
     allOf,
     anyOf,
     role,
     anyRole,
     module,
-    fallback = null }: CanAccessProps) {
-    const { can, canAll, canAny, is, isAny, hasModule } = usePermission();
+    fallback = null
+}: CanAccessProps) {
+    const { can, canAll, canAny, is, isAny, hasModule, isSuperAdmin } = usePermission();
+
+    if (isSuperAdmin) {
+        return <>{children}</>;
+    }
 
     const hasAccess =
         (!permission || can(permission)) &&
@@ -22,8 +28,8 @@ export function CanAccess({ children,
         (!module || hasModule(module));
 
     return hasAccess ? <>{children}</> : <>{fallback}</>;
-
 }
+
 
 
 // ─── USAGE EXAMPLES ──────────────────────────────────────────

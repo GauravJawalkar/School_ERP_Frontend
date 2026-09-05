@@ -1,77 +1,93 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { tryRefreshAccessToken } from './lib/helpers/refreshAccessToken';
 
-const PUBLIC_ROUTES = ["/", "/login", "/forgot-password", "/reset-password"];
-const SUPER_ADMIN_ONLY_ROUTES = ["/saas", "/saas/institutes", "/saas/billing", "/saas/settings"];
+const PUBLIC_ROUTES = ["/login", "/forgot-password", "/reset-password"];
+const SUPER_ADMIN_ONLY_ROUTES = ["/saas", "/saas/institutes", "/saas/billing", "/saas/settings", "/saas/plans", "/saas/subscriptions"];
 
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const loginUrl = new URL("/login", request.url);
 
-    // 1. Let public routes through
-    const isPublic = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
-    if (isPublic) return NextResponse.next();
-
     const token = request.cookies.get("accessToken")?.value;
     const refreshToken = request.cookies.get("refreshToken")?.value;
 
-    // 2. No refresh token at all → must login
-    if (!refreshToken) {
+    // 1. Root route "/" handling
+    if (pathname === "/") {
+        if (token || refreshToken) {
+            return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+        return NextResponse.redirect(loginUrl);
+    }
+
+    // 2. Public auth routes (/login, /forgot-password, /reset-password) -> Always allow
+    const isPublic = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
+    if (isPublic) {
+        return NextResponse.next();
+    }
+
+    // 3. No refresh token and no access token on protected routes -> must login
+    if (!refreshToken && !token) {
         loginUrl.searchParams.set("callbackUrl", pathname);
         return NextResponse.redirect(loginUrl);
     }
 
-    // 3. Access token missing but refresh token exists → try to refresh
+    // 4. Access token missing but refresh token exists -> try to refresh
     if (!token && refreshToken) {
         const newAccessToken = await tryRefreshAccessToken(refreshToken);
 
         if (newAccessToken) {
-            // If Successfully refreshed — set new cookie and continue
             const nextResponse = NextResponse.next();
             nextResponse.cookies.set("accessToken", newAccessToken, {
                 httpOnly: true,
                 sameSite: "lax",
-                secure: false,
-                maxAge: 2 * 60,//2 minutes for testing
+                secure: process.env.NODE_ENV === "production",
+                maxAge: 60 * 60 * 24, // 1 day
             });
             return nextResponse;
         }
 
-        // Refresh failed → go to login
         loginUrl.searchParams.set("callbackUrl", pathname);
-        return NextResponse.redirect(loginUrl);
+        const response = NextResponse.redirect(loginUrl);
+        response.cookies.delete("accessToken");
+        response.cookies.delete("refreshToken");
+        return response;
     }
 
-    // 4. Decode token for routing decisions (no verify, backend does that)
+    // 5. Decode token for routing decisions
     try {
-        const payload = JSON.parse(Buffer.from(token!.split(".")[1], "base64").toString());
-
+        const payloadBase64 = token!.split(".")[1];
+        if (!payloadBase64) {
+            throw new Error("Invalid token format");
+        }
+        const payload = JSON.parse(Buffer.from(payloadBase64, "base64").toString());
         const now = Math.floor(Date.now() / 1000);
 
-        // 5. Token expired → try refresh before giving up
+        // 6. Token expired -> try refresh
         if (payload.exp && payload.exp < now) {
-            const newAccessToken = await tryRefreshAccessToken(refreshToken);
+            if (refreshToken) {
+                const newAccessToken = await tryRefreshAccessToken(refreshToken);
 
-            if (newAccessToken) {
-                const nextResponse = NextResponse.next();
-                nextResponse.cookies.set("accessToken", newAccessToken, {
-                    httpOnly: true,
-                    sameSite: "lax",
-                    secure: false,
-                    maxAge: 2 * 60,
-                });
-                return nextResponse;
+                if (newAccessToken) {
+                    const nextResponse = NextResponse.next();
+                    nextResponse.cookies.set("accessToken", newAccessToken, {
+                        httpOnly: true,
+                        sameSite: "lax",
+                        secure: process.env.NODE_ENV === "production",
+                        maxAge: 60 * 60 * 24,
+                    });
+                    return nextResponse;
+                }
             }
 
-            // Both expired → logout
-            const response = NextResponse.redirect(new URL("/login", request.url));
+            const response = NextResponse.redirect(loginUrl);
             response.cookies.delete("accessToken");
+            response.cookies.delete("refreshToken");
             loginUrl.searchParams.set("callbackUrl", pathname);
             return response;
         }
 
-        // 6. Protect SUPER_ADMIN only routes
+        // 7. Protect SUPER_ADMIN only routes
         const isSuperAdminRoute = SUPER_ADMIN_ONLY_ROUTES.some(
             (route) => pathname === route || pathname.startsWith(route + "/")
         );
@@ -84,14 +100,14 @@ export async function proxy(request: NextRequest) {
         }
 
         return NextResponse.next();
-
     } catch {
-        const response = NextResponse.redirect(new URL("/login", request.url));
+        const response = NextResponse.redirect(loginUrl);
         response.cookies.delete("accessToken");
+        response.cookies.delete("refreshToken");
         return response;
     }
 }
 
 export const config = {
-    matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)",],
+    matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)"],
 };

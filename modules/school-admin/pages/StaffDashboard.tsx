@@ -101,7 +101,7 @@ export default function StaffDashboard() {
     // Mutation: Update Existing Staff Details
     const updateStaffMutation = useMutation({
         mutationFn: async ({ staffId, payload }: { staffId: number | string; payload: any }) => {
-            const response = await ApiClient.put(`${BASE_URL}/admin/updateStaff/${staffId}`, payload);
+            const response = await ApiClient.put(`${BASE_URL}/admin/staff/${staffId}`, payload);
             return response.data;
         },
         onSuccess: () => {
@@ -137,7 +137,7 @@ export default function StaffDashboard() {
     // Mutation: Delete Staff Member
     const deleteStaffMutation = useMutation({
         mutationFn: async (staffId: number | string) => {
-            const response = await ApiClient.delete(`${BASE_URL}/admin/deleteStaff/${staffId}`);
+            const response = await ApiClient.delete(`${BASE_URL}/admin/staff/${staffId}`);
             return response.data;
         },
         onSuccess: () => {
